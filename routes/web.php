@@ -27,42 +27,16 @@ use App\Http\Controllers\Web\Superadmin\ReportController as AdminReport; // <-- 
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
-    return redirect('/login'); // Arahkan ke login saat buka web
-});
-
-// Halaman Login (Render file React di resources/js/Pages/Auth/Login.jsx)
-Route::get('/login', function () {
-    return Inertia::render('Auth/Login');
-})->name('login');
-
-// Proses Form Login Web
-Route::post('/login', function (Request $request) {
-    $credentials = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
-    ]);
-
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
-        
-        // Cek role untuk diarahkan ke dashboard yang benar
-        if (Auth::user()->role === 'organizer') {
-            return redirect()->intended('/organizer/dashboard');
-        } elseif (Auth::user()->role === 'superadmin') {
-            return redirect()->intended('/superadmin/dashboard');
-        }
+    if (Auth::check()) {
+        $role = Auth::user()->role;
+        if ($role === 'superadmin') return redirect()->route('superadmin.dashboard');
+        if ($role === 'organizer') return redirect()->route('organizer.dashboard');
     }
-
-    return back()->withErrors(['email' => 'Email atau Password salah.']);
+    
+    return redirect()->route('login'); 
 });
 
-// Proses Logout Web
-Route::post('/logout', function (Request $request) {
-    Auth::logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
-    return redirect('/login');
-});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -110,3 +84,5 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
     Route::get('/reports/export', [AdminReport::class, 'export'])->name('reports.export');
     
 });
+
+require __DIR__.'/auth.php';

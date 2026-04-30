@@ -37,7 +37,7 @@ export default function Login({ status, canResetPassword }) {
 
                     <TextInput
                         id="email"
-                        type="email"
+                        type=""
                         name="email"
                         value={data.email}
                         className="mt-1 block w-full"

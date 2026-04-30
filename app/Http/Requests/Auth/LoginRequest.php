@@ -38,15 +38,35 @@ class LoginRequest extends FormRequest
      *
      * @throws ValidationException
      */
-    public function authenticate(): void
+  public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // 1. Cek apakah input berupa email atau username
+        // Form field dari Breeze biasanya bernama 'email', biarkan saja namanya, tapi isinya bisa username
+        $loginType = filter_var($this->input('email'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        $credentials = [
+            $loginType => $this->input('email'),
+            'password' => $this->input('password')
+        ];
+
+        // 2. Coba Login
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
+            ]);
+        }
+
+        // 3. Validasi Role (PENTING!)
+        $user = Auth::user();
+        if (!in_array($user->role, ['superadmin', 'organizer'])) {
+            Auth::logout(); // Paksa keluar jika role tidak sesuai
+            
+            throw ValidationException::withMessages([
+                'email' => 'Akses ditolak. Anda hanya dapat masuk melalui aplikasi Mobile.',
             ]);
         }
 

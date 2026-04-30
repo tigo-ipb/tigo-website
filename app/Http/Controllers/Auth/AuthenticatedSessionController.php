@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use Illuminate\Foundation\Support\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,13 +28,23 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+   public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Cek Role dan arahkan ke dashboard masing-masing
+        $role = $request->user()->role;
+        
+        if ($role === 'superadmin') {
+            return redirect()->route('superadmin.dashboard');
+        } elseif ($role === 'organizer') {
+            return redirect()->route('organizer.dashboard');
+        }
+
+        // Fallback (seharusnya tidak pernah tereksekusi karena sudah dihadang di LoginRequest)
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
 
     /**
