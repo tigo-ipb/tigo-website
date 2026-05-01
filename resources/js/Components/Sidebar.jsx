@@ -5,7 +5,8 @@ import {
     IconBook, 
     IconCoin, 
     IconLogout,
-    IconX // Tambahkan icon Close
+    IconX, // Tambahkan icon Close
+    IconPlus
 } from '@tabler/icons-react';
 
 // Tangkap props isOpen dan setIsSidebarOpen
@@ -44,7 +45,14 @@ export default function Sidebar({ isOpen, setIsSidebarOpen }) {
             </div>
 
             {/* Navigation Menu */}
-            <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
+            <nav className="px-4 gap-2 py-6 flex flex-col">
+                <Link 
+                href={route('organizer.events.create')}
+                className="bg-sky-500 text-white max-w-[228px] h-12 px-3 py-2 rounded-[12px] text-xs font-bold shadow-sm hover:bg-sky-600 transition flex items-center justify-center"
+                >
+                    <IconPlus size={20} className="inline-block mr-[10px]" />
+                    Tambahkan Event Baru
+                </Link>
                 {menuItems.map((item) => {
                     const isActive = url.startsWith(item.href);
                     return (
