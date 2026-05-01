@@ -23,6 +23,8 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "@cloudinary/react": "^1.14.4",
+        "@cloudinary/url-gen": "^1.22.0",
         "@tabler/icons-react": "^3.41.1",
         "apexcharts": "^5.10.6",
         "react-apexcharts": "^2.1.0"

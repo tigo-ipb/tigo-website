@@ -340,10 +340,6 @@ export default function Dashboard({ auth, stats, topEvents, recentBookings, curr
                 </div>
 
             </div>
-            
-            <footer className="mt-8 flex justify-between items-center text-gray-500 text-sm p-6 bg-white border border-gray-100 rounded-2xl">
-                <p>Copyright @ 2026 Tigo</p>
-            </footer>
         </DashboardLayout>
     );
 }

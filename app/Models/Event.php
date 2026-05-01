@@ -22,7 +22,8 @@ class Event extends Model
         'banners',       // Object untuk rasio 1x1 dan 16x9
         'poster_url',
         'galleries',
-        'ticket_types'
+        'ticket_types',
+        'status',
     ];
 
     /**

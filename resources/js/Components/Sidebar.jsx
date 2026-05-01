@@ -4,10 +4,12 @@ import {
     IconTicket, 
     IconBook, 
     IconCoin, 
-    IconLogout 
+    IconLogout,
+    IconX // Tambahkan icon Close
 } from '@tabler/icons-react';
 
-export default function Sidebar() {
+// Tangkap props isOpen dan setIsSidebarOpen
+export default function Sidebar({ isOpen, setIsSidebarOpen }) {
     const { url } = usePage();
 
     const menuItems = [
@@ -18,28 +20,46 @@ export default function Sidebar() {
     ];
 
     return (
-        <aside className="w-64 bg-white border-r border-gray-100 flex flex-col fixed h-screen z-20">
-            {/* Logo */}
-            <div className="p-8 flex items-center gap-3">
-                <img src="/images/logo-tigo.png" alt="Tigo Logo" className="w-10 h-10 object-contain" />
-                <span className="text-2xl font-bold text-blue-500">Tigo</span>
+        <aside 
+            // Lebar sidebar di mobile kita buat w-64 (cukup nyaman) atau w-full jika ingin menutup layar.
+            // z-30 agar berada di atas Backdrop (z-20) dan Navbar (z-10)
+            className={`w-[252px] bg-white border-r border-gray-100 flex flex-col fixed h-screen z-30 transition-transform duration-300 ease-in-out ${
+                isOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+        >
+            {/* Header Sidebar (Logo + Tombol Close) */}
+            <div className="p-6 md:p-8 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <img src="/images/logo-tigo.png" alt="Tigo Logo" className="w-10 h-10 object-contain" />
+                    <span className="text-2xl font-bold text-blue-500">Tigo</span>
+                </div>
+                
+                {/* Tombol Close hanya muncul di layar kecil (lg:hidden) */}
+                <button 
+                    className="p-1 text-gray-400 hover:text-red-500 bg-gray-50 rounded-lg lg:hidden"
+                    onClick={() => setIsSidebarOpen(false)}
+                >
+                    <IconX size={24} />
+                </button>
             </div>
 
             {/* Navigation Menu */}
-            <nav className="flex-1 px-4 space-y-2">
+            <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
                 {menuItems.map((item) => {
                     const isActive = url.startsWith(item.href);
                     return (
                         <Link
                             key={item.name}
                             href={item.href}
+                            // Tutup otomatis sidebar jika menu diklik di mobile
+                            onClick={() => window.innerWidth < 1024 && setIsSidebarOpen(false)}
                             className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all duration-200 ${
                                 isActive 
                                 ? 'bg-blue-500 text-white shadow-lg shadow-blue-200' 
-                                : 'text-slate-400 hover:bg-slate-50 hover:text-blue-500'
+                                : 'text-slate-500 hover:bg-slate-50 hover:text-blue-500'
                             }`}
                         >
-                            <item.icon size={22} stroke={2} />
+                            <item.icon size={22} stroke={isActive ? 2.5 : 2} />
                             <span className="font-semibold">{item.name}</span>
                         </Link>
                     );
@@ -47,15 +67,15 @@ export default function Sidebar() {
             </nav>
 
             {/* Logout Button */}
-            <div className="p-6">
+            <div className="p-6 mt-auto border-t border-gray-50">
                 <Link
                     href={route('logout')}
                     method="post"
                     as="button"
-                    className="w-full flex items-center gap-4 px-4 py-3 text-white bg-blue-500 rounded-2xl hover:bg-blue-600 transition-all shadow-md shadow-blue-100"
+                    className="w-full flex items-center gap-4 px-4 py-3 text-red-500 bg-red-50 rounded-2xl hover:bg-red-500 hover:text-white transition-all font-bold"
                 >
-                    <IconLogout size={22} stroke={2} />
-                    <span className="font-semibold">Keluar</span>
+                    <IconLogout size={22} stroke={2.5} />
+                    <span>Keluar</span>
                 </Link>
             </div>
         </aside>

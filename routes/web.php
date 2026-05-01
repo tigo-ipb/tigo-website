@@ -50,7 +50,8 @@ Route::middleware(['auth', 'role:organizer'])->prefix('organizer')->name('organi
     
     // 2. Events (CRUD Event & Cloudinary)
     Route::resource('events', OrgEvent::class);
-    
+    // Pastikan ini ada di dalam group middleware organizer/auth Anda
+    Route::patch('/organizer/events/{id}/status', [App\Http\Controllers\Web\Organizer\EventController::class, 'updateStatus'])->name('events.update-status');
     // 3. Bookings (Data Transaksi & Pesanan Tiket)
     Route::get('/bookings', [OrgBooking::class, 'index'])->name('bookings');
     
