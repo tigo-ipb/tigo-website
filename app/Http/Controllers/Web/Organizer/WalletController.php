@@ -238,37 +238,47 @@ class WalletController extends Controller
             'status' => 'PENDING'
         ]);
 
-        // 5. Tembak API Xendit Disbursement
+        // 5. Tembak API Xendit Batch Disbursement
         try {
             $response = Http::withBasicAuth(env('XENDIT_SECRET_KEY'), '')
-                ->timeout(30) // Biasakan pakai timeout untuk keamanan API
-                ->post('https://api.xendit.co/disbursements', [
-                    'external_id' => (string) $withdrawal->_id,
-                    'amount' => $netAmount, // <--- PENTING: Kirim NET AMOUNT ke Xendit
-                    'bank_code' => $method->bank_code, 
-                    'account_holder_name' => $method->account_name, 
-                    'account_number' => $method->account_number, 
-                    'description' => 'Pencairan Dana Tiket Tigo - EO: ' . auth()->user()->name,
+                ->timeout(30)
+                ->withHeaders([
+                    'X-IDEMPOTENCY-KEY' => (string) $withdrawal->_id 
+                ])
+                ->post('https://api.xendit.co/batch_disbursements', [
+                    'reference' => 'BATCH-WD-' . $withdrawal->_id,
+                    'disbursements' => [
+                        [
+                            'external_id' => (string) $withdrawal->_id,
+                            'amount' => $netAmount, 
+                            'bank_code' => $method->bank_code, 
+                            'bank_account_name' => $method->account_name,   // <-- UBAH INI
+                            'bank_account_number' => $method->account_number, // <-- DAN UBAH INI
+                            'description' => 'Pencairan Dana EO: ' . auth()->user()->name,
+                        ]
+                    ]
                 ]);
 
             $xenditData = $response->json();
 
+            // Tangkap error jika Xendit menolak formatnya
             if ($response->failed()) {
-                // Tangkap pesan error detail dari Xendit jika ada
                 $errorDetail = isset($xenditData['errors']) ? ' | ' . json_encode($xenditData['errors']) : '';
-                throw new \Exception(($xenditData['message'] ?? 'Gagal membuat pencairan di Xendit') . $errorDetail);
+                throw new \Exception(($xenditData['message'] ?? 'Gagal membuat batch pencairan di Xendit') . $errorDetail);
             }
 
             // 6. Jika sukses API
+            // Xendit akan mereturn status "NEEDS_APPROVAL"
             $withdrawal->update([
-                'xendit_external_id' => $xenditData['id'],
-                'status' => 'PENDING' 
+                'xendit_external_id' => $xenditData['id'], // Menyimpan ID Batch dari Xendit
+                'status' => 'PENDING' // Tetap pending di database kita menunggu diapprove di Dashboard
             ]);
 
-            return redirect()->route('organizer.wallet.index')->with('success', 'Permintaan penarikan berhasil dibuat. Menunggu persetujuan pencairan.');
+            return redirect()->route('organizer.wallet.index')
+                ->with('success', 'Permintaan penarikan berhasil dibuat. Menunggu persetujuan admin.');
 
         } catch (\Exception $e) {
-            // ROLLBACK Saldo jika API Xendit gagal/timeout
+            // ROLLBACK Saldo
             $wallet->update(['available_balance' => $originalBalance]);
             $withdrawal->update(['status' => 'FAILED', 'error_message' => $e->getMessage()]);
 

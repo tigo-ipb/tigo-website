@@ -20,47 +20,57 @@ class XenditController extends Controller
         return $headerToken === $xenditToken;
     }
 
-    public function disbursementCallback(Request $request)
+   public function disbursementCallback(\Illuminate\Http\Request $request)
     {
-        // 1. Validasi Token Keamanan
-        if (!$this->verifyXenditToken($request)) {
-            return response()->json(['message' => 'Token tidak valid'], 403);
+        // 1. Verifikasi Token Keamanan Xendit
+        if ($request->header('x-callback-token') !== env('XENDIT_CALLBACK_TOKEN')) {
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        // 2. Ambil data dari payload Xendit
-        $externalId = $request->external_id; // Ini adalah ID Withdrawal kita
-        $status = $request->status; // 'COMPLETED' atau 'FAILED'
+        // 2. Deteksi ID Penarikan yang Cerdas (Bisa dari Single atau Batch)
+        $withdrawalId = null;
 
-        // Cari data penarikan di database
-        $withdrawal = Withdrawal::where('_id', $externalId)->first();
+        if ($request->filled('external_id')) {
+            // Jika webhook dari Disbursement biasa (Single)
+            $withdrawalId = $request->external_id;
+        } elseif ($request->filled('reference')) {
+            // Jika webhook dari Batch Disbursement (Format: BATCH-WD-xxxxxx)
+            $withdrawalId = str_replace('BATCH-WD-', '', $request->reference);
+        }
+
+        if (!$withdrawalId) {
+            return response()->json(['message' => 'ID tidak ditemukan di payload'], 400);
+        }
+
+        // Cari data penarikannya di database
+        $withdrawal = \App\Models\Withdrawal::find($withdrawalId);
 
         if (!$withdrawal) {
-            return response()->json(['message' => 'Data penarikan tidak ditemukan'], 404);
+            return response()->json(['message' => 'Withdrawal not found'], 404);
         }
 
-        // Jika statusnya sudah selesai/gagal sebelumnya, abaikan (mencegah double hit)
-        if (in_array($withdrawal->status, ['COMPLETED', 'FAILED'])) {
-            return response()->json(['message' => 'Webhook sudah diproses sebelumnya'], 200);
+        // 3. JIKA TRANSFER SUKSES DIAPPROVE & CAIR
+        if ($request->status === 'COMPLETED' && $withdrawal->status === 'PENDING') {
+            
+            $withdrawal->update(['status' => 'SUCCESS']);
+
         }
+        // 4. JIKA TRANSFER GAGAL (Ditolak bank / Salah Rekening)
+        elseif ($request->status === 'FAILED' && $withdrawal->status === 'PENDING') {
+            
+            $withdrawal->update([
+                'status' => 'FAILED',
+                'error_message' => $request->failure_code ?? 'Batch disbursement failed'
+            ]);
 
-        // 3. Proses berdasarkan status dari bank/Xendit
-       if ($status === 'COMPLETED') {
-    // Ubah COMPLETED menjadi SUCCESS agar Dashboard EO muncul warna HIJAU
-    $withdrawal->update(['status' => 'SUCCESS']); 
-    
-        } elseif ($status === 'FAILED') {
-            // Tetap FAILED agar muncul warna MERAH
-            $withdrawal->update(['status' => 'FAILED']);
-
-            // Kembalikan uang karena gagal transfer
-            $wallet = Wallet::where('organizer_id', $withdrawal->organizer_id)->first();
+            // KEMBALIKAN SALDO KE EO
+            $wallet = \App\Models\Wallet::where('organizer_id', $withdrawal->organizer_id)->first();
             if ($wallet) {
-                $wallet->increment('available_balance', (int) $withdrawal->amount);
+                $wallet->increment('available_balance', $withdrawal->amount);
             }
         }
 
-        // Xendit mewajibkan kita membalas dengan status 200 agar mereka tahu webhook sampai
-        return response()->json(['message' => 'Webhook pencairan berhasil diproses'], 200);
+        return response()->json(['message' => 'Webhook diproses dengan sukses!'], 200);
     }
 
     public function invoiceCallback(Request $request)

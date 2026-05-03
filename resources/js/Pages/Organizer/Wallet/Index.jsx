@@ -317,7 +317,7 @@ export default function Index({ balances, methods, history, filters }) {
                                 </tr>
                             </thead>
                             <tbody className="text-gray-700">
-                                {history.data.length > 0 ? history.data.map((item, index) => {
+                                {history?.data?.length > 0 ? history.data.map((item, index) => {
                                     // Status Logic
                                     let statusColor, statusText;
                                     if(item.status === 'SUCCESS') { statusColor = 'text-green-500 border-green-200'; statusText = 'Berhasil'; }
@@ -328,7 +328,9 @@ export default function Index({ balances, methods, history, filters }) {
 
                                     return (
                                         <tr key={index} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-                                            <td className="py-5 px-2 text-gray-900">WD-{item.id.toString().substring(0,6).toUpperCase()}</td>
+                                            <td className="py-5 px-2 text-gray-900">
+                                                WD-{(item?._id || item?.id || '000000').toString().substring(0,6).toUpperCase()}
+                                            </td>
                                             <td className="py-4 px-2">
                                                 <div>{formatDate(item.created_at).date}</div>
                                                 <div className="text-xs text-gray-400">{formatDate(item.created_at).time}</div>
@@ -357,7 +359,7 @@ export default function Index({ balances, methods, history, filters }) {
                         </table>
                     </div>
 
-                    {/* Pagination */}
+                   {/* Pagination */}
                     {history.links && history.links.length > 3 && (
                         <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-100">
                             <span className="text-sm text-gray-500 font-medium">
@@ -365,19 +367,27 @@ export default function Index({ balances, methods, history, filters }) {
                             </span>
                             <div className="flex gap-1">
                                 {history.links.map((link, key) => (
-                                    <Link 
-                                        key={key} 
-                                        href={link.url}
-                                        preserveState preserveScroll
-                                        className={`px-4 py-2 rounded-xl text-sm font-bold border transition-colors ${
-                                            link.active 
-                                                ? 'border-[#0ea5e9] bg-white text-[#0ea5e9]' 
-                                                : link.url 
-                                                    ? 'border-gray-100 bg-white text-gray-500 hover:bg-gray-50' 
-                                                    : 'border-transparent text-gray-300 cursor-not-allowed'
-                                        }`}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
+                                    link.url ? (
+                                        // JIKA URL ADA (HALAMAN BISA DIKLIK)
+                                        <Link 
+                                            key={key} 
+                                            href={link.url}
+                                            preserveState preserveScroll
+                                            className={`px-4 py-2 rounded-xl text-sm font-bold border transition-colors ${
+                                                link.active 
+                                                    ? 'border-[#0ea5e9] bg-white text-[#0ea5e9]' 
+                                                    : 'border-gray-100 bg-white text-gray-500 hover:bg-gray-50' 
+                                            }`}
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        />
+                                    ) : (
+                                        // JIKA URL NULL (TOMBOL PREV/NEXT MATI)
+                                        <span 
+                                            key={key}
+                                            className="px-4 py-2 rounded-xl text-sm font-bold border border-transparent text-gray-300 cursor-not-allowed"
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        ></span>
+                                    )
                                 ))}
                             </div>
                         </div>
