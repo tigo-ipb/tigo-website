@@ -281,8 +281,11 @@ class WalletController extends Controller
             // ROLLBACK Saldo
             $wallet->update(['available_balance' => $originalBalance]);
             $withdrawal->update(['status' => 'FAILED', 'error_message' => $e->getMessage()]);
+            $userFriendlyMessage = str_contains($e->getMessage(), 'cURL error 28') 
+                    ? 'Koneksi ke server pembayaran sedang sibuk. Silakan coba beberapa saat lagi.' 
+                    : $e->getMessage();
 
-            return back()->withErrors(['api_error' => 'Gagal terhubung ke gerbang pembayaran: ' . $e->getMessage()]);
+    return back()->withErrors(['api_error' => $userFriendlyMessage]);
         }
     }
 }
