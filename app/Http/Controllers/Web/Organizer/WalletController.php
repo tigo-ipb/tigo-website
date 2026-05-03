@@ -173,7 +173,6 @@ class WalletController extends Controller
         // 1. Validasi Input
         $request->validate([
             'amount' => 'required|numeric|min:50000',
-            // Tambahkan "mongodb." di depan nama tabel/collection
             'withdrawal_method_id' => 'required|exists:mongodb.withdrawal_methods,_id', 
         ]);
 
@@ -185,6 +184,34 @@ class WalletController extends Controller
             ->where('organizer_id', $organizerId)
             ->firstOrFail();
 
+        // =======================================================
+        // TAMBAHAN: Tentukan Biaya Admin Berdasarkan Tipe Metode
+        // =======================================================
+        $adminFee = 0;
+        switch (strtolower($method->type)) {
+            case 'bank':
+                $adminFee = 6500;
+                break;
+            case 'e-wallet':
+                $adminFee = 2500;
+                break;
+            case 'virtual_account':
+                $adminFee = 4500;
+                break;
+            default:
+                $adminFee = 0;
+                break;
+        }
+
+        // Jumlah bersih yang akan ditransfer ke rekening user
+        $netAmount = (int) $request->amount - $adminFee;
+
+        // Pastikan jumlah bersih tidak minus 
+        // (walaupun aturan min:50000 sudah mencegah ini, tetap baik untuk keamanan ganda)
+        if ($netAmount <= 0) {
+            return back()->withErrors(['amount' => 'Jumlah penarikan terlalu kecil setelah dipotong biaya admin.']);
+        }
+
         // 2. Cek ketersediaan saldo
         if (!$wallet || $wallet->available_balance < $request->amount) {
             return back()->withErrors(['amount' => 'Saldo tidak mencukupi untuk penarikan ini.']);
@@ -192,14 +219,18 @@ class WalletController extends Controller
 
         $originalBalance = $wallet->available_balance;
 
-        // 3. Potong saldo EO
+        // 3. Potong saldo EO (Dipotong penuh sesuai permintaan awal)
         $wallet->decrement('available_balance', (int) $request->amount);
 
         // 4. Buat Record Withdrawal (PENDING)
+        // Kita simpan data fee dan net_amount agar transaksi transparan di database
         $withdrawal = Withdrawal::create([
             'organizer_id' => $organizerId,
-            'amount' => (int) $request->amount,
+            'amount' => (int) $request->amount,         // Total ditarik (Misal: 100.000)
+            'admin_fee' => $adminFee,                   // Biaya Admin (Misal: 6.500)
+            'net_amount' => $netAmount,                 // Bersih cair (Misal: 93.500)
             'bank_info' => [
+                'type' => $method->type,
                 'bank_code' => $method->bank_code,
                 'account_name' => $method->account_name,
                 'account_number' => $method->account_number,
@@ -210,19 +241,22 @@ class WalletController extends Controller
         // 5. Tembak API Xendit Disbursement
         try {
             $response = Http::withBasicAuth(env('XENDIT_SECRET_KEY'), '')
+                ->timeout(30) // Biasakan pakai timeout untuk keamanan API
                 ->post('https://api.xendit.co/disbursements', [
                     'external_id' => (string) $withdrawal->_id,
-                    'amount' => (int) $request->amount,
-                    'bank_code' => $method->bank_code, // Sesuai dari tabel
-                    'account_holder_name' => $method->account_name, // Sesuai dari tabel
-                    'account_number' => $method->account_number, // Sesuai dari tabel
+                    'amount' => $netAmount, // <--- PENTING: Kirim NET AMOUNT ke Xendit
+                    'bank_code' => $method->bank_code, 
+                    'account_holder_name' => $method->account_name, 
+                    'account_number' => $method->account_number, 
                     'description' => 'Pencairan Dana Tiket Tigo - EO: ' . auth()->user()->name,
                 ]);
 
             $xenditData = $response->json();
 
             if ($response->failed()) {
-                throw new \Exception($xenditData['message'] ?? 'Gagal membuat pencairan di Xendit');
+                // Tangkap pesan error detail dari Xendit jika ada
+                $errorDetail = isset($xenditData['errors']) ? ' | ' . json_encode($xenditData['errors']) : '';
+                throw new \Exception(($xenditData['message'] ?? 'Gagal membuat pencairan di Xendit') . $errorDetail);
             }
 
             // 6. Jika sukses API
@@ -234,7 +268,7 @@ class WalletController extends Controller
             return redirect()->route('organizer.wallet.index')->with('success', 'Permintaan penarikan berhasil dibuat. Menunggu persetujuan pencairan.');
 
         } catch (\Exception $e) {
-            // ROLLBACK Saldo
+            // ROLLBACK Saldo jika API Xendit gagal/timeout
             $wallet->update(['available_balance' => $originalBalance]);
             $withdrawal->update(['status' => 'FAILED', 'error_message' => $e->getMessage()]);
 
