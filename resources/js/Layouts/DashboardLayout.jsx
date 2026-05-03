@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from '../Components/Sidebar';
 import Navbar from '../Components/Navbar';
+import Footer from '@/Components/Footer';
 
 export default function DashboardLayout({ header, children }) {
     // State untuk Desktop Sidebar (Bisa di-collapse)
@@ -10,7 +11,7 @@ export default function DashboardLayout({ header, children }) {
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen w-full bg-slate-50/50">
+        <div className="flex min-h-screen w-full bg-white">
             {/* DESKTOP SIDEBAR */}
             <aside 
                 className={`hidden lg:block transition-all duration-300 bg-white shrink-0 ${
@@ -30,9 +31,10 @@ export default function DashboardLayout({ header, children }) {
                     setIsMobileOpen={setIsMobileSidebarOpen}
                 />
                 
-                <main className="flex-1 p-4 md:p-6 overflow-y-auto">
+                <main className="flex-1 p-4 md:p-6">
                     <div className="mx-auto max-w-7xl">
                         {children}
+                    <Footer/>
                     </div>
                 </main>
             </div>

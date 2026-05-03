@@ -12,7 +12,7 @@ use App\Http\Controllers\Web\Organizer\EventController as OrgEvent;
 use App\Http\Controllers\Web\Organizer\BookingController as OrgBooking;
 use App\Http\Controllers\Web\Organizer\FinanceController as OrgFinance;
 use App\Http\Controllers\Web\Organizer\StaffController as OrgStaff;
-
+use App\Http\Controllers\Web\Organizer\WalletController;
 // --------------------------------------------------------
 // CONTROLLER SUPERADMIN
 // --------------------------------------------------------
@@ -58,6 +58,20 @@ Route::middleware(['auth', 'role:organizer'])->prefix('organizer')->name('organi
     // 4. Finance (Saldo & Request Withdrawal)
     Route::get('/finance', [OrgFinance::class, 'index'])->name('finance');
     Route::post('/finance/withdraw', [OrgFinance::class, 'withdraw'])->name('finance.withdraw');
+
+    Route::prefix('wallet')->name('wallet.')->group(function () {
+        // 1. Dashboard Wallet (Menampilkan Saldo, Daftar Rekening, dan Riwayat)
+        Route::get('/', [WalletController::class, 'index'])->name('index');
+
+        // 2. Tarik Saldo
+        Route::get('/withdraw', [WalletController::class, 'withdrawForm'])->name('withdrawForm');
+        Route::post('/withdraw', [WalletController::class, 'withdraw'])->name('withdraw');
+
+        // 3. Manajemen Metode Penarikan (Rekening / E-Wallet / VA)
+        Route::get('/methods/create', [WalletController::class, 'createMethod'])->name('createMethod');
+        Route::post('/methods', [WalletController::class, 'storeMethod'])->name('storeMethod');
+        Route::delete('/methods/{id}', [WalletController::class, 'destroyMethod'])->name('destroyMethod');
+    });
     
     // 5. Staff (Manajemen Akun Penjaga Pintu/Scanner)
     Route::resource('staff', OrgStaff::class);

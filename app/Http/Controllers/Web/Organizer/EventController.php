@@ -14,61 +14,110 @@ use Cloudinary\Cloudinary;
 class EventController extends Controller
 {
     // 1. HALAMAN LIST EVENT (Index)
-    public function index(Request $request)
-    {
-        $organizerId = auth()->id();
-        
-        // Ambil event, urutkan dari yang terbaru
-        $eventsRaw = Event::where('organizer_id', $organizerId)->orderBy('created_at', 'desc')->get();
+   public function index(Request $request)
+{
+    $organizerId = auth()->id();
+    
+    // 1. Tangkap Parameter Filter dari React
+    $tab = $request->query('tab', 'active');
+    $search = $request->query('search');
+    $category = $request->query('category');
+    $timeFilter = $request->query('time');
+    
+    // 2. Query Dasar
+    $query = \App\Models\Event::where('organizer_id', $organizerId);
 
-        $events = $eventsRaw->map(function ($event) {
-            // Hitung total tiket dan yang terjual untuk Progress Bar
-            $totalTickets = 0;
-            foreach ($event->ticket_types as $ticket) {
-                $totalTickets += (int) $ticket['available_stock']; // Stok awal (nanti disesuaikan jika stok berkurang real-time)
-            }
-            
-            // Cari total tiket terjual dari tabel Payment
-            $ticketsSold = Payment::where('event_id', $event->_id)
-                ->where('payment_status', 'PAID')
-                ->get()
-                ->sum(function ($payment) {
-                    return collect($payment->ticket_items)->sum('quantity');
-                });
-
-            $totalTickets += $ticketsSold; // Total kuota asli = stok sisa + terjual
-            $soldPercentage = $totalTickets > 0 ? round(($ticketsSold / $totalTickets) * 100) : 0;
-
-            // Cari harga termurah untuk label "Mulai dari"
-            $lowestPrice = collect($event->ticket_types)->min('price');
-
-            // Format tanggal schedule pertama
-            $firstSchedule = collect($event->schedules)->first() ?? [];
-            $scheduleFormat = isset($firstSchedule['date']) 
-                ? Carbon::parse($firstSchedule['date'])->translatedFormat('D, d F Y') . ' • ' . $firstSchedule['time_start'] . ' - ' . $firstSchedule['time_end']
-                : 'Jadwal belum ditentukan';
-
-            // Tentukan status (Active, History)
-            
-
-            return [
-                'id' => $event->_id,
-                'name' => $event->name,
-                'category' => $event->category_name ?? 'Event',
-                'venue' => $event->location['venue'] ?? 'TBA',
-                'image' => $event->banners['16x9'] ?? ($event->poster_url ?? 'https://via.placeholder.com/400x200'),
-                'schedule' => $scheduleFormat,
-                'sold_percentage' => $soldPercentage,
-                'lowest_price' => $lowestPrice,
-                'status' => $event->status ?? 'active',
-                'date_end' => $event->date_end,
-            ];
-        });
-
-        return Inertia::render('Organizer/Events/Index', [
-            'events' => $events
-        ]);
+    // -- FILTER PENCARIAN & KATEGORI (Tetap Sama) --
+    if ($search) {
+        $query->where('name', 'like', "%{$search}%");
     }
+
+    if ($category && $category !== 'Semua Kategori') {
+        $query->where('category_name', $category);
+    }
+
+    // -- FILTER WAKTU (Tetap Sama) --
+    if ($timeFilter === 'Bulan Ini') {
+        $startOfMonth = \Carbon\Carbon::now()->startOfMonth(); 
+        $endOfMonth = \Carbon\Carbon::now()->endOfMonth();
+        $query->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+    }
+
+    // =========================================================
+    // 3. FILTER TAB & STATUS (INI YANG KITA PERBAIKI)
+    // =========================================================
+    $now = \Carbon\Carbon::now()->toDateString();
+    
+    if ($tab === 'history') {
+        // Hanya cari yang punya date_end DAN tanggalnya lebih kecil dari hari ini
+        $query->where('date_end', '!=', null)->where('date_end', '<', $now);
+        
+    } elseif ($tab === 'draft') {
+        // Harus beneran ada tulisan 'draft'
+        $query->where('status', 'draft');
+        
+    } else {
+        // TAB ACTIVE (Default)
+        // Pokoknya SELAIN draft, tampilkan semua! 
+        // (Termasuk event lama yang nggak punya kolom status / date_end)
+        $query->where('status', '!=', 'draft');
+        
+        // Kita matikan dulu filter date_end di Tab Active agar data lama Anda tidak hilang
+        // $query->where(function($q) use ($now) { ... }); 
+    }
+    // =========================================================
+
+    // 4. Eksekusi Paginasi
+    $events = $query->orderBy('created_at', 'desc')->paginate(10);
+
+    // 4. Transformasi Data untuk UI React (Hitung Tiket, Harga, dll)
+    $events->getCollection()->transform(function ($event) {
+        
+        // Hitung total tiket dan yang terjual
+        $totalTickets = 0;
+        foreach ($event->ticket_types ?? [] as $ticket) {
+            $totalTickets += (int) ($ticket['available_stock'] ?? 0);
+        }
+        
+        $ticketsSold = Payment::where('event_id', $event->_id)
+            ->where('payment_status', 'PAID')
+            ->get()
+            ->sum(function ($payment) {
+                return collect($payment->ticket_items)->sum('quantity');
+            });
+
+        $totalTickets += $ticketsSold;
+        $soldPercentage = $totalTickets > 0 ? round(($ticketsSold / $totalTickets) * 100) : 0;
+
+        // Cari harga termurah
+        $lowestPrice = collect($event->ticket_types ?? [])->min('price') ?? 0;
+
+        // Format tanggal schedule pertama
+        $firstSchedule = collect($event->schedules ?? [])->first() ?? [];
+        $scheduleFormat = isset($firstSchedule['date']) 
+            ? \Carbon\Carbon::parse($firstSchedule['date'])->translatedFormat('D, d F Y') . ' • ' . $firstSchedule['time_start'] . ' - ' . $firstSchedule['time_end']
+            : 'Jadwal belum ditentukan';
+
+        return [
+            'id' => $event->_id,
+            'name' => $event->name,
+            'category' => $event->category_name ?? 'Event',
+            'venue' => $event->location['venue'] ?? 'TBA',
+            'image' => $event->banners['16x9'] ?? ($event->poster_url ?? 'https://via.placeholder.com/400x200'),
+            'schedule' => $scheduleFormat,
+            'sold_percentage' => $soldPercentage,
+            'lowest_price' => $lowestPrice,
+            'status' => $event->status ?? 'active',
+            'date_end' => $event->date_end,
+        ];
+    });
+
+    // 5. Kembalikan data Event beserta state Filter saat ini ke React
+    return inertia('Organizer/Events/Index', [
+        'events' => $events,
+        'filters' => $request->only(['tab', 'search', 'category', 'time'])
+    ]);
+}
 
     public function create()
     {
@@ -83,7 +132,7 @@ class EventController extends Controller
         $event = Event::where('_id', $id)->where('organizer_id', auth()->id())->firstOrFail();
         
         // Ambil data transaksi khusus event ini
-        $payments = \App\Models\Payment::where('event_id', $id)->get();
+        $payments = Payment::where('event_id', $id)->get();
         
         $ticketsSold = 0;
         $revenuePaid = 0;
@@ -207,6 +256,16 @@ class EventController extends Controller
         $dates = collect($request->schedules)->pluck('date');
         $terms = $request->terms_conditions ? explode("\n", str_replace("\r", "", $request->terms_conditions)) : [];
 
+        $dom = new DOMDocument();
+        $dom->loadHTML($request->map_link);
+        $iframes = $dom->getElementsByTagName('iframe');
+        if ($iframes->length > 0) {
+            $iframe = $iframes[0];
+            $mapUrl = $iframe->getAttribute('src');
+        } else {
+            $mapUrl = $request->map_link;
+        }
+
         // 3. Simpan ke MongoDB
         Event::create([
             'organizer_id' => auth()->id(),
@@ -217,7 +276,7 @@ class EventController extends Controller
             'location' => [
                 'venue' => $request->venue,
                 'address' => $request->address,
-                'map_link' => $request->map_link
+                'map_link' => $mapUrl
             ],
             'schedules' => $request->schedules,
             'date_start' => Carbon::parse($dates->min()),
@@ -295,6 +354,16 @@ class EventController extends Controller
         $dates = collect($request->schedules)->pluck('date');
         $terms = $request->terms_conditions ? explode("\n", str_replace("\r", "", $request->terms_conditions)) : [];
 
+        $dom = new DOMDocument();
+        $dom->loadHTML($request->map_link);
+        $iframes = $dom->getElementsByTagName('iframe');
+        if ($iframes->length > 0) {
+            $iframe = $iframes[0];
+            $mapUrl = $iframe->getAttribute('src');
+        } else {
+            $mapUrl = $request->map_link;
+        }
+
         // 3. Update Database
         $event->update([
             'name' => $request->name,
@@ -304,7 +373,7 @@ class EventController extends Controller
             'location' => [
                 'venue' => $request->venue,
                 'address' => $request->address,
-                'map_link' => $request->map_link
+                'map_link' => $mapUrl
             ],
             'schedules' => $request->schedules,
             'date_start' => Carbon::parse($dates->min()),

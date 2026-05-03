@@ -44,18 +44,18 @@ class XenditController extends Controller
         }
 
         // 3. Proses berdasarkan status dari bank/Xendit
-        if ($status === 'COMPLETED') {
-            // Transfer sukses! Cukup ubah status menjadi COMPLETED
-            $withdrawal->update(['status' => 'COMPLETED']);
-            
+       if ($status === 'COMPLETED') {
+    // Ubah COMPLETED menjadi SUCCESS agar Dashboard EO muncul warna HIJAU
+    $withdrawal->update(['status' => 'SUCCESS']); 
+    
         } elseif ($status === 'FAILED') {
-            // Transfer Gagal (misal: rekening EO salah atau tutup)
+            // Tetap FAILED agar muncul warna MERAH
             $withdrawal->update(['status' => 'FAILED']);
 
-            // ROLLBACK UANG: Kembalikan uang ke saldo available EO agar bisa ditarik ulang
+            // Kembalikan uang karena gagal transfer
             $wallet = Wallet::where('organizer_id', $withdrawal->organizer_id)->first();
             if ($wallet) {
-                $wallet->increment('available_balance', $withdrawal->amount);
+                $wallet->increment('available_balance', (int) $withdrawal->amount);
             }
         }
 

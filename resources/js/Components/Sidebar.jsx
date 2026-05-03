@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { IconLayoutDashboard, IconTicket, IconBook, IconCoin, IconLogout, IconPlus } from '@tabler/icons-react';
+import { IconLayoutDashboard, IconTicket, IconBook, IconCoin, IconLogout, IconPlus, IconWallet } from '@tabler/icons-react';
 
 export default function Sidebar({ isMobile, setIsMobileOpen }) {
     const { url } = usePage();
@@ -11,6 +11,7 @@ export default function Sidebar({ isMobile, setIsMobileOpen }) {
         { name: 'Events', href: '/organizer/events', icon: IconTicket },
         { name: 'Bookings', href: '/organizer/bookings', icon: IconBook },
         { name: 'Finance', href: '/organizer/finance', icon: IconCoin },
+        { name: 'Wallet', href: '/organizer/wallet', icon: IconWallet },
     ];
 
     return (

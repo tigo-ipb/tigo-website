@@ -1,6 +1,10 @@
 import '../css/app.css';
 import './bootstrap';
 
+import '@fontsource/poppins/400.css'; // Regular
+import '@fontsource/poppins/500.css'; // Medium
+import '@fontsource/poppins/600.css'; // SemiBold
+import '@fontsource/poppins/700.css'; // Bold
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
@@ -20,6 +24,6 @@ createInertiaApp({
         root.render(<App {...props} />);
     },
     progress: {
-        color: '#4B5563',
+        color: '#00a6f4',
     },
 });

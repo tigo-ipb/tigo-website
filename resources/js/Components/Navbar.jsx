@@ -45,7 +45,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
             </Button>
             
             <div className="flex items-center justify-center">
-                {header || <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>}
+                {<h1 className="text-2xl font-bold text-slate-800">{header || "Dashboard"}</h1>}
             </div>
 
             <div className="flex items-center gap-6">
