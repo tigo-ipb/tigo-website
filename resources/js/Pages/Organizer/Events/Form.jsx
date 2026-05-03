@@ -201,7 +201,8 @@ export default function Form({ event }) {
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Kategori</label>
                                     <select value={data.category_name} onChange={e => setData('category_name', e.target.value)} className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500">
                                         <option value="Hiburan & Festival">Hiburan & Festival</option>
-                                        <option value="Workshop & Seminar">Workshop & Seminar</option>
+                                        <option value="Edukasi">Edukasi</option>
+                                        <option value="Seni & Budaya">Seni & Budaya</option>
                                         <option value="Olahraga">Olahraga</option>
                                     </select>
                                 </div>
