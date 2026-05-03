@@ -18,7 +18,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
 
     return (
         // Ubah z-index menjadi z-50 agar dropdown tidak tertimpa elemen lain di bawahnya
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-gray-50 flex items-center justify-between px-10 sticky top-0 z-50">
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-neutral-300 flex items-center justify-between px-10 sticky top-0 z-50">
 
            <div className="lg:hidden">
                 <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>

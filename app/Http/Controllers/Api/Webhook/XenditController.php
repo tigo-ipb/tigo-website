@@ -88,6 +88,12 @@ class XenditController extends Controller
             );
             $wallet->increment('available_balance', $payment->net_for_eo);
 
+            // $adminWallet = Wallet::firstOrCreate(
+            //     ['organizer_id' => 'SYSTEM_SUPERADMIN'], // ID Khusus untuk sistem
+            //     ['pending_balance' => 0, 'available_balance' => 0]
+            // );
+            // $adminWallet->increment('available_balance', $payment->platform_fee);
+
             // Generate QR Code untuk pembeli
             foreach ($payment->ticket_items as $item) {
                 for ($i = 0; $i < $item['quantity']; $i++) {
