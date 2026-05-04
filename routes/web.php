@@ -57,7 +57,6 @@ Route::middleware(['auth', 'role:organizer'])->prefix('organizer')->name('organi
     
     // 4. Finance (Saldo & Request Withdrawal)
     Route::get('/finance', [OrgFinance::class, 'index'])->name('finance');
-    Route::post('/finance/withdraw', [OrgFinance::class, 'withdraw'])->name('finance.withdraw');
 
     Route::prefix('wallet')->name('wallet.')->group(function () {
         // 1. Dashboard Wallet (Menampilkan Saldo, Daftar Rekening, dan Riwayat)

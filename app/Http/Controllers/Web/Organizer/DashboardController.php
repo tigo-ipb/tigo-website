@@ -19,6 +19,7 @@ class DashboardController extends Controller
     // --- PARAMETER FILTER DARI FRONTEND ---
     $topEventBy = $request->query('top_event', 'revenue'); // revenue / attendance
     $chartPeriod = $request->query('chart_period', 'tahun_ini'); // tahun_ini, 3_bulan, 6_bulan, tahun_kemarin, 5_tahun
+    $search = $request->query('search', null); // Pencarian untuk Booking Terkini
 
     // 1. Ambil data dasar
     $events = Event::where('organizer_id', $organizerId)->get();
@@ -129,24 +130,57 @@ class DashboardController extends Controller
         }
     }
 
-    // 5. Booking Terkini
-    $recentBookings = $allPayments->take(5)->map(function ($payment) {
-        $user = User::find($payment->user_id);
-        $event = Event::find($payment->event_id);
-        
-        return [
-            'order_id' => substr($payment->_id, -8),
-            'date' => $payment->created_at->format('d/m/Y'),
-            'time' => $payment->created_at->format('H:i'),
-            'buyer_name' => $user ? $user->name : 'Pengunjung',
-            'email' => $user ? $user->email : '-',
-            'event_name' => $event ? $event->name : 'Event Dihapus',
-            'category' => $event ? $event->category_name : 'Hiburan',
-            'qty' => collect($payment->ticket_items)->sum('quantity'),
-            'amount' => $payment->sub_total,
-            'status' => $payment->payment_status,
-        ];
-    });
+    $recentBookingsQuery = Payment::with(['user', 'event'])
+        ->where('organizer_id', $organizerId);
+
+    if ($search) {
+        $safeSearch = preg_quote($search, '/');
+        $regexPattern = "/.*{$safeSearch}.*/i";
+
+        // Tarik ID Relasi
+        $userIds = User::where('name', 'regex', $regexPattern)
+            ->select('_id')->limit(100)->get()->map(fn($user) => $user->id)->filter()->toArray();
+            
+        $eventIds = Event::where('name', 'regex', $regexPattern)
+            ->select('_id')->limit(100)->get()->map(fn($event) => $event->id)->filter()->toArray();
+
+        // Terapkan filter ke Query Booking Terkini
+        $recentBookingsQuery->where(function($q) use ($search, $regexPattern, $userIds, $eventIds) {
+            $q->where('external_id', 'regex', $regexPattern);
+              
+            if (strlen($search) === 24) {
+                $q->orWhere('_id', $search);
+            }
+
+            if (!empty($userIds)) {
+                $q->orWhereIn('user_id', $userIds);
+            }
+            
+            if (!empty($eventIds)) {
+                $q->orWhereIn('event_id', $eventIds);
+            }
+        });
+    }
+
+    // Eksekusi Query, ambil 5 teratas, lalu mapping ke format Frontend
+    $recentBookings = $recentBookingsQuery->orderBy('created_at', 'desc')
+        ->take(5)
+        ->get()
+        ->map(function ($payment) {
+            return [
+                'order_id' => substr($payment->_id, -8),
+                'date' => $payment->created_at->format('d/m/Y'),
+                'time' => $payment->created_at->format('H:i'),
+                // Karena sudah pakai with(), kita panggil relasinya langsung tanpa query User::find() lagi
+                'buyer_name' => $payment->user ? $payment->user->name : 'Pengunjung',
+                'email' => $payment->user ? $payment->user->email : '-',
+                'event_name' => $payment->event ? $payment->event->name : 'Event Dihapus',
+                'category' => $payment->event ? $payment->event->category_name : 'Hiburan',
+                'qty' => collect($payment->ticket_items)->sum('quantity'),
+                'amount' => $payment->sub_total,
+                'status' => $payment->payment_status,
+            ];
+        });
 
     // 6. Aktivitas Terakhir
     $ticketActivities = $paidPayments->take(10)->map(function ($payment) {
@@ -196,7 +230,7 @@ class DashboardController extends Controller
         ];
     }
 
-    // Return Data
+       // Return Data
     return inertia('Organizer/Dashboard', [
         'stats' => [
             'total_events' => $totalEvents,
@@ -209,7 +243,7 @@ class DashboardController extends Controller
         'recentBookings' => $recentBookings,
         'recentActivities' => $recentActivities,
         'currentEvent' => $currentEvent,
-        'filters' => $request->only(['top_event', 'chart_period']) // Kirim balik state filter
+        'filters' => $request->only(['top_event', 'chart_period', 'search']) // Kirim balik state filter
     ]);
 }
 }

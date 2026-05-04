@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use MongoDB\Laravel\Eloquent\Model;
+use MongoDB\Laravel\Relations\BelongsTo;
 
 class Payment extends Model
 {
@@ -25,4 +26,18 @@ class Payment extends Model
     protected $casts = [
         'ticket_items' => 'array',
     ];
+
+    public function event(): BelongsTo
+    {
+        // Karena kamu pakai MongoDB, kita pertegas foreign_key dan local_key-nya
+        return $this->belongsTo(Event::class, 'event_id', '_id');
+    }
+
+    /**
+     * Relasi ke model User (Pembeli tiket)
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', '_id');
+    }
 }

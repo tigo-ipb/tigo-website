@@ -25,11 +25,18 @@ export default function Dashboard({ auth, stats, topEvents, recentBookings, rece
     // --- State Filter ---
     const [topEventFilter, setTopEventFilter] = useState(filters?.top_event || 'revenue');
     const [chartFilter, setChartFilter] = useState(filters?.chart_period || 'tahun_ini');
+    const [searchTerm, setSearchTerm] = useState(filters?.search || '');
+    
 
     // Fungsi Fetch saat Filter Berubah
     const handleFilterChange = (key, value) => {
         const query = { top_event: topEventFilter, chart_period: chartFilter, [key]: value };
         router.get(route('organizer.dashboard'), query, { preserveState: true, preserveScroll: true });
+    };
+    const handleSearch = (e) => {
+        if (e.key === 'Enter') {
+            handleFilterChange('search', searchTerm);
+        }
     };
 
     // --- Metrik Donut ---
@@ -257,7 +264,13 @@ export default function Dashboard({ auth, stats, topEvents, recentBookings, rece
                             <h4 className="font-bold text-lg text-gray-900">Booking Terkini</h4>
                             <div className="relative w-full md:w-80">
                                 <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                                <input type="text" placeholder="Cari nama, event..." className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-100" />
+                               <input 
+                                    type="text" placeholder="Cari ID, nama..." 
+                                    value={searchTerm} 
+                                    onChange={e => setSearchTerm(e.target.value)} 
+                                    onKeyDown={handleSearch}
+                                    className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:border-[#0ea5e9] focus:ring-1 focus:ring-[#0ea5e9]"
+                                />
                             </div>
                         </div>
 
