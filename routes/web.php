@@ -71,9 +71,8 @@ Route::middleware(['auth', 'role:organizer'])->prefix('organizer')->name('organi
         Route::post('/methods', [WalletController::class, 'storeMethod'])->name('storeMethod');
         Route::delete('/methods/{id}', [WalletController::class, 'destroyMethod'])->name('destroyMethod');
     });
-    
-    // 5. Staff (Manajemen Akun Penjaga Pintu/Scanner)
-    Route::resource('staff', OrgStaff::class);
+     Route::get('/export', [App\Http\Controllers\Web\Organizer\ExportController::class, 'index'])->name('export');
+     Route::get('/export/download', [App\Http\Controllers\Web\Organizer\ExportController::class, 'download'])->name('export.download');
 });
 
 
