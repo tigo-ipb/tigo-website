@@ -10,6 +10,13 @@ import {
 } from '@tabler/icons-react';
 import { cn } from "@/lib/utils";
 import DateRangeModal from '@/Components/DateRangeModal';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 
 export default function Export({ stats, histories, filters }) {
@@ -28,6 +35,8 @@ export default function Export({ stats, histories, filters }) {
     // --- STATE FILTER RIWAYAT ---
     const [historySearch, setHistorySearch] = useState(filters?.search || '');
     const [activeTab, setActiveTab] = useState(filters?.type || 'Semua');
+    const [sortOrder, setSortOrder] = useState(filters?.sort_order || 'terbaru');
+    
     
     // --- Fungsi Helper Tanggal ---
     const formatDateStr = (dateString) => {
@@ -74,14 +83,26 @@ export default function Export({ stats, histories, filters }) {
         }, 2000);
     };
 
-    const handleTabChange = (tab) => {
-        setActiveTab(tab);
-        router.get(route('organizer.export'), { type: tab, search: historySearch }, { preserveState: true, preserveScroll: true });
-    };
+    const handleFilterChange = (key, value) => {
+            const query = { 
+                search: historySearch,
+                type: activeTab,
+                sort_order: sortOrder,
+                [key]: value 
+            };
+            
+            // Memakai replace: true agar saat user klik tombol "Back" di browser,
+            // dia tidak perlu melewati riwayat filter satu-satu.
+            router.get(route('organizer.export'), query, { 
+                preserveState: true, 
+                preserveScroll: true,
+                replace: true 
+            });
+        };
 
-    const handleSearch = (e) => {
+        const handleSearch = (e) => {
         if (e.key === 'Enter') {
-            router.get(route('organizer.export'), { type: activeTab, search: historySearch }, { preserveState: true });
+            handleFilterChange('search', historySearch);
         }
     };
 
@@ -193,7 +214,10 @@ export default function Export({ stats, histories, filters }) {
                                 {['Semua', 'Events', 'Bookings', 'Finance', 'Wallet'].map(tab => (
                                     <button 
                                         key={tab}
-                                        onClick={() => handleTabChange(tab)}
+                                        onClick={() => { 
+                                            setActiveTab(tab); 
+                                            handleFilterChange('type', tab); 
+                                        }}
                                         className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors whitespace-nowrap ${
                                             activeTab === tab ? 'bg-sky-500 text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'
                                         }`}
@@ -211,15 +235,27 @@ export default function Export({ stats, histories, filters }) {
                                 <Input 
                                     type="text" 
                                     placeholder="Cari nama, file, atau ID..." 
-                                    value={historySearch}
-                                    onChange={e => setHistorySearch(e.target.value)}
+                                     value={historySearch} 
+                                    onChange={e => setHistorySearch(e.target.value)} 
                                     onKeyDown={handleSearch}
                                     className="pl-10 rounded-full border-gray-200 h-10 w-full focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
                                 />
                             </div>
-                            <Button variant="outline" className="rounded-full border-gray-200 h-10 px-4 text-sky-500 font-bold hover:text-sky-600 hover:bg-sky-50">
-                                <IconFilter size={18} className="mr-2"/> Terbaru
-                            </Button>
+                            <Select 
+                                value={sortOrder} 
+                                onValueChange={(val) => { 
+                                    setSortOrder(val); 
+                                    handleFilterChange('sort_order', val); 
+                                }}
+                            >
+                                <SelectTrigger className="bg-[#0ea5e9] w-28 text-white text-xs font-medium px-4 py-2 h-auto rounded-full flex justify-between items-center gap-1 border-0 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 shadow-none">
+                                    <SelectValue placeholder="Sortir" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white rounded-2xl border border-gray-100 shadow-xl z-[100] p-1.5">
+                                    <SelectItem value="terbaru" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-[#0ea5e9] rounded-xl cursor-pointer">Terbaru</SelectItem>
+                                    <SelectItem value="terlama" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-[#0ea5e9] rounded-xl cursor-pointer">Terlama</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 

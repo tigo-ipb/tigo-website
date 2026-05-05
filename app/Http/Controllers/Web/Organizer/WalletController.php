@@ -19,6 +19,8 @@ class WalletController extends Controller
     {
         $organizerId = auth()->id();
         $wallet = Wallet::where('organizer_id', $organizerId)->first();
+        $sortOrder = $request->query('sort', 'terbaru');
+        $direction = $sortOrder === 'terlama' ? 'asc' : 'desc';
 
         // --- A. Hitung Metrik Saldo ---
         $saldoAktif = $wallet ? $wallet->available_balance : 0;
@@ -88,7 +90,7 @@ class WalletController extends Controller
         
         // Ambil data dengan Pagination (10 per halaman) & pertahankan URL query
         // TAMBAHAN: Jangan lupa pakai with() jika bank_info adalah relasi
-        $history = $query->latest()->paginate(10)->withQueryString();
+        $history = $query->orderBy('created_at', $direction)->paginate(10)->withQueryString();
 
         return Inertia::render('Organizer/Wallet/Index', [
             'balances' => [
@@ -98,7 +100,7 @@ class WalletController extends Controller
             ],
             'methods' => $groupedMethods,
             'history' => $history,
-            'filters' => $request->only(['search', 'status']) // Kirim balik filter ke UI agar state tidak hilang
+            'filters' => $request->only(['search', 'status', 'sort']) // Kirim balik filter ke UI agar state tidak hilang
         ]);
     }
 

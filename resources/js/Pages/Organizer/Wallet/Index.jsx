@@ -8,12 +8,20 @@ import {
     IconBuildingBank, IconDeviceMobile, IconUserCircle, 
     IconTrash, IconSearch, IconFilter, IconCheck, IconX 
 } from '@tabler/icons-react';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 export default function Index({ balances, methods, history, filters }) {
     
     // --- State untuk Filter & Pencarian ---
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
     const [activeTab, setActiveTab] = useState(filters?.status || 'Semua');
+    const [sortOrder, setSortOrder] = useState(filters?.sort_order || 'terbaru');
 
     // --- State untuk Modal & Toast ---
     const [methodToDelete, setMethodToDelete] = useState(null);
@@ -59,19 +67,30 @@ export default function Index({ balances, methods, history, filters }) {
         }
     };
 
-    // --- Aksi Ganti Filter Status ---
-    const handleTabChange = (status) => {
-        setActiveTab(status);
-        router.get(route('organizer.wallet.index'), { status, search: searchTerm }, { preserveState: true, preserveScroll: true });
-    };
+    const handleFilterChange = (key, value) => {
+                const query = { 
+                    search: searchTerm,
+                    status: activeTab,
+                    sort: sortOrder,
+                    [key]: value 
+                };
+                
+                // Memakai replace: true agar saat user klik tombol "Back" di browser,
+                // dia tidak perlu melewati riwayat filter satu-satu.
+                router.get(route('organizer.wallet.index'), query, { 
+                    preserveState: true, 
+                    preserveScroll: true,
+                    replace: true 
+                });
+            };
 
     // --- Aksi Cari (Tekan Enter) ---
     const handleSearch = (e) => {
         if (e.key === 'Enter') {
-            router.get(route('organizer.wallet.index'), { status: activeTab, search: searchTerm }, { preserveState: true });
+            handleFilterChange('search', searchTerm);
         }
-    };
-
+    }
+;
     // Komponen Kartu Metode Penarikan
     const MethodCard = ({ method, icon: Icon }) => (
         <div className="border border-gray-200 rounded-2xl p-5 flex items-center justify-between bg-white hover:shadow-sm transition-shadow">
@@ -271,7 +290,10 @@ export default function Index({ balances, methods, history, filters }) {
                                 {['Semua', 'Berhasil', 'Diproses', 'Gagal'].map(tab => (
                                     <button 
                                         key={tab}
-                                        onClick={() => handleTabChange(tab)}
+                                        onClick={() => { 
+                                            setActiveTab(tab); 
+                                            handleFilterChange('status', tab); 
+                                        }}
                                         className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${
                                             activeTab === tab ? 'bg-[#0ea5e9] text-white shadow-sm' : 'text-gray-500 hover:text-gray-900'
                                         }`}
@@ -289,15 +311,27 @@ export default function Index({ balances, methods, history, filters }) {
                                 <Input 
                                     type="text" 
                                     placeholder="Cari ID, tujuan, nama..." 
-                                    value={searchTerm}
-                                    onChange={e => setSearchTerm(e.target.value)}
+                                    value={searchTerm} 
+                                    onChange={e => setSearchTerm(e.target.value)} 
                                     onKeyDown={handleSearch}
                                     className="pl-10 rounded-full border-gray-200 h-10 w-full"
                                 />
                             </div>
-                            <Button variant="outline" className="rounded-full border-gray-200 h-10 px-4 text-[#0ea5e9] font-bold">
-                                <IconFilter size={18} className="mr-2"/> Terbaru
-                            </Button>
+                            <Select 
+                                value={sortOrder} 
+                                onValueChange={(val) => { 
+                                    setSortOrder(val); 
+                                    handleFilterChange('sort', val); 
+                                }}
+                            >
+                                <SelectTrigger className="bg-[#0ea5e9] w-28 text-white text-xs font-medium px-4 py-2 h-auto rounded-full flex justify-between items-center gap-1 border-0 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 shadow-none">
+                                    <SelectValue placeholder="Sortir" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white rounded-2xl border border-gray-100 shadow-xl z-[100] p-1.5">
+                                    <SelectItem value="terbaru" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-[#0ea5e9] rounded-xl cursor-pointer">Terbaru</SelectItem>
+                                    <SelectItem value="terlama" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-[#0ea5e9] rounded-xl cursor-pointer">Terlama</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 

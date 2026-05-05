@@ -44,7 +44,7 @@ class ExportController extends Controller
         }
 
         // Sorting
-        $sortOrder = $request->query('sort', 'terbaru');
+        $sortOrder = $request->query('sort_order', 'terbaru');
         $direction = $sortOrder === 'terlama' ? 'asc' : 'desc';
 
         // Pagination
@@ -55,7 +55,7 @@ class ExportController extends Controller
         return Inertia::render('Organizer/Export', [
             'stats' => $stats,
             'histories' => $histories,
-            'filters' => $request->only(['search', 'type', 'sort'])
+            'filters' => $request->only(['search', 'type', 'sort_order'])
         ]);
     }
 
