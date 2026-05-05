@@ -23,41 +23,37 @@ class BookingsSheetExport implements FromCollection, WithHeadings, WithTitle, Wi
 
     public function collection()
     {
-        $query = Payment::with('user')->where('organizer_id', $this->organizerId);
-        
-        if ($this->startDate && $this->endDate) {
-            $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
-        }
-
+        $query = Payment::with(['user', 'event'])->where('organizer_id', $this->organizerId);
+        if ($this->startDate && $this->endDate) $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
         return $query->get();
     }
 
     public function map($payment): array
     {
+        // Sesuaikan terjemahan status
+        $statusText = 'Dibatalkan';
+        if ($payment->payment_status === 'PAID') $statusText = 'Dibayar';
+        if ($payment->payment_status === 'PENDING') $statusText = 'Menunggu';
+
         return [
             $payment->external_id,
-            $payment->user ? $payment->user->name : 'Pengunjung',
-            $payment->payment_status,
-            $payment->sub_total,
-            $payment->net_for_eo,
-            $payment->created_at->format('d-m-Y H:i'),
+            $payment->created_at->format('d/m/Y H:i'),
+            $payment->user->name ?? 'Pengunjung',
+            $payment->user->email ?? '-',
+            $payment->event->name ?? 'Event Dihapus',
+            $payment->quantity ?? 1, // Ganti 'quantity' jika nama kolom di DB beda
+            'Rp ' . number_format($payment->sub_total ?? 0, 0, ',', '.'),
+            $statusText,
         ];
     }
 
     public function headings(): array
     {
-        return [
-            'Order ID',
-            'Nama Pembeli',
-            'Status Pembayaran',
-            'Total Bayar (Rp)',
-            'Pendapatan Bersih (Rp)',
-            'Tanggal Beli',
-        ];
+        return ['Order ID', 'Waktu', 'Nama', 'Email', 'Event', 'Qty', 'Jumlah', 'Status'];
     }
 
     public function title(): string
     {
-        return 'Data Bookings';
+        return 'Riwayat Booking';
     }
 }

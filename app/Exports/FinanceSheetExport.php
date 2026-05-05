@@ -23,46 +23,38 @@ class FinanceSheetExport implements FromCollection, WithHeadings, WithTitle, Wit
 
     public function collection()
     {
-        // Hanya ambil yang PAID dan load relasi event & user
-        $query = Payment::with(['user', 'event'])
-            ->where('organizer_id', $this->organizerId)
-            ->where('payment_status', 'PAID');
-        
-        if ($this->startDate && $this->endDate) {
-            $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
-        }
-
+        // Query disesuaikan dengan kebutuhan (misal menampilkan semua status seperti di gambar)
+        $query = Payment::with(['user', 'event'])->where('organizer_id', $this->organizerId);
+        if ($this->startDate && $this->endDate) $query->whereBetween('created_at', [$this->startDate, $this->endDate]);
         return $query->get();
     }
 
     public function map($payment): array
     {
+        $statusText = 'Dibatalkan';
+        if ($payment->payment_status === 'PAID') $statusText = 'Dibayar';
+        if ($payment->payment_status === 'PENDING') $statusText = 'Menunggu';
+
         return [
             $payment->external_id,
-            $payment->created_at->format('d-m-Y H:i'),
-            $payment->event ? $payment->event->name : 'Event Dihapus',
-            $payment->user ? $payment->user->name : 'Pengunjung',
-            $payment->sub_total,
-            $payment->platform_fee ?? 0, // Biaya layanan platform (jika ada)
-            $payment->net_for_eo, // Ini yang paling penting untuk Finance!
+            $payment->created_at->format('d/m/Y H:i'),
+            $payment->user->name ?? 'Pengunjung',
+            $payment->event->name ?? 'Event Dihapus',
+            $payment->quantity ?? 1,
+            'Rp ' . number_format($payment->sub_total ?? 0, 0, ',', '.'),
+            '-Rp ' . number_format($payment->platform_fee ?? 0, 0, ',', '.'), // Kolom Fee
+            'Rp ' . number_format($payment->net_for_eo ?? 0, 0, ',', '.'), // Kolom Net
+            $statusText,
         ];
     }
 
     public function headings(): array
     {
-        return [
-            'Order ID',
-            'Tanggal Transaksi',
-            'Nama Event',
-            'Nama Pembeli',
-            'Bruto / Sub Total (Rp)',
-            'Potongan Platform (Rp)',
-            'Netto / Masuk Dompet (Rp)',
-        ];
+        return ['Order ID', 'Waktu', 'Nama', 'Event', 'Qty', 'Jumlah', 'Fee', 'Net', 'Status'];
     }
 
     public function title(): string
     {
-        return 'Data Finance';
+        return 'Riwayat Transaksi';
     }
 }
