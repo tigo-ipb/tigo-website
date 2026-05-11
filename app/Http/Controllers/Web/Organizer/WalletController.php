@@ -257,6 +257,7 @@ class WalletController extends Controller
                             'bank_account_name' => $method->account_name,   // <-- UBAH INI
                             'bank_account_number' => $method->account_number, // <-- DAN UBAH INI
                             'description' => 'Pencairan Dana EO: ' . auth()->user()->name,
+                            'email_to' => [auth()->user()->email],
                         ]
                     ]
                 ]);

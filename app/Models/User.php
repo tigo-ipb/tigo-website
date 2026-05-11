@@ -18,6 +18,7 @@ class User extends Authenticatable
         'name',
         'username',
         'email',
+        'email_verified_at', // Tambahkan ini
         'bio',
         'password',
         'profile_photo',
@@ -25,8 +26,9 @@ class User extends Authenticatable
         'phone_code',
         'phone_number',
         'role',
-        'reset_otp',      // Disiapkan untuk fitur OTP Lupa Password
-        'otp_expires_at'  // Disiapkan untuk batas waktu kedaluwarsa OTP
+        'reset_otp',
+        'otp_expires_at',
+        'google_id',
     ];
 
     protected $hidden = [
