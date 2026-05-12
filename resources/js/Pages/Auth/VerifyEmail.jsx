@@ -1,5 +1,3 @@
-import PrimaryButton from '@/Components/PrimaryButton';
-import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function VerifyEmail({ status }) {
@@ -7,44 +5,59 @@ export default function VerifyEmail({ status }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('verification.send'));
     };
 
     return (
-        <GuestLayout>
-            <Head title="Email Verification" />
+        <div className="min-h-screen bg-white flex flex-col">
+            <Head title="Verifikasi Email - Tigo" />
 
-            <div className="mb-4 text-sm text-gray-600">
-                Thanks for signing up! Before getting started, could you verify
-                your email address by clicking on the link we just emailed to
-                you? If you didn't receive the email, we will gladly send you
-                another.
-            </div>
-
-            {status === 'verification-link-sent' && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    A new verification link has been sent to the email address
-                    you provided during registration.
+            {/* Header */}
+            <header className="px-8 py-4 border-b border-gray-100">
+                <div className="flex items-center gap-2">
+                    <img src="/tigo-logo.svg" alt="Tigo" className="h-8" />
                 </div>
-            )}
+            </header>
 
-            <form onSubmit={submit}>
-                <div className="mt-4 flex items-center justify-between">
-                    <PrimaryButton disabled={processing}>
-                        Resend Verification Email
-                    </PrimaryButton>
+            <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+                <h1 className="text-4xl font-black text-blue-500 mb-3 text-center">
+                    Verifikasi Email
+                </h1>
+                <p className="text-gray-500 text-sm mb-8 text-center max-w-sm">
+                    Terima kasih sudah mendaftar! Sebelum memulai, mohon verifikasi email kamu dengan mengklik link yang sudah kami kirimkan. Jika tidak menerima email, kami akan mengirimkan yang baru.
+                </p>
 
-                    <Link
-                        href={route('logout')}
-                        method="post"
-                        as="button"
-                        className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >
-                        Log Out
-                    </Link>
+                {status === 'verification-link-sent' && (
+                    <div className="mb-6 text-sm font-medium text-green-600 bg-green-50 p-3 rounded-lg w-full max-w-md text-center">
+                        Link verifikasi baru sudah dikirimkan ke email kamu.
+                    </div>
+                )}
+
+                <div className="w-full max-w-md bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+                    <form onSubmit={submit} className="space-y-4">
+                        <button
+                            type="submit"
+                            disabled={processing}
+                            className="w-full py-3 bg-blue-400 hover:bg-blue-500 disabled:opacity-60 text-white font-bold rounded-xl transition-colors text-sm"
+                        >
+                            {processing ? 'Mengirim...' : 'Kirim Ulang Email Verifikasi'}
+                        </button>
+
+                        <Link
+                            href={route('logout')}
+                            method="post"
+                            as="button"
+                            className="w-full py-3 border border-gray-200 text-gray-500 hover:bg-gray-50 font-medium rounded-xl transition-colors text-sm text-center block"
+                        >
+                            Keluar
+                        </Link>
+                    </form>
                 </div>
-            </form>
-        </GuestLayout>
+            </main>
+
+            <footer className="py-4 text-center text-xs text-gray-400 border-t border-gray-100">
+                Copyright @ 2026 Tigo
+            </footer>
+        </div>
     );
 }

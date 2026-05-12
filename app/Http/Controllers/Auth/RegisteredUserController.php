@@ -9,49 +9,35 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
-use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class RegisteredUserController extends Controller
 {
-    /**
-     * Display the registration view.
-     */
     public function create(): Response
     {
         return Inertia::render('Auth/Register');
     }
 
-    /**
-     * Handle an incoming registration request.
-     *
-     * @throws ValidationException
-     */
     public function store(Request $request): RedirectResponse
     {
-        // Sesuaikan validasi dengan struktur Model User Anda
         $request->validate([
-            'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users,username',
-            'email' => 'required|string|email|max:255|unique:users,email',
-            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'email'    => 'required|string|email|max:255|unique:users,email',
+            'password' => ['required', \Illuminate\Validation\Rules\Password::defaults()],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
+            'name'     => $request->username, // sementara pakai username
             'username' => $request->username,
-            'email' => $request->email,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'organizer', // Otomatis jadikan Organizer
+            'role'     => 'organizer',
         ]);
 
         event(new Registered($user));
-
         Auth::login($user);
 
-        // Setelah register, langsung arahkan ke dashboard EO
         return redirect()->route('organizer.dashboard');
     }
 }
