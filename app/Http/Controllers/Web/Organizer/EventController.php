@@ -391,7 +391,6 @@ class EventController extends Controller
             'galleries' => $existingGalleries, // Update array galleries
             'status' => $request->status ?? $event->status, // Update status jika ada
         ]);
-
         return redirect()->route('organizer.events.index')->with('success', 'Event berhasil diperbarui!');
     }
 

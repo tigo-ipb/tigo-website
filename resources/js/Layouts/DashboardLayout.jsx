@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Sidebar from '../Components/Sidebar';
 import Navbar from '../Components/Navbar';
 import Footer from '@/Components/Footer';
+import Notification from '@/Components/Notification';
 
 export default function DashboardLayout({ header, children }) {
     // State untuk Desktop Sidebar (Bisa di-collapse)
@@ -13,6 +14,7 @@ export default function DashboardLayout({ header, children }) {
     return (
         <div className="flex min-h-screen w-full bg-white">
             {/* DESKTOP SIDEBAR */}
+            <Notification />
             <aside 
                 className={`hidden lg:block transition-all duration-300 bg-white shrink-0 ${
                     isDesktopSidebarOpen ? 'w-64' : 'w-0 overflow-hidden border-none'

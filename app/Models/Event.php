@@ -52,4 +52,8 @@ class Event extends Model
         }
         return null;
     }
+
+    public function organizer() {
+        return $this->belongsTo(User::class, 'organizer_id');
+    }
 }

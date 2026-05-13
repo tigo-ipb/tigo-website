@@ -17,9 +17,12 @@ use App\Http\Controllers\Web\Organizer\WalletController;
 // CONTROLLER SUPERADMIN
 // --------------------------------------------------------
 use App\Http\Controllers\Web\Superadmin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Web\Superadmin\EventController;
 use App\Http\Controllers\Web\Superadmin\UserController as AdminUser;
 use App\Http\Controllers\Web\Superadmin\FinanceController as AdminFinance;
 use App\Http\Controllers\Web\Superadmin\ReportController as AdminReport; // <-- Modul Baru
+use App\Http\Controllers\Web\Superadmin\EventController as AdminEvent;
+use App\Http\Controllers\Web\Superadmin\WithdrawalController as AdminWithdrawal;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,16 +88,29 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
     
     // 1. Dashboard
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+    // Route Aksi Pengguna
+    Route::put('/users/{id}', [AdminDashboard::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{id}', [AdminDashboard::class, 'destroyUser'])->name('users.destroy');
+
+    // Route Aksi Penarikan
+    Route::patch('/withdrawals/{id}', [AdminDashboard::class, 'updateWithdrawal'])->name('withdrawals.update');
+    Route::delete('/withdrawals/{id}', [AdminDashboard::class, 'destroyWithdrawal'])->name('withdrawals.destroy');
     
     // 2. User Management (Pantau Customer & Verifikasi EO)
-    Route::resource('users', AdminUser::class);
+    Route::get('users', [AdminUser::class, 'index'])->name('users');
     
+    Route::get('/events', [AdminEvent::class, 'index'])->name('events');
+    Route::get('/events/{id}', [AdminEvent::class, 'edit'])->name('events.edit');
+    Route::put('/events/{id}', [AdminEvent::class, 'update'])->name('events.update');
+
+    Route::get('/withdrawals', [AdminWithdrawal::class, 'index'])->name('withdrawals');
+
     // 3. Finance (Approval Pencairan Dana EO ke Xendit)
-    Route::get('/finance', [AdminFinance::class, 'index'])->name('finance');
+    // Route::get('/finance', [AdminFinance::class, 'index'])->name('finance');
     
     // 4. Report (Laporan Pendapatan Platform, Export CSV/Excel, dll)
-    Route::get('/reports', [AdminReport::class, 'index'])->name('reports.index');
-    Route::get('/reports/export', [AdminReport::class, 'export'])->name('reports.export');
+    // Route::get('/reports', [AdminReport::class, 'index'])->name('reports.index');
+    // Route::get('/reports/export', [AdminReport::class, 'export'])->name('reports.export');
     
 });
 

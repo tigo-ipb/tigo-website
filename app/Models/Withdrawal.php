@@ -17,4 +17,8 @@ class Withdrawal extends Model
         'bank_info' => 'array', // Menyimpan {bank_name, account_number, account_holder}
         'amount' => 'integer'
     ];
+
+    public function user() {
+        return $this->belongsTo(User::class, 'organizer_id');
+    }
 }

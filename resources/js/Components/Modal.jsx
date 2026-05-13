@@ -1,65 +1,43 @@
-import {
-    Dialog,
-    DialogPanel,
-    Transition,
-    TransitionChild,
-} from '@headlessui/react';
+// resources/js/Components/Modal.jsx
+import React, { useEffect } from 'react';
+import { IconX } from '@tabler/icons-react';
 
-export default function Modal({
-    children,
-    show = false,
-    maxWidth = '2xl',
-    closeable = true,
-    onClose = () => {},
-}) {
-    const close = () => {
-        if (closeable) {
-            onClose();
+export default function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-md' }) {
+    // Mencegah scroll pada background saat modal terbuka
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
         }
-    };
+        return () => { document.body.style.overflow = 'unset'; };
+    }, [isOpen]);
 
-    const maxWidthClass = {
-        sm: 'sm:max-w-sm',
-        md: 'sm:max-w-md',
-        lg: 'sm:max-w-lg',
-        xl: 'sm:max-w-xl',
-        '2xl': 'sm:max-w-2xl',
-    }[maxWidth];
+    if (!isOpen) return null;
 
     return (
-        <Transition show={show} leave="duration-200">
-            <Dialog
-                as="div"
-                id="modal"
-                className="fixed inset-0 z-50 flex transform items-center overflow-y-auto px-4 py-6 transition-all sm:px-0"
-                onClose={close}
-            >
-                <TransitionChild
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                >
-                    <div className="absolute inset-0 bg-gray-500/75" />
-                </TransitionChild>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0">
+            {/* Overlay gelap dengan efek blur */}
+            <div 
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity" 
+                onClick={onClose}
+            ></div>
 
-                <TransitionChild
-                    enter="ease-out duration-300"
-                    enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                    enterTo="opacity-100 translate-y-0 sm:scale-100"
-                    leave="ease-in duration-200"
-                    leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-                    leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                >
-                    <DialogPanel
-                        className={`mb-6 transform overflow-hidden rounded-lg bg-white shadow-xl transition-all sm:mx-auto sm:w-full ${maxWidthClass}`}
+            {/* Kotak Modal */}
+            <div className={`relative bg-white rounded-2xl shadow-xl w-full ${maxWidth} overflow-hidden transform transition-all`}>
+                <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100">
+                    <h3 className="font-bold text-lg text-gray-900">{title}</h3>
+                    <button 
+                        onClick={onClose} 
+                        className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                     >
-                        {children}
-                    </DialogPanel>
-                </TransitionChild>
-            </Dialog>
-        </Transition>
+                        <IconX size={20} />
+                    </button>
+                </div>
+                <div className="p-6">
+                    {children}
+                </div>
+            </div>
+        </div>
     );
 }
