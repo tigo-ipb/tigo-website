@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Payment;
-use App\Models\TicketValidation; // Pastikan Model ini di-import
+use App\Models\TicketValidation; 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str; // Import Str untuk generate QR
+use Illuminate\Support\Str; 
 
 class CheckoutController extends Controller
 {
@@ -69,10 +69,23 @@ class CheckoutController extends Controller
 
         // Cek apakah tiket gratis
         $isFree = $subTotal == 0;
+        
+        // Tarik data user yang sedang login
+        $user = auth()->user();
+
+        // ================================================================
+        // 🔥 VALIDASI EMAIL IPB (KHUSUS TIKET GRATIS) 🔥
+        // ================================================================
+        if ($isFree && !Str::endsWith($user->email, '@apps.ipb.ac.id')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Maaf, tiket gratis ini eksklusif dan hanya dapat diklaim menggunakan email IPB (@apps.ipb.ac.id).'
+            ], 403); // 403 Forbidden
+        }
 
         // 4. Simpan ke Database (Jika gratis langsung PAID, jika bayar PENDING)
         $payment = Payment::create([
-            'user_id' => auth()->id(),
+            'user_id' => $user->id, // Menggunakan id dari variable $user yang ditarik di atas
             'event_id' => $event->_id,
             'organizer_id' => $event->organizer_id,
             'ticket_items' => $savedTicketItems,
@@ -118,8 +131,6 @@ class CheckoutController extends Controller
         // SKENARIO B: TIKET BERBAYAR (LEWAT XENDIT)
         // ================================================================
         try {
-            $user = auth()->user();
-            
             // Rakit data kustomer
             $customerData = [
                 'given_names' => $user->name,
