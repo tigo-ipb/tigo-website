@@ -33,6 +33,7 @@ use App\Http\Controllers\Web\Superadmin\ReportController as AdminReport;
 use App\Http\Controllers\Web\Superadmin\EventController as AdminEvent;
 use App\Http\Controllers\Web\Superadmin\WithdrawalController as AdminWithdrawal;
 
+use App\Http\Controllers\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | PUBLIC & AUTH WEB (React)
@@ -124,6 +125,27 @@ Route::middleware(['auth', EnsureAccountSetup::class, 'role:superadmin'])->prefi
     // Route::get('/reports', [AdminReport::class, 'index'])->name('reports.index');
     // Route::get('/reports/export', [AdminReport::class, 'export'])->name('reports.export');
     
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    
+    // Grup Rute Profile
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'index'])->name('index');
+        
+        // Rute-rute ini untuk halaman selanjutnya, kita siapkan dulu jalurnya
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+        Route::patch('/edit', [ProfileController::class, 'updateProfile'])->name('update');
+
+        Route::get('/account', [ProfileController::class, 'account'])->name('account');
+        Route::patch('/account', [ProfileController::class, 'updateAccount'])->name('account.update');
+
+        Route::get('/password', [ProfileController::class, 'password'])->name('password');
+        Route::patch('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+
+        Route::get('/language', [ProfileController::class, 'language'])->name('language');
+    });
+
 });
 
 require __DIR__.'/auth.php';

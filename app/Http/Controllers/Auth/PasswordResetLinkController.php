@@ -80,7 +80,7 @@ class PasswordResetLinkController extends Controller
         );
 
         return $status == Password::PASSWORD_RESET
-            ? redirect('/login')->with('status', 'Password berhasil diubah! Silakan login.')
+            ? redirect('/login')->with('success', 'Password berhasil diubah! Silakan login.')
             : back()->withErrors(['email' => __($status)]);
     }
 }

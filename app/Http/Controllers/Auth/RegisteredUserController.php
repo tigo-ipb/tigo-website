@@ -38,6 +38,6 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
         Auth::login($user);
 
-        return redirect()->route('setup.account');
+        return redirect()->route('setup.account')->with('success', 'Setup Akun Kamu');
     }
 }

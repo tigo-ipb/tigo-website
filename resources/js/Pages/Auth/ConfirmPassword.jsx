@@ -1,7 +1,7 @@
 import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
-
+import GuestLayout from '@/Layouts/GuestLayout';
 export default function ConfirmPassword() {
     const [showPassword, setShowPassword] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -16,15 +16,9 @@ export default function ConfirmPassword() {
     };
 
     return (
+        <GuestLayout>
         <div className="min-h-screen bg-white flex flex-col">
             <Head title="Konfirmasi Password - Tigo" />
-
-            {/* Header */}
-            <header className="px-8 py-4 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                    <img src="/tigo-logo.svg" alt="Tigo" className="h-8" />
-                </div>
-            </header>
 
             <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
                 <h1 className="text-4xl font-black text-blue-500 mb-3 text-center">
@@ -72,10 +66,7 @@ export default function ConfirmPassword() {
                     </form>
                 </div>
             </main>
-
-            <footer className="py-4 text-center text-xs text-gray-400 border-t border-gray-100">
-                Copyright @ 2026 Tigo
-            </footer>
         </div>
+        </GuestLayout>
     );
 }

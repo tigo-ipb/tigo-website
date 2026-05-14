@@ -45,6 +45,6 @@ class SetupAccountController extends Controller
             'phone_number' => $request->phone_number,
         ]);
 
-        return redirect('/');
+        return redirect('/')->with('success', 'Sukses Setup Akun');
     }
 }

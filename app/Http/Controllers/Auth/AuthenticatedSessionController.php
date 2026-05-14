@@ -44,7 +44,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Fallback (seharusnya tidak pernah tereksekusi karena sudah dihadang di LoginRequest)
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->intended(RouteServiceProvider::HOME)->with('success', 'Selamat Datang Kembali');
     }
 
     /**
