@@ -9,7 +9,12 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\SetupAccountController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 Route::middleware('guest')->group(function () {
     Route::get('register', [RegisteredUserController::class, 'create'])
@@ -33,19 +38,33 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    // OAUTH GOOGLE
+    Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
+    Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('verify-email', EmailVerificationPromptController::class)
-        ->name('verification.notice');
+    // 1. Menampilkan halaman peringatan "Cek Email"
+    // Nama rute HARUS 'verification.notice' karena ini standar baku Laravel
+    Route::get('/email/verify', function () {
+        return Inertia::render('Auth/VerifyEmail', ['status' => session('status')]);
+    })->name('verification.notice');
 
-    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
-        ->middleware(['signed', 'throttle:6,1'])
-        ->name('verification.verify');
+    // 2. Memproses saat user mengeklik link dari kotak masuk email mereka
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        // Tandai email sebagai terverifikasi di database
+        $request->fulfill(); 
+        
+        // Arahkan ke halaman setup-account setelah sukses!
+        return redirect('/setup-account'); 
+    })->middleware(['signed'])->name('verification.verify');
 
-    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
+    // 3. Memproses tombol "Kirim Ulang Email"
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('status', 'verification-link-sent');
+    })->middleware(['throttle:6,1'])->name('verification.send');
 
     Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
         ->name('password.confirm');
@@ -56,4 +75,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    // SETUP ACCOUNT (PILIH ROLE & ISI DATA AWAL)
+    Route::get('/setup-account', [SetupAccountController::class, 'create'])->name('setup.account')->middleware(['verified']);
+    Route::post('/setup-account', [SetupAccountController::class, 'store'])->middleware(['verified']);
 });

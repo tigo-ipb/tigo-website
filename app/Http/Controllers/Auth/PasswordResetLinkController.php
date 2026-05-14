@@ -3,49 +3,84 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rules;
 use Inertia\Inertia;
-use Inertia\Response;
+use Illuminate\Auth\Events\PasswordReset;
+use App\Models\User;
+
 
 class PasswordResetLinkController extends Controller
 {
-    /**
-     * Display the password reset link request view.
-     */
-    public function create(): Response
+    // 1. Tampilkan halaman Lupa Password
+    public function create()
     {
         return Inertia::render('Auth/ForgotPassword', [
             'status' => session('status'),
         ]);
     }
 
-    /**
-     * Handle an incoming password reset link request.
-     *
-     * @throws ValidationException
-     */
-    public function store(Request $request): RedirectResponse
+    // 2. Proses kirim email link reset
+    public function store(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => [
+                'required',
+                'email',
+                function ($attribute, $value, $fail) {
+                    // Cek manual menggunakan Model User (MongoDB)
+                    if (!User::where('email', $value)->exists()) {
+                        $fail('The selected email is invalid.');
+                    }
+                },
+            ],
         ]);
 
-        // We will send the password reset link to this user. Once we have attempted
-        // to send the link, we will examine the response then see the message we
-        // need to show to the user. Finally, we'll send out a proper response.
-        $status = Password::sendResetLink(
+        // Broker bawaan Laravel akan otomatis membuat token & mengirim email
+        $status = Password::broker()->sendResetLink(
             $request->only('email')
         );
 
-        if ($status == Password::RESET_LINK_SENT) {
-            return back()->with('status', __($status));
-        }
+        return $status == Password::RESET_LINK_SENT
+            ? back()->with('status', 'Email berisi link reset password telah dikirim!')
+            : back()->withErrors(['email' => __($status)]);
+    }
 
-        throw ValidationException::withMessages([
-            'email' => [trans($status)],
+    // 3. Tampilkan halaman Ganti Password (dari link email)
+    public function edit(Request $request, $token)
+    {
+        return Inertia::render('Auth/ResetPassword', [
+            'email' => $request->email,
+            'token' => $token,
         ]);
+    }
+
+    // 4. Proses simpan password baru
+    public function update(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $status = Password::broker()->reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                    'remember_token' => Str::random(60),
+                ])->save();
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status == Password::PASSWORD_RESET
+            ? redirect('/login')->with('status', 'Password berhasil diubah! Silakan login.')
+            : back()->withErrors(['email' => __($status)]);
     }
 }

@@ -4,6 +4,14 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+
+// --------------------------------------------------------
+// CONTROLLER AUTH KUSTOM (Google & Setup)
+// --------------------------------------------------------
+use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\SetupAccountController;
+use App\Http\Middleware\EnsureAccountSetup;
+
 // --------------------------------------------------------
 // CONTROLLER ORGANIZER (EO)
 // --------------------------------------------------------
@@ -13,6 +21,7 @@ use App\Http\Controllers\Web\Organizer\BookingController as OrgBooking;
 use App\Http\Controllers\Web\Organizer\FinanceController as OrgFinance;
 use App\Http\Controllers\Web\Organizer\StaffController as OrgStaff;
 use App\Http\Controllers\Web\Organizer\WalletController;
+
 // --------------------------------------------------------
 // CONTROLLER SUPERADMIN
 // --------------------------------------------------------
@@ -20,7 +29,7 @@ use App\Http\Controllers\Web\Superadmin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Web\Superadmin\EventController;
 use App\Http\Controllers\Web\Superadmin\UserController as AdminUser;
 use App\Http\Controllers\Web\Superadmin\FinanceController as AdminFinance;
-use App\Http\Controllers\Web\Superadmin\ReportController as AdminReport; // <-- Modul Baru
+use App\Http\Controllers\Web\Superadmin\ReportController as AdminReport; 
 use App\Http\Controllers\Web\Superadmin\EventController as AdminEvent;
 use App\Http\Controllers\Web\Superadmin\WithdrawalController as AdminWithdrawal;
 
@@ -40,21 +49,21 @@ Route::get('/', function () {
 });
 
 
-
 /*
 |--------------------------------------------------------------------------
 | PANEL ORGANIZER (EO)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:organizer'])->prefix('organizer')->name('organizer.')->group(function () {
+// 🔥 PERHATIKAN: Saya menambahkan EnsureAccountSetup::class di sini
+Route::middleware(['auth', EnsureAccountSetup::class, 'role:organizer'])->prefix('organizer')->name('organizer.')->group(function () {
     
     // 1. Dashboard
     Route::get('/dashboard', [OrgDashboard::class, 'index'])->name('dashboard');
     
     // 2. Events (CRUD Event & Cloudinary)
     Route::resource('events', OrgEvent::class);
-    // Pastikan ini ada di dalam group middleware organizer/auth Anda
-    Route::patch('/organizer/events/{id}/status', [App\Http\Controllers\Web\Organizer\EventController::class, 'updateStatus'])->name('events.update-status');
+    Route::patch('/organizer/events/{id}/status', [OrgEvent::class, 'updateStatus'])->name('events.update-status');
+    
     // 3. Bookings (Data Transaksi & Pesanan Tiket)
     Route::get('/bookings', [OrgBooking::class, 'index'])->name('bookings');
     
@@ -74,8 +83,9 @@ Route::middleware(['auth', 'role:organizer'])->prefix('organizer')->name('organi
         Route::post('/methods', [WalletController::class, 'storeMethod'])->name('storeMethod');
         Route::delete('/methods/{id}', [WalletController::class, 'destroyMethod'])->name('destroyMethod');
     });
-     Route::get('/export', [App\Http\Controllers\Web\Organizer\ExportController::class, 'index'])->name('export');
-     Route::get('/export/download', [App\Http\Controllers\Web\Organizer\ExportController::class, 'download'])->name('export.download');
+
+    Route::get('/export', [App\Http\Controllers\Web\Organizer\ExportController::class, 'index'])->name('export');
+    Route::get('/export/download', [App\Http\Controllers\Web\Organizer\ExportController::class, 'download'])->name('export.download');
 });
 
 
@@ -84,10 +94,12 @@ Route::middleware(['auth', 'role:organizer'])->prefix('organizer')->name('organi
 | PANEL SUPERADMIN
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+// 🔥 PERHATIKAN: Saya menambahkan EnsureAccountSetup::class di sini juga
+Route::middleware(['auth', EnsureAccountSetup::class, 'role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
     
     // 1. Dashboard
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+    
     // Route Aksi Pengguna
     Route::put('/users/{id}', [AdminDashboard::class, 'updateUser'])->name('users.update');
     Route::delete('/users/{id}', [AdminDashboard::class, 'destroyUser'])->name('users.destroy');
