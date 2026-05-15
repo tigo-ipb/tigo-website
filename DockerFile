@@ -59,13 +59,6 @@ RUN sed -i "s/80/\${PORT}/g" /etc/apache2/sites-available/000-default.conf /etc/
 
 # 1. Instal depedensi PHP (abaikan dev) dan abaikan peringatan platform
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --ignore-platform-reqs
-# ---------------------------------------------------------
-# PROSES BUILD
-# ---------------------------------------------------------
-
-# 1. Instal depedensi PHP (abaikan dev)
-# 1. Instal depedensi PHP (abaikan dev) dan abaikan peringatan platform
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --ignore-platform-reqs
 
 # 2. Instal depedensi Node.js & Build React/Inertia (Vite)
 RUN npm install
