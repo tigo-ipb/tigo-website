@@ -1,68 +1,41 @@
-# Menggunakan base image PHP 8.2 dengan Apache
 FROM php:8.2-apache
 
-# Mengatur working directory di dalam container
-WORKDIR /var/www/html
-
-# Menginstal modul sistem operasi yang dibutuhkan oleh Laravel & Node.js
+# 1. Instal dependensi sistem & Node.js (Cara yang benar untuk versi 20 terbaru)
 RUN apt-get update && apt-get install -y \
-    libpng-dev \
-    zlib1g-dev \
-    libxml2-dev \
-    libzip-dev \
-    libonig-dev \
-    zip \
-    curl \
-    unzip \
-    git \
-    nodejs \
-    npm
+    libpng-dev zlib1g-dev libxml2-dev libzip-dev \
+    libonig-dev zip curl unzip git \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
 
-# Menginstal ekstensi PHP yang dibutuhkan Laravel
+# 2. Instal PHP Extensions & MongoDB
 RUN docker-php-ext-install pdo_mysql exif pcntl bcmath gd zip
-
-# Menginstal ekstensi MongoDB (KARENA MAS ARYO PAKAI MONGODB)
 RUN pecl install mongodb && docker-php-ext-enable mongodb
 
-# Menginstal Composer secara global
+# 3. Instal Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Meng-copy seluruh kode aplikasi Tigo dari laptop ke dalam container
-COPY . /var/www/html
+WORKDIR /var/www/html
+COPY . .
 
-# Mengatur permission agar web server (Apache) bisa menulis ke folder storage
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
-RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# 4. Beri Permission untuk folder penting Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache || true
+RUN chmod -R 775 storage bootstrap/cache || true
 
-# Mengatur Document Root Apache ke folder public Laravel
+# 5. Konfigurasi Apache Document Root ke folder /public
 ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
-# Mengaktifkan mod_rewrite Apache (wajib untuk routing Laravel)
 RUN a2enmod rewrite
-# ==========================================
-# 🔥 FIX ERROR MPM & PORT RAILWAY 🔥
-# ==========================================
-# 1. Matikan paksa modul MPM lain agar tidak bentrok dengan mpm_prefork bawaan PHP
-RUN a2dismod mpm_event mpm_worker || true
-RUN a2enmod mpm_prefork
 
-# 2. Konfigurasi Apache agar otomatis mendengarkan port dinamis yang diberikan Railway
-ENV PORT=80
-RUN sed -i "s/80/\${PORT}/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
-# ==========================================
+# 6. 🔥 FIX ERROR MPM: Hapus paksa semua MPM dan aktifkan Prefork saja 🔥
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load \
+    && a2enmod mpm_prefork
 
-# ---------------------------------------------------------
-# PROSES BUILD
-# ---------------------------------------------------------
-
-# 1. Instal depedensi PHP (abaikan dev) dan abaikan peringatan platform
+# 7. Build Laravel & React (Abaikan versi PHP lokal)
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --ignore-platform-reqs
-
-# 2. Instal depedensi Node.js & Build React/Inertia (Vite)
 RUN npm install
 RUN npm run build
 
-# Mengekspos port 80 untuk web server
+# 8. 🔥 FIX PORT RAILWAY: Ganti port 80 dengan $PORT dinamis milik Railway saat container berjalan 🔥
 EXPOSE 80
+CMD sed -i "s/80/$PORT/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf && docker-php-entrypoint apache2-foreground
