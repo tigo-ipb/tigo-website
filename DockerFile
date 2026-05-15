@@ -1,14 +1,15 @@
-# 1. Gunakan PHP versi CLI murni (Tanpa Apache, jadi tidak akan ada error MPM)
+# 1. Gunakan PHP versi CLI murni
 FROM php:8.2-cli
 
-# 2. Instal dependensi sistem & Node.js versi 20
+# 2. 🔥 FIX ERROR SSL MONGODB: Tambahkan libssl-dev dan pkg-config 🔥
 RUN apt-get update && apt-get install -y \
     libpng-dev zlib1g-dev libxml2-dev libzip-dev \
     libonig-dev zip curl unzip git \
+    libssl-dev pkg-config \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
-# 3. Instal PHP Extensions & MongoDB
+# 3. Instal PHP Extensions & MongoDB (Sekarang akan ter-install dengan SSL)
 RUN docker-php-ext-install pdo_mysql exif pcntl bcmath gd zip
 RUN pecl install mongodb && docker-php-ext-enable mongodb
 
@@ -24,5 +25,5 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-d
 RUN npm install
 RUN npm run build
 
-# 7. Jalankan server Laravel murni (Otomatis menggunakan $PORT dari Railway)
+# 7. Jalankan server Laravel murni
 CMD php artisan serve --host=0.0.0.0 --port=$PORT
