@@ -41,7 +41,24 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 
 # Mengaktifkan mod_rewrite Apache (wajib untuk routing Laravel)
 RUN a2enmod rewrite
+# ==========================================
+# 🔥 FIX ERROR MPM & PORT RAILWAY 🔥
+# ==========================================
+# 1. Matikan paksa modul MPM lain agar tidak bentrok dengan mpm_prefork bawaan PHP
+RUN a2dismod mpm_event mpm_worker || true
+RUN a2enmod mpm_prefork
 
+# 2. Konfigurasi Apache agar otomatis mendengarkan port dinamis yang diberikan Railway
+ENV PORT=80
+RUN sed -i "s/80/\${PORT}/g" /etc/apache2/sites-available/000-default.conf /etc/apache2/ports.conf
+# ==========================================
+
+# ---------------------------------------------------------
+# PROSES BUILD
+# ---------------------------------------------------------
+
+# 1. Instal depedensi PHP (abaikan dev) dan abaikan peringatan platform
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --ignore-platform-reqs
 # ---------------------------------------------------------
 # PROSES BUILD
 # ---------------------------------------------------------
