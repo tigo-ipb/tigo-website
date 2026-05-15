@@ -189,21 +189,21 @@ class WalletController extends Controller
         // =======================================================
         // TAMBAHAN: Tentukan Biaya Admin Berdasarkan Tipe Metode
         // =======================================================
-        $adminFee = 0;
-        switch (strtolower($method->type)) {
-            case 'bank':
-                $adminFee = 6500;
-                break;
-            case 'e-wallet':
-                $adminFee = 2500;
-                break;
-            case 'virtual_account':
-                $adminFee = 4500;
-                break;
-            default:
-                $adminFee = 0;
-                break;
-        }
+        $adminFee = 2775;
+        // switch (strtolower($method->type)) {
+        //     case 'bank':
+        //         $adminFee = 6500;
+        //         break;
+        //     case 'e-wallet':
+        //         $adminFee = 2500;
+        //         break;
+        //     case 'virtual_account':
+        //         $adminFee = 4500;
+        //         break;
+        //     default:
+        //         $adminFee = 0;
+        //         break;
+        // }
 
         // Jumlah bersih yang akan ditransfer ke rekening user
         $netAmount = (int) $request->amount - $adminFee;

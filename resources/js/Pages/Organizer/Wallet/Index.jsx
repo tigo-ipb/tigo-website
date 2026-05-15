@@ -198,15 +198,15 @@ export default function Index({ balances, methods, history, filters }) {
                         <div className="space-y-4">
                             <div className="flex justify-between items-center text-sm">
                                 <span className="flex items-center text-[#0ea5e9] font-medium"><IconBuildingBank size={18} className="mr-2"/> Transfer Bank</span>
-                                <span className="text-red-500 font-bold">Rp6.500</span>
+                                <span className="text-red-500 font-bold">Rp2.775</span>
                             </div>
                             <div className="flex justify-between items-center text-sm">
                                 <span className="flex items-center text-[#10b981] font-medium"><IconDeviceMobile size={18} className="mr-2"/> E-Wallet</span>
-                                <span className="text-red-500 font-bold">Rp2.500</span>
+                                <span className="text-red-500 font-bold">Rp2.775</span>
                             </div>
                             <div className="flex justify-between items-center text-sm">
                                 <span className="flex items-center text-[#0ea5e9] font-medium"><IconUserCircle size={18} className="mr-2"/> Virtual Account</span>
-                                <span className="text-red-500 font-bold">Rp4.500</span>
+                                <span className="text-red-500 font-bold">Rp2.775</span>
                             </div>
                         </div>
                     </div>
@@ -358,7 +358,7 @@ export default function Index({ balances, methods, history, filters }) {
                                     else if(item.status === 'PENDING' || item.status === 'PROCESSING') { statusColor = 'text-yellow-500 border-yellow-200'; statusText = 'Diproses'; }
                                     else { statusColor = 'text-red-500 border-red-200'; statusText = 'Gagal'; }
 
-                                    const dummyFee = 6500; 
+                                    const dummyFee = 2775; 
 
                                     return (
                                         <tr key={index} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
