@@ -47,7 +47,8 @@ RUN a2enmod rewrite
 # ---------------------------------------------------------
 
 # 1. Instal depedensi PHP (abaikan dev)
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
+# 1. Instal depedensi PHP (abaikan dev) dan abaikan peringatan platform
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev --ignore-platform-reqs
 
 # 2. Instal depedensi Node.js & Build React/Inertia (Vite)
 RUN npm install
