@@ -10,7 +10,7 @@ import {
 // Import Shadcn Select
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+} from "@/Components/ui/select";
 import Modal from '@/Components/Modal';
 
 const formatRupiah = (number) => {

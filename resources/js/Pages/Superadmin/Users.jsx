@@ -8,7 +8,7 @@ import {
 
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+} from "@/Components/ui/select";
 import Modal from '@/Components/Modal';
 
 const formatRupiah = (number) => new Intl.NumberFormat('id-ID').format(number);

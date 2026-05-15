@@ -8,7 +8,7 @@ import {
 
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
+} from "@/Components/ui/select";
 
 export default function Events({ stats, events, filters }) {
     

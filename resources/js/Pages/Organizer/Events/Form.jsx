@@ -7,16 +7,16 @@ import {
 } from '@tabler/icons-react';
 
 // --- IMPORT SHADCN COMPONENTS ---
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
+import { Input } from '@/Components/ui/input';
+import { Textarea } from '@/Components/ui/textarea';
+import { Button } from '@/Components/ui/button';
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select";
+} from "@/Components/ui/select";
 
 export default function Form({ event }) {
     const isEdit = !!event;
