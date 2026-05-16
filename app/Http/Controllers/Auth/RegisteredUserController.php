@@ -32,6 +32,7 @@ class RegisteredUserController extends Controller
             'username' => $request->username,
             'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'is_password_set_manually' => true,
             'role'     => 'organizer',
         ]);
 
