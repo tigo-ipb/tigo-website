@@ -29,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'reset_otp',
         'otp_expires_at',
         'google_id',
+        'is_password_set_manually'
     ];
 
     protected $hidden = [

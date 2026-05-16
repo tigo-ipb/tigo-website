@@ -85,16 +85,30 @@ class ProfileController extends Controller
     }
 
     // Memproses update Password
-    public function updatePassword(Request $request)
+   public function updatePassword(Request $request)
     {
-        $request->validate([
-            // current_password adalah aturan bawaan Laravel untuk mengecek password lama
-            'current_password' => ['required', 'current_password'], 
-            'password' => ['required', 'string', 'min:8'], // Minimal 8 karakter
-        ]);
-
         $user = $request->user();
+
+        // 1. Cek apakah ini jatah VIP (Punya google_id DAN belum pernah set password manual)
+        $isFirstTimeGoogleUser = $user->google_id && !$user->is_password_set_manually;
+
+        if ($isFirstTimeGoogleUser) {
+            // SKENARIO A: JALUR VIP (Bypass validasi hash current_password)
+            $request->validate([
+                'current_password' => ['required', 'string'], // User bisa isi ngawur
+                'password' => ['required', 'string', 'min:8'], 
+            ]);
+        } else {
+            // SKENARIO B: USER BIASA / SUDAH PERNAH GANTI
+            $request->validate([
+                'current_password' => ['required', 'current_password'], // Validasi ketat aktif
+                'password' => ['required', 'string', 'min:8'], 
+            ]);
+        }
+
+        // 2. Simpan password baru dan tandai jatah VIP-nya sudah hangus
         $user->password = Hash::make($request->password);
+        $user->is_password_set_manually = true; // 🔥 Cabut status VIP
         $user->save();
 
         return redirect()->route('profile.index')->with('success', 'Password berhasil diperbarui!');
