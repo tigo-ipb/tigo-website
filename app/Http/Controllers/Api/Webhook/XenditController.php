@@ -122,7 +122,7 @@ class XenditController extends Controller
         // 2. JIKA PEMBAYARAN KADALUARSA (EXPIRED)
         elseif ($payment->payment_status === 'PENDING' && $request->status === 'EXPIRED') {
             
-            $payment->update(['payment_status' => 'EXPIRED']);
+            $payment->update(['payment_status' => 'FAILED']);
 
             // Kembalikan stok tiket ke Event agar bisa dibeli orang lain
             $event = \App\Models\Event::find($payment->event_id);
