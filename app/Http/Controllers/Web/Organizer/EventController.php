@@ -46,7 +46,7 @@ class EventController extends Controller
     // =========================================================
     // 3. FILTER TAB & STATUS (INI YANG KITA PERBAIKI)
     // =========================================================
-    $now = \Carbon\Carbon::now()->toDateString();
+    $now = \Carbon\Carbon::now();
     
     if ($tab === 'history') {
         // Hanya cari yang punya date_end DAN tanggalnya lebih kecil dari hari ini
@@ -54,13 +54,13 @@ class EventController extends Controller
         
     } elseif ($tab === 'draft') {
         // Harus beneran ada tulisan 'draft'
-        $query->where('status', 'draft');
+        $query->where('status', 'draft')->where('date_end', '>=', $now);
         
     } else {
         // TAB ACTIVE (Default)
         // Pokoknya SELAIN draft, tampilkan semua! 
         // (Termasuk event lama yang nggak punya kolom status / date_end)
-        $query->where('status', '!=', 'draft');
+        $query->where('status', '!=', 'draft')->where('date_end', '>=', $now);
         
         // Kita matikan dulu filter date_end di Tab Active agar data lama Anda tidak hilang
         // $query->where(function($q) use ($now) { ... }); 

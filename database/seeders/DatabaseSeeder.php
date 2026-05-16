@@ -21,35 +21,36 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Super Admin Tigo',
             'username' => 'superadmin',
-            'email' => 'admin@tigo.com',
-            'password' => Hash::make('admin123'),
+            'email' => 'tigoipb@gmail.com',
+            'password' => Hash::make('tigo-arsa-ipb'),
             'role' => 'superadmin',
+            'email_verified_at' => now(),
         ]);
 
-        // 2. Organizer (EO)
-        $organizer = User::create([
-            'name' => 'BEM Kampus',
-            'username' => 'bem_kampus',
-            'email' => 'organizer@tigo.com',
-            'password' => Hash::make('organizer123'),
-            'role' => 'organizer',
-        ]);
+        // // 2. Organizer (EO)
+        // $organizer = User::create([
+        //     'name' => 'BEM Kampus',
+        //     'username' => 'bem_kampus',
+        //     'email' => 'organizer@tigo.com',
+        //     'password' => Hash::make('organizer123'),
+        //     'role' => 'organizer',
+        // ]);
 
-        // Setiap Organizer WAJIB punya Wallet saat akun dibuat
-        Wallet::create([
-            'organizer_id' => $organizer->_id,
-            'available_balance' => 0,
-            'pending_balance' => 0,
-        ]);
+        // // Setiap Organizer WAJIB punya Wallet saat akun dibuat
+        // Wallet::create([
+        //     'organizer_id' => $organizer->_id,
+        //     'available_balance' => 0,
+        //     'pending_balance' => 0,
+        // ]);
 
-        // 3. Customer
-        User::create([
-            'name' => 'Aryo Customer',
-            'username' => 'aryo_tigo',
-            'email' => 'customer@gmail.com',
-            'password' => Hash::make('customer123'),
-            'role' => 'customer',
-        ]);
+        // // 3. Customer
+        // User::create([
+        //     'name' => 'Aryo Customer',
+        //     'username' => 'aryo_tigo',
+        //     'email' => 'customer@gmail.com',
+        //     'password' => Hash::make('customer123'),
+        //     'role' => 'customer',
+        // ]);
 
         $this->command->info('User Seeder berhasil dijalankan!');
     }
