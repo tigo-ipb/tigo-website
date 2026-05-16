@@ -13,7 +13,7 @@ export default function ForgotPassword({ status }) {
     return (
         <GuestLayout>
         <div className="min-h-screen bg-white flex flex-col">
-            <Head title="Lupa Password - Tigo" />
+            <Head title="Lupa Password" />
 
             {/* Content */}
             <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">

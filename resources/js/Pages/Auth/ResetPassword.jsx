@@ -23,7 +23,7 @@ export default function ResetPassword({ token, email }) {
     return (
         <GuestLayout>
             <div className="min-h-screen bg-white flex flex-col">
-                <Head title="Reset Password - Tigo" />
+                <Head title="Reset Password" />
 
                 {/* Content */}
                 <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">

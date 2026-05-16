@@ -21,7 +21,7 @@ export default function Login({ status, canResetPassword }) {
     return (
         <GuestLayout>
         <div className="min-h-screen bg-white flex flex-col font-sans">
-            <Head title="Masuk - Tigo" />
+            <Head title="Login" />
 
             {/* Header */}
             {/* <header className="px-8 py-4 border-b border-gray-100 flex items-center justify-between">

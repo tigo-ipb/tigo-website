@@ -96,7 +96,7 @@ export default function SetupAccount({ user }) {
     return (
         <GuestLayout>
             <div className="min-h-screen bg-white flex flex-col font-sans">
-                <Head title="Setup Akun - Tigo" />
+                <Head title="Setup Akun" />
                 <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
                     <h1 className="text-5xl font-black text-sky-500 mb-10 text-center tracking-tight">
                         Setup Akun

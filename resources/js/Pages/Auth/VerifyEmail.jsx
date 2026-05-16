@@ -11,7 +11,7 @@ export default function VerifyEmail({ status }) {
     return (
         <GuestLayout>
             <div className="min-h-screen bg-white flex flex-col">
-                <Head title="Verifikasi Email - Tigo" />
+                <Head title="Verifikasi Email" />
 
                 <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
                     <h1 className="text-4xl font-black text-blue-500 mb-3 text-center">

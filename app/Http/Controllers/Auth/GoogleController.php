@@ -40,6 +40,7 @@ class GoogleController extends Controller
                 'google_id' => $googleUser->id,
                 'password' => Hash::make(uniqid()), 
                 'role' => $role, // <--- Masuk sebagai 'organizer' atau 'user'
+                'email_verified_at' => now(),
             ]);
         } else {
             $user->update(['google_id' => $googleUser->id]);

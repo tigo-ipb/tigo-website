@@ -22,7 +22,7 @@ export default function Register() {
     return (
         <GuestLayout>
             <div className="min-h-screen bg-white flex flex-col font-sans">
-                <Head title="Buat Akun - Tigo" />
+                <Head title="Register" />
 
                 {/* Content Form */}
                 <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
