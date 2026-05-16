@@ -5,8 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
-<meta name="title" content="Tigo App - Ticketing & Event Management IPB">
+        <meta name="title" content="Tigo App - Ticketing & Event Management IPB">
         <meta name="description" content="Platform Ticketing eksklusif untuk mahasiswa IPB. Temukan dan ikuti berbagai event kampus dengan mudah!">
+        <link rel="icon" type="image/png" href="{{ asset('/tigo-logo.png') }}">
 
         <meta property="og:type" content="website">
         <meta property="og:url" content="{{ url()->current() }}">
