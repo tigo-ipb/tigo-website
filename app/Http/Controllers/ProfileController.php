@@ -85,32 +85,38 @@ class ProfileController extends Controller
     }
 
     // Memproses update Password
-   public function updatePassword(Request $request)
+ public function updatePassword(Request $request)
     {
-        $user = $request->user();
+        $user = auth()->user();
 
         // 1. Cek apakah ini jatah VIP (Punya google_id DAN belum pernah set password manual)
         $isFirstTimeGoogleUser = $user->google_id && !$user->is_password_set_manually;
 
-        if ($isFirstTimeGoogleUser) {
-            // SKENARIO A: JALUR VIP (Bypass validasi hash current_password)
-            $request->validate([
-                'current_password' => ['required', 'string'], // User bisa isi ngawur
-                'password' => ['required', 'string', 'min:8'], 
-            ]);
-        } else {
-            // SKENARIO B: USER BIASA / SUDAH PERNAH GANTI
-            $request->validate([
-                'current_password' => ['required', 'current_password'], // Validasi ketat aktif
-                'password' => ['required', 'string', 'min:8'], 
-            ]);
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed', // Mobile wajib kirim new_password_confirmation
+        ]);
+
+        // 2. Jika BUKAN user VIP, lakukan validasi ketat kecocokan hash password lama
+        if (!$isFirstTimeGoogleUser) {
+            if (!Hash::check($request->current_password, $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Password saat ini salah.'
+                ], 400);
+            }
         }
+        // Jika VIP, blok pengecekan hash di atas akan diabaikan (bebas isi apapun di current_password).
 
-        // 2. Simpan password baru dan tandai jatah VIP-nya sudah hangus
-        $user->password = Hash::make($request->password);
-        $user->is_password_set_manually = true; // 🔥 Cabut status VIP
-        $user->save();
+        // 3. Simpan password baru dan tandai jatah VIP-nya sudah hangus
+        $user->update([
+            'password' => Hash::make($request->new_password),
+            'is_password_set_manually' => true // 🔥 Cabut status VIP agar trik ini hanya berlaku 1 kali
+        ]);
 
-        return redirect()->route('profile.index')->with('success', 'Password berhasil diperbarui!');
+        return response()->json([
+            'success' => true,
+            'message' => 'Password berhasil diperbarui.'
+        ], 200);
     }
 }

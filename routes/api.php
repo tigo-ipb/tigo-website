@@ -20,7 +20,9 @@ Route::prefix('webhook/xendit')->group(function () {
 
 // Public API
 Route::post('/auth/register', [ApiAuthController::class, 'register']);
+Route::post('/auth/verify-email', [ApiAuthController::class, 'verifyEmail']); // 🔥 Tambahkan ini (Untuk kirim OTP Register)
 Route::post('/auth/login', [ApiAuthController::class, 'login']);
+Route::post('/auth/google', [ApiAuthController::class, 'googleLogin']);       // 🔥 Tambahkan ini (Untuk Login via Google)
 Route::post('/auth/forgot-password', [ApiAuthController::class, 'forgotPassword']);
 Route::post('/auth/reset-password', [ApiAuthController::class, 'resetPassword']);
 

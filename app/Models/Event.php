@@ -24,6 +24,7 @@ class Event extends Model
         'galleries',
         'ticket_types',
         'status',
+        'format'
     ];
 
     /**

@@ -26,8 +26,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone_code',
         'phone_number',
         'role',
+        'verification_otp',
         'reset_otp',
         'otp_expires_at',
+        'is_profile_setup',
         'google_id',
         'is_password_set_manually'
     ];

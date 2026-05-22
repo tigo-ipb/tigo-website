@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "cloudinary-labs/cloudinary-laravel": "^3.0",
+        "google/apiclient": "^2.19",
         "inertiajs/inertia-laravel": "^2.0",
         "jenssegers/mongodb": "*",
         "laravel/framework": "^12.0",

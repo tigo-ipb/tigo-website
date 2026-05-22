@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     // 1. Base Query Super Aman (Hanya singkirkan yang BUKAN draft)
     // Kita matikan filter date_end sementara agar data testing Anda tidak hilang
-    $baseQuery = \App\Models\Event::where('status', '!=', 'draft');
+    $baseQuery = Event::where('status', '!=', 'draft')->where('date_end', '>=', now());
 
     // 2. Featured Events (Ambil 5)
     // Menggunakan created_at sebagai fallback jika date_start kosong di data testing
