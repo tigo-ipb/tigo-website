@@ -17,6 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select";
+import { Switch } from '@/Components/ui/switch';
 
 export default function Form({ event }) {
     const isEdit = !!event;
@@ -32,6 +33,7 @@ export default function Form({ event }) {
     const { data, setData, post, processing, transform } = useForm({
         name: event?.name || '',
         category_name: event?.category_name || 'Hiburan & Festival',
+        format: event?.format || 'offline',
         description: event?.description || '',
         terms_conditions: event?.terms_string || '',
         venue: event?.location?.venue || '',
@@ -257,9 +259,29 @@ export default function Form({ event }) {
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Tentang Event</label>
                                     <Textarea rows={4} value={data.description} onChange={e => setData('description', e.target.value)} required />
                                 </div>
-                                <div>
+                                <div className="mb-6">
                                     <label className="block text-sm font-semibold text-gray-700 mb-2">Ketentuan</label>
                                     <Textarea rows={4} value={data.terms_conditions} onChange={e => setData('terms_conditions', e.target.value)} placeholder="Gunakan enter/baris baru untuk setiap poin" />
+                                </div>
+                                {/* 🔥 TAB FORMAT EVENT (Gaya Full Width) 🔥 */}
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Format Event</label>
+                                    <div className="flex w-full bg-gray-50 p-1 rounded-full border border-neutral-200">
+                                        {['offline', 'online'].map((formatOption) => (
+                                            <button
+                                                key={formatOption}
+                                                type="button"
+                                                onClick={() => setData('format', formatOption)}
+                                                className={`flex-1 py-2 rounded-full text-sm font-bold transition-all capitalize ${
+                                                    data.format === formatOption 
+                                                        ? 'bg-sky-500 text-white shadow-sm scale-[1.02]' 
+                                                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                                                }`}
+                                            >
+                                                {formatOption}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
