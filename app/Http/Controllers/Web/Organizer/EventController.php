@@ -228,7 +228,8 @@ class EventController extends Controller
             // Validasi galleries: array of images
             'galleries' => 'nullable|array|max:4',
             'galleries.*' => 'image|max:15360',
-            'status' => 'nullable|in:active,draft' // Status opsional (default active)
+            'status' => 'nullable|in:active,draft', // Status opsional (default active),
+            'format' => 'nullable|in:online,offline' // Format event opsional
         ]);
 
         $cloudinary = new \Cloudinary\Cloudinary(env('CLOUDINARY_URL'));
@@ -291,6 +292,7 @@ class EventController extends Controller
             'banners' => $banners,
             'galleries' => $galleries, // Simpan array URL ke kolom galleries
             'status' => $request->status ?? 'active', // Default 'active' jika tidak ada request
+            'format' => $request->format ?? 'offline' // Default 'offline' jika tidak ada request
         ]);
 
         return redirect()->route('organizer.events.index')->with('success', 'Event berhasil dibuat!');
@@ -311,7 +313,8 @@ class EventController extends Controller
             'banner_16x9' => 'nullable|image|max:20480', 
             'banner_1x1' => 'nullable|image|max:15360',  
             'galleries' => 'nullable|array|max:4',
-            'status' => 'nullable|in:active,draft'
+            'status' => 'nullable|in:active,draft',
+            'format' => 'nullable|in:online,offline'
         ]);
 
         $cloudinary = new \Cloudinary\Cloudinary(env('CLOUDINARY_URL'));
@@ -390,6 +393,7 @@ class EventController extends Controller
             'banners' => $banners,
             'galleries' => $existingGalleries, // Update array galleries
             'status' => $request->status ?? $event->status, // Update status jika ada
+            'format' => $request->format ?? $event->format, // Update format jika ada
         ]);
         return redirect()->route('organizer.events.index')->with('success', 'Event berhasil diperbarui!');
     }
@@ -400,7 +404,7 @@ class EventController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:active,draft'
+            'status' => 'required|in:active,draft',
         ]);
 
         $event = Event::where('_id', $id)->where('organizer_id', auth()->id())->firstOrFail();
