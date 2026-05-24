@@ -22,7 +22,7 @@ class SetupAccountController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|unique:users,username,' . Auth::id() . ',_id',
+            'username' => 'required|string|unique:mongodb.users,username,' . Auth::id() . ',_id',
             'phone_number' => 'required|string',
             'name' => 'required|string',
             'birth_date' => 'required|date',

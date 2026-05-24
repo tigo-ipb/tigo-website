@@ -199,9 +199,12 @@ class ApiAuthController extends Controller
         $request->validate([
             'phone_number' => 'required|string',
             'birth_date'   => 'required|date',
+            'name'         => 'required|string|max:255',
+            'username'     => 'required|string|max:255|unique:users,username,' . $user->_id . ',_id',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,webp|max:15360', // Maks 15MB
         ]);
 
-        $dataToUpdate = $request->only(['name', 'username', 'bio', 'birth_date', 'phone_code', 'phone_number']);
+        $dataToUpdate = $request->only(['name', 'username', 'birth_date', 'phone_code', 'phone_number']);
         $dataToUpdate['is_profile_setup'] = true; // Tandai profil sudah lengkap!
 
         $cloudinary = new \Cloudinary\Cloudinary(env('CLOUDINARY_URL'));

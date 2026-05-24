@@ -14,12 +14,16 @@ class CheckoutController extends Controller
 {
     public function store(Request $request)
     {
-        // 1. Validasi Input dari Flutter
+        // 1. Validasi Input dari Mobile (Termasuk field customer_birth_date)
         $request->validate([
             'event_id' => 'required|string',
             'ticket_items' => 'required|array|min:1',
             'ticket_items.*.type_id' => 'required|string',
             'ticket_items.*.quantity' => 'required|integer|min:1',
+            'customer_name' => 'required|string|max:255',
+            'customer_email' => 'required|email|max:255',
+            'customer_phone' => 'required|string|max:20',
+            'customer_birth_date' => 'required|date', // 🔥 TAMBAHAN VALIDASI TANGGAL LAHIR
         ]);
 
         $event = Event::find($request->event_id);
@@ -64,7 +68,7 @@ class CheckoutController extends Controller
         }
 
         // 3. Kalkulasi Pembagian Dana
-        $platformFee = $subTotal * 0.10;
+        $platformFee = $subTotal * 0.10; 
         $netForEo = $subTotal - $platformFee;
 
         // Cek apakah tiket gratis
@@ -74,21 +78,27 @@ class CheckoutController extends Controller
         $user = auth()->user();
 
         // ================================================================
-        // 🔥 VALIDASI EMAIL IPB (KHUSUS TIKET GRATIS) 🔥
+        // VALIDASI EMAIL IPB (KHUSUS TIKET GRATIS)
         // ================================================================
         if ($isFree && !Str::endsWith($user->email, '@apps.ipb.ac.id')) {
             return response()->json([
                 'success' => false,
-                'message' => 'Maaf, tiket gratis ini eksklusif dan hanya dapat diklaim menggunakan email IPB (@apps.ipb.ac.id).'
-            ], 403); // 403 Forbidden
+                'message' => 'Maaf, tiket gratis ini eksklusif dan hanya dapat diklaim menggunakan akun dengan email IPB (@apps.ipb.ac.id).'
+            ], 403); 
         }
 
-        // 4. Simpan ke Database (Jika gratis langsung PAID, jika bayar PENDING)
+        // 4. Simpan ke Database Payment dengan tambahan birth_date di customer_info
         $payment = Payment::create([
-            'user_id' => $user->id, // Menggunakan id dari variable $user yang ditarik di atas
+            'user_id' => $user->id,
             'event_id' => $event->_id,
             'organizer_id' => $event->organizer_id,
             'ticket_items' => $savedTicketItems,
+            'customer_info' => [
+                'name' => $request->customer_name,
+                'email' => $request->customer_email,
+                'phone' => $request->customer_phone,
+                'birth_date' => $request->customer_birth_date, // 🔥 SIMPAN TANGGAL LAHIR DI SINI
+            ],
             'sub_total' => $subTotal,
             'platform_fee' => $platformFee,
             'net_for_eo' => $netForEo,
@@ -99,10 +109,8 @@ class CheckoutController extends Controller
         // SKENARIO A: TIKET GRATIS (TIDAK LEWAT XENDIT)
         // ================================================================
         if ($isFree) {
-            // Update stok event ke DB
             $event->update(['ticket_types' => $eventTickets]);
 
-            // Buatkan QR Code Tiket langsung (Karena tidak memicu webhook)
             foreach ($savedTicketItems as $item) {
                 for ($i = 0; $i < $item['quantity']; $i++) {
                     TicketValidation::create([
@@ -121,39 +129,37 @@ class CheckoutController extends Controller
                 'message' => 'Tiket gratis berhasil diklaim.',
                 'data' => [
                     'payment_id' => $payment->_id,
-                    'payment_url' => null // Null karena tidak ada tagihan
+                    'payment_url' => null 
                 ]
             ], 201);
         }
-
 
         // ================================================================
         // SKENARIO B: TIKET BERBAYAR (LEWAT XENDIT)
         // ================================================================
         try {
-            // Rakit data kustomer
-            $customerData = [
-                'given_names' => $user->name,
-                'email' => $user->email,
-            ];
-
-            // Setup No HP yang aman untuk Xendit
-            if (!empty($user->phone_number)) {
-                $phoneCode = $user->phone_code ?? '+62'; 
-                // Buang angka 0 di depan jika user mengetik 0812...
-                $cleanPhone = ltrim($user->phone_number, '0');
-                $customerData['mobile_number'] = $phoneCode . $cleanPhone;
+            $cleanPhone = $request->customer_phone;
+            if (Str::startsWith($cleanPhone, '0')) {
+                $cleanPhone = '+62' . substr($cleanPhone, 1);
             }
+
+            $customerData = [
+                'given_names' => $request->customer_name,
+                'email' => $request->customer_email,
+                'mobile_number' => $cleanPhone,
+            ];
 
             $response = Http::withBasicAuth(env('XENDIT_SECRET_KEY'), '')
                 ->timeout(30)
                 ->post('https://api.xendit.co/v2/invoices', [
                     'external_id' => (string) $payment->_id,
                     'amount' => (int) $subTotal,
-                    'payer_email' => $user->email,
+                    'payer_email' => $request->customer_email,
                     'description' => 'Pembelian Tiket: ' . $event->name,
-                    'invoice_duration' => 86400,
-                    'customer' => $customerData
+                    'invoice_duration' => 86400, 
+                    'customer' => $customerData,
+                    'success_redirect_url' => 'tigoapp://payment/success', 
+                    'failure_redirect_url' => 'tigoapp://payment/failed',
                 ]);
 
             $xenditData = $response->json();
@@ -163,13 +169,11 @@ class CheckoutController extends Controller
                 throw new \Exception(($xenditData['message'] ?? 'Gagal membuat invoice') . $errorDetail);
             }
 
-            // Update Payment dengan URL Xendit
             $payment->update([
                 'xendit_invoice_id' => $xenditData['id'],
                 'xendit_checkout_url' => $xenditData['invoice_url']
             ]);
 
-            // Simpan stok yang sudah dikurangi ke database MongoDB
             $event->update(['ticket_types' => $eventTickets]);
 
             return response()->json([
@@ -182,7 +186,6 @@ class CheckoutController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
-            // Rollback payment jika Xendit gagal (stok tidak jadi dikurangi)
             $payment->delete();
             return response()->json([
                 'success' => false, 

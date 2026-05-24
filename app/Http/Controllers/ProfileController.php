@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
-    // Menampilkan Halaman Utama Profile
     public function index(Request $request)
     {
         return Inertia::render('Profile/Index', [
@@ -16,7 +15,6 @@ class ProfileController extends Controller
         ]);
     }
 
-    // Menampilkan Halaman Edit Profile
     public function edit(Request $request)
     {
         return Inertia::render('Profile/Edit', [
@@ -24,24 +22,40 @@ class ProfileController extends Controller
         ]);
     }
 
-    // Memproses update Nama dan Bio
+    // =========================================================
+    // 🔥 MEMPROSES UPDATE PROFILE & FOTO (WEB)
+    // =========================================================
     public function updateProfile(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'bio' => 'nullable|string|max:1000',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,webp|max:15360', // Maks 15MB
         ]);
 
         $user = $request->user();
         $user->name = $request->name;
         $user->bio = $request->bio;
+
+        // Jika ada upload foto profil baru
+        if ($request->hasFile('profile_photo')) {
+            // Hapus foto lama di Cloudinary terlebih dahulu
+            $this->deleteCloudinaryImage($user->profile_photo);
+
+            // Upload foto baru
+            $cloudinary = new \Cloudinary\Cloudinary(env('CLOUDINARY_URL'));
+            $upload = $cloudinary->uploadApi()->upload($request->file('profile_photo')->getRealPath(), [
+                'folder' => 'tigo/users/profile'
+            ]);
+            
+            $user->profile_photo = $upload['secure_url'];
+        }
+
         $user->save();
 
-        // Kembali ke halaman profile utama dengan pesan sukses
         return redirect()->route('profile.index')->with('success', 'Profile berhasil diperbarui!');
     }
 
-    // Menampilkan Halaman Setting Akun
     public function account(Request $request)
     {
         return Inertia::render('Profile/Account', [
@@ -49,18 +63,16 @@ class ProfileController extends Controller
         ]);
     }
 
-    // Memproses update data Akun
     public function updateAccount(Request $request)
     {
         $user = $request->user();
 
         $request->validate([
-            // Pastikan username & email unik, kecuali untuk user ini sendiri (menggunakan $user->id)
-            'username' => 'required|string|max:255|unique:users,username,' . $user->id . ',_id', 
+            'username' => 'required|string|max:255|unique:mongodb.users,username,' . $user->id . ',id', 
             'birth_date' => 'nullable|date',
             'phone_code' => 'nullable|string|max:10',
             'phone_number' => 'nullable|string|max:20',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id . ',_id',
+            'email' => 'required|string|email|max:255|unique:mongodb.users,email,' . $user->id . ',id',
         ]);
 
         $user->username = $request->username;
@@ -68,10 +80,9 @@ class ProfileController extends Controller
         $user->phone_code = $request->phone_code;
         $user->phone_number = $request->phone_number;
 
-        // Cek jika user mengganti emailnya
         if ($user->email !== $request->email) {
             $user->email = $request->email;
-            $user->email_verified_at = null; // Reset verifikasi jika email diganti (opsional tapi disarankan)
+            $user->email_verified_at = null; 
         }
 
         $user->save();
@@ -84,39 +95,47 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Password');
     }
 
-    // Memproses update Password
- public function updatePassword(Request $request)
+    public function updatePassword(Request $request)
     {
         $user = auth()->user();
-
-        // 1. Cek apakah ini jatah VIP (Punya google_id DAN belum pernah set password manual)
         $isFirstTimeGoogleUser = $user->google_id && !$user->is_password_set_manually;
 
         $request->validate([
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed', // Mobile wajib kirim new_password_confirmation
+            'new_password' => 'required|string|min:8|confirmed', 
         ]);
 
-        // 2. Jika BUKAN user VIP, lakukan validasi ketat kecocokan hash password lama
         if (!$isFirstTimeGoogleUser) {
             if (!Hash::check($request->current_password, $user->password)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Password saat ini salah.'
-                ], 400);
+                return back()->withErrors(['current_password' => 'Password saat ini salah.']);
             }
         }
-        // Jika VIP, blok pengecekan hash di atas akan diabaikan (bebas isi apapun di current_password).
 
-        // 3. Simpan password baru dan tandai jatah VIP-nya sudah hangus
         $user->update([
             'password' => Hash::make($request->new_password),
-            'is_password_set_manually' => true // 🔥 Cabut status VIP agar trik ini hanya berlaku 1 kali
+            'is_password_set_manually' => true 
         ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Password berhasil diperbarui.'
-        ], 200);
+        return redirect()->route('profile.index')->with('success', 'Password berhasil diperbarui!');
+    }
+
+    // =========================================================
+    // 🔥 PRIVATE FUNCTION MENGHAPUS GAMBAR LAMA
+    // =========================================================
+    private function deleteCloudinaryImage($url)
+    {
+        if (!$url) return;
+        try {
+            $parts = explode('/upload/', $url);
+            if (count($parts) > 1) {
+                $path = preg_replace('/^v\d+\//', '', $parts[1]);
+                $publicId = preg_replace('/\.[^.]+$/', '', $path);
+                
+                $cloudinary = new \Cloudinary\Cloudinary(env('CLOUDINARY_URL'));
+                $cloudinary->uploadApi()->destroy($publicId);
+            }
+        } catch (\Exception $e) {
+            // Abaikan error
+        }
     }
 }

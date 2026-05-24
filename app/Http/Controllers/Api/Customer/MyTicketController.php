@@ -75,25 +75,28 @@ class MyTicketController extends Controller
         // (Satu payment bisa menghasilkan banyak QR jika beli banyak tiket)
         $qrCodes = TicketValidation::where('payment_id', $payment_id)->get();
 
+        // Di dalam fungsi show() MyTicketController...
+        $customerInfo = $payment->customer_info ?? [];
+
         return response()->json([
             'success' => true,
             'data' => [
                 'event_details' => [
-                    'name' => $event->name,
-                    'date_start' => $event->date_start,
-                    'time_start' => $event->time_start,
-                    'location' => $event->location,
+                    'name' => $event->name ?? 'Event',
+                    'date_start' => $event->date_start ?? '',
+                    'time_start' => $event->time_start ?? '',
+                    'location' => $event->location ?? null,
                 ],
                 'buyer_details' => [
-                    'name' => auth()->user()->name,
-                    'birth_date' => auth()->user()->birth_date,
-                    'phone_number' => auth()->user()->phone_number,
-                    'email' => auth()->user()->email,
+                    'name' => $customerInfo['name'] ?? auth()->user()->name,
+                    'email' => $customerInfo['email'] ?? auth()->user()->email,
+                    'phone_number' => $customerInfo['phone'] ?? auth()->user()->phone_number,
+                    'birth_date' => $customerInfo['birth_date'] ?? auth()->user()->birth_date, // 🔥 AMBIL TANGGAL LAHIR TRANSKASI DI SINI
                 ],
                 'ticket_items' => $payment->ticket_items,
                 'total_paid' => $payment->sub_total,
                 'status' => $payment->payment_status,
-                'qr_codes' => $qrCodes // Array berisi string QR dan status is_used
+                'qr_codes' => $qrCodes 
             ]
         ], 200);
     }

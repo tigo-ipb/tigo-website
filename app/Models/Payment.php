@@ -14,17 +14,19 @@ class Payment extends Model
         'user_id',
         'event_id',
         'organizer_id',
-        'ticket_items', // Array: tiket apa saja yg dibeli
+        'customer_info', // 🔥 TAMBAHKAN INI UNTUK MENYIMPAN IDENTITAS PEMESAN
+        'ticket_items', 
         'sub_total',
         'platform_fee',
         'net_for_eo',
-        'payment_status', // PENDING, PAID, EXPIRED
+        'payment_status', 
         'xendit_invoice_id',
         'xendit_checkout_url'
     ];
 
     protected $casts = [
         'ticket_items' => 'array',
+        'customer_info' => 'array', // 🔥 TAMBAHKAN INI AGAR FORMAT JSON/ARRAY TETAP TERJAGA
     ];
 
     public function event(): BelongsTo
