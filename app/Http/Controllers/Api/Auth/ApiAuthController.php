@@ -30,8 +30,8 @@ class ApiAuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'username' => 'required|string|unique:users,username',
-            'email'    => 'required|string|email|unique:users,email',
+            'username' => 'required|string|unique:mongodb.users,username',
+            'email'    => 'required|string|email|unique:mongodb.users,email',
             'password' => 'required|string|min:8',
         ]);
 
@@ -195,14 +195,19 @@ class ApiAuthController extends Controller
     public function setupProfile(Request $request)
     {
         $user = auth()->user();
-
+        
+        if ($user->is_profile_setup) {
+            return response()->json(['success' => false, 'message' => 'Profil sudah lengkap.'], 400);
+        }
         $request->validate([
             'phone_number' => 'required|string',
+            'phone_code' => 'required|string|max:10',
             'birth_date'   => 'required|date',
             'name'         => 'required|string|max:255',
-            'username'     => 'required|string|max:255|unique:users,username,' . $user->_id . ',_id',
+            'username'     => 'required|string|max:255|unique:mongodb.users,username,' . $user->id . ',id',
             'profile_photo' => 'nullable|image|mimes:jpeg,png,webp|max:15360', // Maks 15MB
         ]);
+
 
         $dataToUpdate = $request->only(['name', 'username', 'birth_date', 'phone_code', 'phone_number']);
         $dataToUpdate['is_profile_setup'] = true; // Tandai profil sudah lengkap!
