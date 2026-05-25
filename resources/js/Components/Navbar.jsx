@@ -1,7 +1,5 @@
 import { usePage, Link } from '@inertiajs/react';
 import { IconBell, IconChevronDown, IconMenuDeep } from '@tabler/icons-react';
-
-// Import komponen Shadcn (Pastikan Anda sudah install: npx shadcn-ui@latest add dropdown-menu)
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -17,79 +15,90 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
     const { auth } = usePage().props;
 
     return (
-        // Ubah z-index menjadi z-50 agar dropdown tidak tertimpa elemen lain di bawahnya
-        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-neutral-300 flex items-center justify-between px-10 sticky top-0 z-50">
+        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 font-sans md:px-6">
+            <div className="flex items-center gap-2">
+                <div className="lg:hidden">
+                    <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
+                        <SheetTrigger asChild>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-10 w-10 rounded-xl text-neutral-500 hover:bg-[#f0f2f5] hover:text-sky-500"
+                            >
+                                <IconMenuDeep size={22} stroke={2} />
+                            </Button>
+                        </SheetTrigger>
+                        <SheetContent side="left" className="w-64 p-0">
+                            <Sidebar isMobile setIsMobileOpen={setIsMobileOpen} />
+                        </SheetContent>
+                    </Sheet>
+                </div>
 
-           <div className="lg:hidden">
-                <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
-                    <SheetTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-slate-600">
-                            <IconMenuDeep size={24} />
-                        </Button>
-                    </SheetTrigger>
-                    {/* side="left" agar muncul dari kiri seperti sidebar */}
-                    <SheetContent side="left" className="w-64 p-0">
-                        <Sidebar isMobile setIsMobileOpen={setIsMobileOpen} />
-                    </SheetContent>
-                </Sheet>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggleDesktop}
+                    className="hidden h-10 w-10 rounded-xl text-neutral-500 hover:bg-[#f0f2f5] hover:text-sky-500 lg:flex"
+                >
+                    <IconMenuDeep size={22} stroke={2} />
+                </Button>
             </div>
 
-            {/* DESKTOP SIDEBAR TRIGGER */}
-            <Button 
-                variant="ghost"
-                size='icon'  
-                onClick={toggleDesktop} 
-                className="hidden lg:flex text-black hover:text-sky-600 text-[42px]"
-            >
-                <IconMenuDeep size={42} />
-            </Button>
-            
-            <div className="flex items-center justify-center">
-                {<h1 className="text-2xl font-bold text-slate-800">{header || "Dashboard"}</h1>}
-            </div>
+            <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold text-neutral-950 md:text-xl">
+                {header || 'Dashboard'}
+            </h1>
 
-            <div className="flex items-center gap-6">
-                <button className="text-slate-400 hover:text-blue-500 transition-colors p-2 bg-slate-50 rounded-full">
-                    <IconBell size={24} />
+            <div className="flex items-center gap-3 md:gap-4">
+                <button
+                    type="button"
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e6f4fe] text-sky-500 transition-colors hover:bg-sky-100 hover:text-sky-600 md:h-10 md:w-10"
+                    title="Notifikasi"
+                >
+                    <IconBell size={20} stroke={2} />
                 </button>
-                
-                {/* --- SHADCN DROPDOWN MENU --- */}
+
                 <DropdownMenu>
-                    {/* Trigger (Tombol yang diklik) */}
-                    <DropdownMenuTrigger className="flex items-center gap-3 pl-6 border-l border-slate-100 outline-none focus:outline-none hover:bg-slate-50 p-2 rounded-xl transition-colors cursor-pointer">
-                        <div className="w-10 h-10 rounded-full bg-blue-100 border-2 border-blue-500 flex items-center justify-center text-blue-600 font-bold uppercase">
+                    <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 rounded-xl border-0 pl-3 outline-none transition-colors hover:bg-[#f0f2f5] focus:outline-none md:gap-3 md:pl-4 md:border-l md:border-gray-100">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-sky-500 bg-sky-50 text-sm font-bold uppercase text-sky-500 md:h-10 md:w-10">
                             {auth.user.name.charAt(0)}
                         </div>
-                        <div className="text-left hidden md:block">
-                            <p className="text-sm font-bold text-slate-800">{auth.user.name}</p>
-                            <p className="text-xs text-slate-400 capitalize">{auth.user.role}</p>
+                        <div className="hidden text-left md:block">
+                            <p className="text-sm font-bold text-neutral-950">{auth.user.name}</p>
+                            <p className="text-xs capitalize text-neutral-400">{auth.user.role}</p>
                         </div>
-                        <IconChevronDown size={16} className="text-slate-400" />
+                        <IconChevronDown size={16} className="hidden text-neutral-400 md:block" stroke={2} />
                     </DropdownMenuTrigger>
-                    
-                    {/* Isi Dropdown */}
-                    <DropdownMenuContent align="end" className="w-56 mt-2 bg-white z-[60] p-2 rounded-2xl shadow-lg border-gray-100">
-                        <DropdownMenuItem asChild className="cursor-pointer rounded-xl hover:bg-blue-50 focus:bg-blue-50">
-                            <Link href="/profile" className="w-full font-bold text-slate-700">
+
+                    <DropdownMenuContent
+                        align="end"
+                        className="z-[60] mt-2 w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-lg"
+                    >
+                        <DropdownMenuItem
+                            asChild
+                            className="cursor-pointer rounded-xl focus:bg-sky-50"
+                        >
+                            <Link href="/profile" className="w-full font-semibold text-neutral-950">
                                 Profil Saya
                             </Link>
                         </DropdownMenuItem>
-                        
-                        <DropdownMenuSeparator className="my-2 bg-slate-100" />
-                        
-                        <DropdownMenuItem asChild className="cursor-pointer rounded-xl hover:bg-red-50 focus:bg-red-50">
-                            <Link 
-                                href={route('logout')} 
-                                method="post" 
-                                as="button" 
-                                className="w-full font-bold text-red-500 focus:text-red-600"
+
+                        <DropdownMenuSeparator className="my-2 bg-gray-100" />
+
+                        <DropdownMenuItem
+                            asChild
+                            className="cursor-pointer rounded-xl focus:bg-red-50"
+                        >
+                            <Link
+                                href={route('logout')}
+                                method="post"
+                                as="button"
+                                className="w-full font-semibold text-red-500 focus:text-red-600"
                             >
                                 Keluar
                             </Link>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-
             </div>
         </header>
     );

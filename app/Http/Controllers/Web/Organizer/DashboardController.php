@@ -19,6 +19,7 @@ class DashboardController extends Controller
     // --- PARAMETER FILTER DARI FRONTEND ---
     $topEventBy = $request->query('top_event', 'revenue'); // revenue / attendance
     $chartPeriod = $request->query('chart_period', 'tahun_ini'); // tahun_ini, 3_bulan, 6_bulan, tahun_kemarin, 5_tahun
+    $ticketPeriod = $request->query('ticket_period', 'minggu_ini'); // minggu_ini, bulan_ini, semua
     $search = $request->query('search', null); // Pencarian untuk Booking Terkini
 
     // 1. Ambil data dasar
@@ -30,6 +31,8 @@ class DashboardController extends Controller
         ->get();
     
     $paidPayments = $allPayments->where('payment_status', 'PAID');
+
+    $now = Carbon::now();
 
     // 2. Kalkulasi Statistik & Chart Donut
     $totalEvents = $events->count();
@@ -60,6 +63,18 @@ class DashboardController extends Controller
         $eventStatsMap[$payment->event_id]['attendance'] += $qty;
     }
 
+    $donutPayments = $paidPayments;
+    if ($ticketPeriod === 'minggu_ini') {
+        $donutPayments = $paidPayments->filter(fn ($p) => $p->created_at >= $now->copy()->subWeek());
+    } elseif ($ticketPeriod === 'bulan_ini') {
+        $donutPayments = $paidPayments->filter(fn ($p) => $p->created_at >= $now->copy()->startOfMonth());
+    }
+
+    $donutTicketsSold = 0;
+    foreach ($donutPayments as $payment) {
+        $donutTicketsSold += collect($payment->ticket_items)->sum('quantity');
+    }
+
     // 3. Top Events (Ambil 8 teratas berdasarkan Filter Metrik)
     // Urutkan array map berdasarkan revenue atau attendance
     uasort($eventStatsMap, function ($a, $b) use ($topEventBy) {
@@ -79,7 +94,6 @@ class DashboardController extends Controller
     // 4. Kalkulasi Chart Area (Berdasarkan Rentang Waktu)
     $chartLabels = [];
     $chartData = [];
-    $now = \Carbon\Carbon::now();
 
     if ($chartPeriod === 'tahun_ini' || $chartPeriod === 'tahun_kemarin') {
         $targetYear = $chartPeriod === 'tahun_ini' ? $now->year : $now->year - 1;
@@ -236,14 +250,16 @@ class DashboardController extends Controller
             'total_events' => $totalEvents,
             'total_tickets_sold' => $totalTicketsSold,
             'total_tickets_available' => $totalTicketsAvailable,
-            'chart_labels' => $chartLabels, // Kirim Array Label
-            'chart_data' => $chartData,     // Kirim Array Data
+            'donut_tickets_sold' => $donutTicketsSold,
+            'donut_tickets_available' => max(0, $totalTicketsAvailable),
+            'chart_labels' => $chartLabels,
+            'chart_data' => $chartData,
         ],
         'topEvents' => $topEvents,
         'recentBookings' => $recentBookings,
         'recentActivities' => $recentActivities,
         'currentEvent' => $currentEvent,
-        'filters' => $request->only(['top_event', 'chart_period', 'search']) // Kirim balik state filter
+        'filters' => $request->only(['top_event', 'chart_period', 'ticket_period', 'search'])
     ]);
 }
 }
