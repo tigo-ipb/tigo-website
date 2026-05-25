@@ -2,11 +2,11 @@ import React from 'react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 
 export default function Pagination({ pagination, onPageChange }) {
-    if (!pagination || pagination.last_page <= 1) return null;
+    if (!pagination) return null;
 
     const {
         current_page,
-        last_page,
+        last_page = 1,
         per_page,
         total,
         from,

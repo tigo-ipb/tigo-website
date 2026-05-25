@@ -160,10 +160,10 @@ export default function Index({ events, filters }) {
     };
 
     return (
-        <DashboardLayout header={"Events"}>
+        <DashboardLayout header={"Events"} hideFooter>
             <Head title="Events" />
 
-            <div className="flex flex-col h-full w-full gap-6">
+            <div className="flex flex-col flex-1 min-h-0 w-full gap-6">
                 {/* Toolbar Section */}
                 <div className="flex flex-col xl:flex-row justify-between items-center gap-4 w-full">
 
@@ -287,7 +287,7 @@ export default function Index({ events, filters }) {
                     }}
                 />
 
-
+                <Copyright whatsappNumber="628123456789" className="mt-auto shrink-0" />
             </div>
 
             {/* MODAL & TOAST COMPONENT */}
