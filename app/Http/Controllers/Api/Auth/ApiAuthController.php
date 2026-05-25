@@ -55,7 +55,7 @@ class ApiAuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Akun berhasil dibuat. Silakan cek email untuk kode OTP verifikasi.',
-            'data'    => ['email' => $user->email, 'simulasi_otp' => $otp] // Hapus simulasi_otp di production!
+            'data'    => ['email' => $user->email] // Hapus simulasi_otp di production!
         ], 201);
     }
 
@@ -303,5 +303,52 @@ class ApiAuthController extends Controller
             'success' => true, 
             'message' => 'Password berhasil diubah. Silakan login kembali dengan password baru Anda.'
         ], 200);
+    }
+
+    // =========================================================
+    // 🔥 MENGIRIM ULANG KODE OTP
+    // =========================================================
+    public function resendOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:mongodb.users,email'
+        ], [
+            'email.exists' => 'Email tidak ditemukan di sistem kami.'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        // 1. Cek apakah user sebenarnya sudah verifikasi
+        if ($user->email_verified_at) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun ini sudah diverifikasi. Silakan langsung login.'
+            ], 400);
+        }
+
+        // 2. Generate OTP baru (6 digit angka acak)
+        $newOtp = random_int(100000, 999999);
+
+        // 3. Simpan OTP baru ke database dan perpanjang masa aktifnya (misal 15 menit)
+        $user->update([
+            'verification_otp' => $newOtp,
+            'otp_expires_at' => now()->addMinutes(15),
+        ]);
+
+        // 4. Kirim ulang email OTP
+        try {
+            \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\VerifyEmailMobileMail($newOtp));
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Kode verifikasi yang baru telah dikirim ke email Anda.'
+            ], 200);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email verifikasi. Silakan coba lagi.'
+            ], 500);
+        }
     }
 }

@@ -25,6 +25,7 @@ Route::post('/auth/login', [ApiAuthController::class, 'login']);
 Route::post('/auth/google', [ApiAuthController::class, 'googleLogin']);       // Untuk Login via Google
 Route::post('/auth/forgot-password', [ApiAuthController::class, 'forgotPassword']);
 Route::post('/auth/reset-password', [ApiAuthController::class, 'resetPassword']);
+Route::post('/auth/resend-otp', [ApiAuthController::class, 'resendOtp']);
 
 Route::get('/home', [HomeController::class, 'index']); // Tab Home
 Route::get('/explore', [ExploreController::class, 'index']); // Tab Explore
