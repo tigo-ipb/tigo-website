@@ -149,7 +149,7 @@ export default function Export({ stats, histories, filters }) {
                 </div>
 
                 {/* Export config */}
-                <div className="bg-white border border-gray-100 rounded-[24px] p-6 shadow-sm space-y-6">
+                <div className="bg-white border border-gray-100 rounded-[24px] p-4 shadow-sm flex flex-col gap-6">
                     <div>
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-base font-bold text-neutral-950">Pilih Data yang Diekspor</h2>
@@ -192,17 +192,17 @@ export default function Export({ stats, histories, filters }) {
                             }
                         />
 
-                        <div className="flex flex-wrap gap-2 mt-4">
+                        <div className="flex flex-wrap justify-between mt-4">
                             {DATE_PRESETS.map(preset => (
                                 <button
                                     key={preset}
                                     type="button"
                                     onClick={() => handlePresetClick(preset)}
                                     className={cn(
-                                        "px-4 py-2 rounded-[12px] text-sm font-bold transition-colors",
+                                        "w-full max-w-[240px] px-4 py-2 rounded-full text-xs font-semibold transition-colors",
                                         activePreset === preset
-                                            ? "bg-[#00a2ff] text-white shadow-sm shadow-[#00a2ff]/10"
-                                            : "bg-[#f0f2f5] text-neutral-400 hover:bg-gray-200"
+                                            ? "bg-sky-500 text-white"
+                                            : "bg-neutral-100 text-neutral-400 hover:bg-neutral-200"
                                     )}
                                 >
                                     {preset}

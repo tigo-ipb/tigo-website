@@ -17,10 +17,10 @@ import {
 import StatCard from '@/Components/StatCard';
 
 const PRIMARY = '#00a2ff';
-const PRIMARY_LIGHT = '#e6f4fe';
+const PRIMARY_LIGHT = '#dff2fe';
 
 const selectTriggerClass =
-    "h-[36px] px-4 bg-[#00a2ff] border-0 rounded-[12px] text-xs font-bold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0";
+    "h-[36px] px-4 bg-sky-500 border-0 rounded-[12px] text-xs font-bold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0";
 
 const formatRupiah = (number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);

@@ -15,6 +15,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select";
+import StatCard from '@/Components/StatCard';
 
 export default function Index({ balances, methods, history, filters }) {
     
@@ -129,37 +130,13 @@ export default function Index({ balances, methods, history, filters }) {
                 ========================================== */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Saldo Aktif */}
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex items-start gap-4">
-                        <div className="w-12 h-12 bg-blue-50 text-[#0ea5e9] rounded-full flex items-center justify-center shrink-0">
-                            <IconWallet size={24} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 font-medium mb-1">Saldo</p>
-                            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">{formatRupiah(balances.active)}</h2>
-                        </div>
-                    </div>
+                    <StatCard icon={IconWallet} label="Saldo Aktif" value={balances.active} />
 
                     {/* Saldo Pending */}
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex items-start gap-4">
-                        <div className="w-12 h-12 bg-blue-50 text-[#0ea5e9] rounded-full flex items-center justify-center shrink-0">
-                            <IconClockHour4 size={24} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 font-medium mb-1">Saldo Pending</p>
-                            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">{formatRupiah(balances.pending)}</h2>
-                        </div>
-                    </div>
+                    <StatCard icon={IconClockHour4} label="Saldo Pending" value={balances.pending} />
 
                     {/* Total Penarikan */}
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex items-start gap-4">
-                        <div className="w-12 h-12 bg-blue-50 text-[#0ea5e9] rounded-full flex items-center justify-center shrink-0">
-                            <IconArrowUpRight size={24} />
-                        </div>
-                        <div>
-                            <p className="text-sm text-gray-500 font-medium mb-1">Total Penarikan</p>
-                            <h2 className="text-2xl lg:text-3xl font-bold text-gray-900">{formatRupiah(balances.total)}</h2>
-                        </div>
-                    </div>
+                    <StatCard icon={IconArrowUpRight} label="Total Penarikan" value={balances.total} />
                 </div>
 
                 {/* Tombol Besar Tarik Saldo */}
