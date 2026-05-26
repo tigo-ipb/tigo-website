@@ -1,9 +1,11 @@
 import React from 'react';
 import { IconClock, IconMapPin, IconTicket, IconDots } from '@tabler/icons-react';
+import { router } from '@inertiajs/react';
 
 // Komponen EventItem Tunggal (Merepresentasikan setiap baris event)
 export function EventItem({ event, onActionClick, actionMenu }) {
     const {
+        id,
         image,
         category = "Hiburan & Festival",
         title = "IPB Innovation Expo",
@@ -14,7 +16,10 @@ export function EventItem({ event, onActionClick, actionMenu }) {
     } = event;
 
     return (
-        <div className="w-full bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col xl:flex-row items-start xl:items-center gap-6 font-sans">
+        <div 
+            onClick={() => id && router.visit(route('organizer.events.show', id))}
+            className="w-full bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-sky-200 transition-all flex flex-col xl:flex-row items-start xl:items-center gap-6 font-sans cursor-pointer group"
+        >
             
             {/* 1. Thumbnail Event */}
             <div className="w-full xl:w-48 h-32 xl:h-24 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100">
@@ -22,7 +27,7 @@ export function EventItem({ event, onActionClick, actionMenu }) {
                     <img 
                         src={image} 
                         alt={title} 
-                        className="w-full h-full object-cover" 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                     />
                 ) : (
                     // Placeholder jika gambar tidak ada
@@ -41,7 +46,7 @@ export function EventItem({ event, onActionClick, actionMenu }) {
                 <span className="inline-block px-3 py-1 border border-sky-400 text-sky-500 text-[10px] font-semibold rounded-lg uppercase tracking-wider bg-sky-50/20">
                     {category}
                 </span>
-                <h3 className="text-xl font-bold text-neutral-950 truncate xl:whitespace-normal xl:line-clamp-2" title={title}>
+                <h3 className="text-xl font-bold text-neutral-950 truncate xl:whitespace-normal xl:line-clamp-2 group-hover:text-sky-500 transition-colors" title={title}>
                     {title}
                 </h3>
             </div>
