@@ -14,6 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select";
+import StatCard from '@/Components/StatCard';
 
 export default function Index({ stats, chartPendapatan, topEvents, categories, transactions, filters }) {
     
@@ -123,42 +124,16 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
 
                 {/* --- 1. TOP STATS CARDS --- */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-center gap-4 shadow-sm">
-                        <div className="w-14 h-14 bg-blue-50 text-[#0ea5e9] rounded-2xl flex items-center justify-center shrink-0 border border-blue-100">
-                            <IconCurrencyDollar size={28} stroke={1.5} />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Total Pendapatan</p>
-                            <h2 className="text-2xl font-bold text-gray-900">{formatRupiah(stats.total)}</h2>
-                        </div>
-                    </div>
-
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-center gap-4 shadow-sm">
-                        <div className="w-14 h-14 bg-blue-50 text-[#0ea5e9] rounded-2xl flex items-center justify-center shrink-0 border border-blue-100">
-                            <IconWallet size={28} stroke={1.5} />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Saldo</p>
-                            <h2 className="text-2xl font-bold text-gray-900">{formatRupiah(stats.saldo)}</h2>
-                        </div>
-                    </div>
-
-                    <div className="bg-white border border-gray-200 rounded-2xl p-6 flex items-center gap-4 shadow-sm">
-                        <div className="w-14 h-14 bg-blue-50 text-[#0ea5e9] rounded-2xl flex items-center justify-center shrink-0 border border-blue-100">
-                            <IconChartLine size={28} stroke={1.5} />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-500 mb-1">Rata-Rata Pendapatan /Event</p>
-                            <h2 className="text-2xl font-bold text-gray-900">{formatRupiah(stats.rata_rata)}</h2>
-                        </div>
-                    </div>
+                    <StatCard icon={IconCurrencyDollar} label="Total Pendapatan" value={stats.total} />
+                    <StatCard icon={IconWallet} label="Saldo" value={stats.saldo} />
+                    <StatCard icon={IconChartLine} label="Rata-Rata Pendapatan /Event" value={stats.rata_rata} />
                 </div>
 
                 {/* --- 2. GRAFIK PENDAPATAN & TOP EVENT --- */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
                     {/* Area Chart Pendapatan */}
-                    <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+                    <div className="lg:col-span-2 bg-white border border-neutral-300 rounded-2xl p-6 shadow-sm">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                             <h3 className="text-lg font-bold text-gray-900">Pendapatan Penjualan</h3>
                             <div className="flex items-center gap-4">

@@ -14,6 +14,7 @@ import {
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/Components/ui/select"
+import StatCard from '@/Components/StatCard'
 
 const formatRupiah = (number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -126,28 +127,15 @@ export default function Bookings({ bookings, stats, charts, pagination, filters 
                     
                     {/* ===== STAT CARDS ===== */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-4 shadow-sm">
-                            <div className="w-14 h-14 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
-                                <IconShoppingCart size={28} stroke={1.5} />
-                            </div>
-                            <div>
-                                <p className="text-xs font-medium text-gray-500 mb-1">Total Bookings</p>
-                                <h3 className="text-3xl font-black text-gray-900">
-                                    {new Intl.NumberFormat('id-ID').format(stats.total_bookings)}
-                                </h3>
-                            </div>
-                        </div>
-                        <div className="bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-4 shadow-sm">
-                            <div className="w-14 h-14 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0">
-                                <IconTicket size={28} stroke={1.5} />
-                            </div>
-                            <div>
-                                <p className="text-xs font-medium text-gray-500 mb-1">Tiket Terjual</p>
-                                <h3 className="text-3xl font-black text-gray-900">
-                                    {new Intl.NumberFormat('id-ID').format(stats.total_tickets_sold)}
-                                </h3>
-                            </div>
-                        </div>
+                        <StatCard
+                        icon={IconShoppingCart}
+                        label="Total Bookings"
+                        value={stats.total_bookings}/>
+                        <StatCard 
+                        icon={IconTicket} 
+                        label="Tiket Terjual" 
+                        value={stats.total_tickets_sold} />
+                        
                     </div>
 
                     {/* ===== BOOKINGS OVERVIEW ===== */}

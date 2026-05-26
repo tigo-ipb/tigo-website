@@ -7,7 +7,6 @@ import {
     IconTicket, IconCalendarWeek, IconMapPin,
 } from '@tabler/icons-react';
 import Search from '@/Components/Search';
-import Copyright from '@/Components/Copyright';
 import {
     Select,
     SelectContent,
@@ -15,6 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select";
+import StatCard from '@/Components/StatCard';
 
 const PRIMARY = '#00a2ff';
 const PRIMARY_LIGHT = '#e6f4fe';
@@ -139,7 +139,7 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
     };
 
     return (
-        <DashboardLayout header="Dashboard" hideFooter>
+        <DashboardLayout header="Dashboard">
             <Head title="Dashboard" />
 
             <div className="flex flex-col flex-1 min-h-0 w-full gap-6">
@@ -424,26 +424,11 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                         </table>
                     </div>
                 </div>
-
-                <Copyright whatsappNumber="628123456789" className="mt-auto shrink-0" />
             </div>
         </DashboardLayout>
     );
 }
 
-function StatCard({ icon: Icon, label, value }) {
-    return (
-        <div className="bg-white border border-gray-100 rounded-[24px] p-5 shadow-sm flex items-center gap-4">
-            <div className="w-11 h-11 bg-[#e6f4fe] text-[#00a2ff] rounded-full flex items-center justify-center shrink-0">
-                <Icon size={22} stroke={2} />
-            </div>
-            <div>
-                <p className="text-sm text-neutral-500 font-medium mb-0.5">{label}</p>
-                <p className="text-2xl font-bold text-neutral-950 leading-tight">{formatNumber(value)}</p>
-            </div>
-        </div>
-    );
-}
 
 function LegendRow({ label, value, percent, active }) {
     return (

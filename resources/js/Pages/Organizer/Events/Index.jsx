@@ -17,7 +17,6 @@ import {
 import Search from '@/Components/Search';
 import EventList from '@/Components/EventList';
 import Pagination from '@/Components/Pagination';
-import Copyright from '@/Components/Copyright';
 
 const formatRupiah = (number) => {
     if (number === 0 || !number) return 'Free';
@@ -160,7 +159,7 @@ export default function Index({ events, filters }) {
     };
 
     return (
-        <DashboardLayout header={"Events"} hideFooter>
+        <DashboardLayout header={"Events"}>
             <Head title="Events" />
 
             <div className="flex flex-col flex-1 min-h-0 w-full gap-6">
@@ -286,8 +285,6 @@ export default function Index({ events, filters }) {
                         fetchFilteredData({ page });
                     }}
                 />
-
-                <Copyright whatsappNumber="628123456789" className="mt-auto shrink-0" />
             </div>
 
             {/* MODAL & TOAST COMPONENT */}

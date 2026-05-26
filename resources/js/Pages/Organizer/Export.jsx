@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import DateRangeModal from '@/Components/DateRangeModal';
 import Search from '@/Components/Search';
 import Pagination from '@/Components/Pagination';
-import Copyright from '@/Components/Copyright';
 import {
     Select,
     SelectContent,
@@ -137,7 +136,7 @@ export default function Export({ stats, histories, filters }) {
     const historyTabs = ['Semua', 'Events', 'Bookings', 'Finance', 'Wallet'];
 
     return (
-        <DashboardLayout header="Export" hideFooter>
+        <DashboardLayout header="Export">
             <Head title="Export Data" />
 
             <div className="flex flex-col flex-1 min-h-0 w-full gap-6">
@@ -334,8 +333,6 @@ export default function Export({ stats, histories, filters }) {
                         />
                     </div>
                 </div>
-
-                <Copyright whatsappNumber="628123456789" className="mt-auto shrink-0" />
             </div>
         </DashboardLayout>
     );
