@@ -76,8 +76,9 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                         total: {
                             show: true,
                             showAlways: true,
-                            label: 'Total',
-                            color: '#737373',
+                            label: 'Total Tiket',
+                            color: '#000000',
+                            fontSize: '12px',
                             formatter: () => formatNumber(donutTotal),
                         },
                     },
@@ -228,7 +229,7 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                                 </span>
                                                 <p className="text-sm font-medium text-neutral-700 truncate">{event.name}</p>
                                             </div>
-                                            <p className="text-sm font-bold text-green-600 shrink-0">
+                                            <p className="text-sm font-bold text-green-500 shrink-0">
                                                 {topEventFilter === 'revenue'
                                                     ? formatRupiah(event.revenue)
                                                     : `${formatNumber(event.attendance)} Tiket`}
@@ -381,34 +382,34 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                         <table className="w-full text-left text-sm min-w-[900px]">
                             <thead>
                                 <tr className="border-b border-neutral-300">
-                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Order ID</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Waktu</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Nama</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Email</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Event</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap text-center">Qty</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Jumlah</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Status</th>
+                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Order ID</th>
+                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Waktu</th>
+                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Nama</th>
+                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Email</th>
+                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Event</th>
+                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap text-center">Qty</th>
+                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Jumlah</th>
+                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {recentBookings.length > 0 ? recentBookings.map((booking, i) => (
                                     <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                                         <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">
-                                            #{booking.order_id}
+                                            {booking.order_id}
                                         </td>
                                         <td className="py-4 px-2 whitespace-nowrap">
                                             <div className="font-medium text-neutral-800">{booking.date}</div>
-                                            <div className="text-xs text-neutral-400">{booking.time}</div>
+                                            <div className="text-xs text-neutral-500">{booking.time}</div>
                                         </td>
-                                        <td className="py-4 px-2 font-bold text-neutral-950 whitespace-nowrap">{booking.buyer_name}</td>
-                                        <td className="py-4 px-2 text-neutral-600 whitespace-nowrap">{booking.email}</td>
+                                        <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">{booking.buyer_name}</td>
+                                        <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">{booking.email}</td>
                                         <td className="py-4 px-2">
-                                            <p className="font-bold text-neutral-950">{booking.event_name}</p>
-                                            <p className="text-xs text-neutral-400">{booking.category}</p>
+                                            <p className="text-neutral-950">{booking.event_name}</p>
+                                            <p className="text-xs text-neutral-500">{booking.category}</p>
                                         </td>
                                         <td className="py-4 px-2 text-center font-medium text-neutral-950">{booking.qty}</td>
-                                        <td className="py-4 px-2 font-bold text-neutral-950 whitespace-nowrap">{formatRupiah(booking.amount)}</td>
+                                        <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">{formatRupiah(booking.amount)}</td>
                                         <td className="py-4 px-2">
                                             <StatusBadge status={booking.status} />
                                         </td>
@@ -450,13 +451,13 @@ function LegendRow({ label, value, percent, active }) {
 function StatusBadge({ status }) {
     if (status === 'PENDING') {
         return (
-            <span className="px-3 py-1 rounded-full text-[10px] font-bold border border-amber-200 bg-amber-50 text-amber-600">
+            <span className="px-3 py-1 rounded-[4px] text-[10px] font-bold border border-amber-500 text-amber-500">
                 Menunggu
             </span>
         );
     }
     return (
-        <span className="px-3 py-1 rounded-full text-[10px] font-bold border border-green-200 bg-green-50 text-green-600">
+        <span className="px-3 py-1 rounded-[4px] text-[10px] font-bold border border-green-500 text-green-500">
             Dibayar
         </span>
     );
