@@ -15,7 +15,7 @@ class ExploreController extends Controller
         $now = Carbon::now();
 
         // Base Query: Hanya tampilkan event aktif yang belum kedaluwarsa
-        $query = Event::where('status', '!=', 'draft')->where('date_end', '>=', $now);
+        $query = Event::where('status', '=', 'active')->where('date_end', '>=', $now);
 
         // =======================================================
         // 🔥 1. FILTER: Pencarian Nama Event

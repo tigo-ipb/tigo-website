@@ -16,7 +16,7 @@ class HomeController extends Controller
         $now = Carbon::now();
 
         // 1. Base Query (Event Aktif & Belum Berakhir)
-        $baseQuery = Event::where('status', '!=', 'draft')->where('date_end', '>=', $now);
+        $baseQuery = Event::where('status', '=', 'active')->where('date_end', '>=', $now);
 
         // FILTER KATEGORI DARI UI MOBILE (Chips)
         if ($request->filled('category')) {

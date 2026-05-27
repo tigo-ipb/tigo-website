@@ -13,7 +13,7 @@ class EventController extends Controller
     public function show($id)
     {
         // 1. Cari event utama yang aktif berdasarkan ID MongoDB
-        $event = Event::where('_id', $id)->where('status', '!=', 'draft')->first();
+        $event = Event::where('_id', $id)->where('status', '=', 'active')->first();
 
         if (!$event) {
             return response()->json([
@@ -37,7 +37,7 @@ class EventController extends Controller
         // =======================================================
         // 🔥 LOGIKA: AMBIL 7 EVENT LAINNYA SECARA RANDOM + DATA EO
         // =======================================================
-        $otherEventsRaw = Event::where('status', '!=', 'draft')
+        $otherEventsRaw = Event::where('status', '=', 'active')
             ->where('_id', '!=', $id) // Eksklusi event yang sedang dibuka saat ini
             ->where('date_end', '>=', Carbon::now()) // Pastikan event belum berakhir
             ->latest() 

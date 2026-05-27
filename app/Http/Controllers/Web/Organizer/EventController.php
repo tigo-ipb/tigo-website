@@ -56,11 +56,14 @@ class EventController extends Controller
         // Harus beneran ada tulisan 'draft'
         $query->where('status', 'draft')->where('date_end', '>=', $now);
         
+    } elseif ($tab === 'archive') {
+        $query->where('status', 'archive');
+
     } else {
         // TAB ACTIVE (Default)
         // Pokoknya SELAIN draft, tampilkan semua! 
         // (Termasuk event lama yang nggak punya kolom status / date_end)
-        $query->where('status', '!=', 'draft')->where('date_end', '>=', $now);
+        $query->where('status', '=', 'active')->where('date_end', '>=', $now);
         
         // Kita matikan dulu filter date_end di Tab Active agar data lama Anda tidak hilang
         // $query->where(function($q) use ($now) { ... }); 
@@ -228,7 +231,7 @@ class EventController extends Controller
             // Validasi galleries: array of images
             'galleries' => 'nullable|array|max:4',
             'galleries.*' => 'image|max:15360',
-            'status' => 'nullable|in:active,draft', // Status opsional (default active),
+            'status' => 'nullable|in:active,draft,archive', // Status opsional (default active),
             'format' => 'nullable|in:online,offline' // Format event opsional
         ]);
 
@@ -291,7 +294,7 @@ class EventController extends Controller
             }, $request->ticket_types),
             'banners' => $banners,
             'galleries' => $galleries, // Simpan array URL ke kolom galleries
-            'status' => $request->status ?? 'active', // Default 'active' jika tidak ada request
+            'status' => $request->status ?? 'draft', // Default 'draft' jika tidak ada request
             'format' => $request->format ?? 'offline' // Default 'offline' jika tidak ada request
         ]);
 
@@ -313,7 +316,7 @@ class EventController extends Controller
             'banner_16x9' => 'nullable|image|max:20480', 
             'banner_1x1' => 'nullable|image|max:15360',  
             'galleries' => 'nullable|array|max:4',
-            'status' => 'nullable|in:active,draft',
+            'status' => 'nullable|in:active,draft,archive',
             'format' => 'nullable|in:online,offline'
         ]);
 
@@ -404,7 +407,7 @@ class EventController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:active,draft',
+            'status' => 'required|in:active,draft,archive',
         ]);
 
         $event = Event::where('_id', $id)->where('organizer_id', auth()->id())->firstOrFail();
@@ -414,7 +417,7 @@ class EventController extends Controller
             'status' => $request->status
         ]);
 
-        $pesan = $request->status === 'active' ? 'Event diaktifkan!' : 'Event disimpan sebagai Draft!';
+        $pesan = $request->status === 'active' ? 'Event diaktifkan!' : ($request->status === 'archive' ? 'Event diarsipkan!' : 'Event disimpan sebagai Draft!');
         
         // Kita menggunakan back() agar halaman tidak reload keras, 
         // Inertia akan menangkapnya dengan mulus
