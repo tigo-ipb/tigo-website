@@ -12,19 +12,18 @@ export default function DashboardLayout({ header, children, hideFooter = false }
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
     return (
-        <div className="flex min-h-screen w-full bg-white">
+        <div className="flex h-screen w-full overflow-hidden bg-white">
             {/* DESKTOP SIDEBAR */}
             <Notification />
             <aside
-                className={`hidden lg:block transition-all duration-300 bg-white shrink-0 ${isDesktopSidebarOpen ? 'w-64' : 'w-0 overflow-hidden border-none'
+                className={`hidden lg:block h-screen shrink-0 transition-all duration-300 bg-white ${isDesktopSidebarOpen ? 'w-64' : 'w-0 overflow-hidden border-none'
                     }`}
             >
-                {/* Komponen Sidebar dipanggil dengan mode desktop */}
                 <Sidebar />
             </aside>
 
             {/* MAIN CONTENT AREA */}
-            <div className="flex flex-col flex-1 w-full overflow-hidden">
+            <div className="flex min-h-0 flex-1 flex-col w-full overflow-hidden">
                 <Navbar
                     header={header}
                     toggleDesktop={() => setIsDesktopSidebarOpen(!isDesktopSidebarOpen)}
@@ -32,7 +31,7 @@ export default function DashboardLayout({ header, children, hideFooter = false }
                     setIsMobileOpen={setIsMobileSidebarOpen}
                 />
 
-                <main className="flex flex-1 flex-col min-h-0 p-4 md:p-6">
+                <main className="flex flex-1 flex-col min-h-0 overflow-y-auto p-4 md:p-6">
                     <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col">
                         {children}
                         {!hideFooter && (

@@ -15,8 +15,8 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
     const { auth } = usePage().props;
 
     return (
-        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between border-b border-gray-100 bg-white px-4 font-sans md:px-6">
-            <div className="flex items-center gap-2">
+        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-gray-100 bg-white px-4 font-sans md:px-6">
+            <div className="flex items-center gap-2 shrink-0">
                 <div className="lg:hidden">
                     <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
                         <SheetTrigger asChild>
@@ -28,7 +28,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
                                 <IconMenuDeep size={22} stroke={2} />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="w-64 p-0">
+                        <SheetContent side="left" className="h-full w-64 p-0">
                             <Sidebar isMobile setIsMobileOpen={setIsMobileOpen} />
                         </SheetContent>
                     </Sheet>
@@ -44,11 +44,13 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
                 </Button>
             </div>
 
-            <h1 className="absolute left-1/2 -translate-x-1/2 text-lg font-bold text-neutral-950 md:text-xl">
-                {header || 'Dashboard'}
-            </h1>
+            <div className="flex-1 px-3">
+                <h1 className="text-center text-lg font-bold text-neutral-950 md:text-xl">
+                    {header || 'Dashboard'}
+                </h1>
+            </div>
 
-            <div className="flex items-center gap-3 md:gap-4">
+            <div className="flex items-center gap-3 md:gap-4 shrink-0">
                 <button
                     type="button"
                     className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e6f4fe] text-sky-500 transition-colors hover:bg-sky-100 hover:text-sky-600 md:h-10 md:w-10"
