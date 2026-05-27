@@ -4,7 +4,7 @@ import Navbar from '../Components/Navbar';
 import Footer from '@/Components/Footer';
 import Notification from '@/Components/Notification';
 
-export default function DashboardLayout({ header, children, hideFooter = false }) {
+export default function DashboardLayout({ header, children }) {
     // State untuk Desktop Sidebar (Bisa di-collapse)
     const [isDesktopSidebarOpen, setIsDesktopSidebarOpen] = useState(true);
 
@@ -34,11 +34,9 @@ export default function DashboardLayout({ header, children, hideFooter = false }
                 <main className="flex flex-1 flex-col min-h-0 overflow-y-auto p-4 md:p-6">
                     <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col">
                         {children}
-                        {!hideFooter && (
                             <div className="mt-auto shrink-0 pt-6">
                                 <Footer />
                             </div>
-                        )}
                     </div>
                 </main>
             </div>

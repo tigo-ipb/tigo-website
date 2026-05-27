@@ -15,7 +15,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
     const { auth } = usePage().props;
 
     return (
-        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-gray-100 bg-white px-4 font-sans md:px-6">
+        <header className="sticky top-0 h-20 z-50 flex shrink-0 items-center border-b border-neutral-300 bg-white p-4 font-sans md:p-6">
             <div className="flex items-center gap-2 shrink-0">
                 <div className="lg:hidden">
                     <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
@@ -23,7 +23,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                className="h-10 w-10 rounded-xl text-neutral-500 hover:bg-[#f0f2f5] hover:text-sky-500"
+                                className="h-10 w-10 rounded-xl text-black hover:bg-sky-100 hover:text-sky-500 scale-x-[-1]"
                             >
                                 <IconMenuDeep size={22} stroke={2} />
                             </Button>
@@ -38,9 +38,9 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
                     variant="ghost"
                     size="icon"
                     onClick={toggleDesktop}
-                    className="hidden h-10 w-10 rounded-xl text-neutral-500 hover:bg-[#f0f2f5] hover:text-sky-500 lg:flex"
+                    className="hidden h-11 w-11 rounded-xl text-black hover:bg-sky-100 hover:text-sky-500 lg:flex scale-x-[-1]"
                 >
-                    <IconMenuDeep size={22} stroke={2} />
+                    <IconMenuDeep className='!w-7 !h-7' size={42} stroke={2} />
                 </Button>
             </div>
 
@@ -60,7 +60,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
                 </button>
 
                 <DropdownMenu>
-                    <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 rounded-xl border-0 pl-3 outline-none transition-colors hover:bg-[#f0f2f5] focus:outline-none md:gap-3 md:pl-4 md:border-l md:border-gray-100">
+                    <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 rounded-xl border-0 pl-3 outline-none transition-colors hover:bg-[#f0f2f5] focus:outline-none md:gap-3 md:pl-4 ">
                         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-sky-500 bg-sky-50 text-sm font-bold uppercase text-sky-500 md:h-10 md:w-10">
                             {auth.user.name.charAt(0)}
                         </div>
@@ -73,7 +73,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
 
                     <DropdownMenuContent
                         align="end"
-                        className="z-[60] mt-2 w-56 rounded-2xl border border-gray-100 bg-white p-2 shadow-lg"
+                        className="z-[60] mt-2 w-56 rounded-2xl border border-neutral-300 bg-white p-2 shadow-lg"
                     >
                         <DropdownMenuItem
                             asChild
@@ -84,7 +84,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
                             </Link>
                         </DropdownMenuItem>
 
-                        <DropdownMenuSeparator className="my-2 bg-gray-100" />
+                        <DropdownMenuSeparator className="my-2 bg-neutral-300" />
 
                         <DropdownMenuItem
                             asChild

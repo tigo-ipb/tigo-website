@@ -162,9 +162,9 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
 
                         {/* Donut + Top Event */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-white border border-gray-100 rounded-[24px] p-5 shadow-sm flex flex-col">
+                            <div className="bg-white border border-neutral-300 rounded-[24px] p-4 shadow-sm flex flex-col">
                                 <div className="flex justify-between items-center mb-4">
-                                    <h4 className="text-base font-bold text-neutral-950">Penjualan Tiket</h4>
+                                    <h4 className="text-xl font-medium text-neutral-950">Penjualan Tiket</h4>
                                     <Select
                                         value={ticketPeriod}
                                         onValueChange={(val) => {
@@ -175,7 +175,7 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                         <SelectTrigger className={selectTriggerClass}>
                                             <SelectValue>{ticketPeriodLabel[ticketPeriod] || 'Minggu Ini'}</SelectValue>
                                         </SelectTrigger>
-                                        <SelectContent className="bg-white rounded-[20px] border border-gray-100 shadow-xl z-[100] p-1.5">
+                                        <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
                                             <SelectItem value="minggu_ini" className="font-medium text-sm rounded-xl cursor-pointer">Minggu Ini</SelectItem>
                                             <SelectItem value="bulan_ini" className="font-medium text-sm rounded-xl cursor-pointer">Bulan Ini</SelectItem>
                                             <SelectItem value="semua" className="font-medium text-sm rounded-xl cursor-pointer">Semua Waktu</SelectItem>
@@ -200,9 +200,9 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                 </div>
                             </div>
 
-                            <div className="bg-white border border-gray-100 rounded-[24px] p-5 shadow-sm">
+                            <div className="bg-white border border-neutral-300 rounded-[24px] p-4 shadow-sm">
                                 <div className="flex justify-between items-center mb-4">
-                                    <h4 className="text-base font-bold text-neutral-950">Top Event</h4>
+                                    <h4 className="text-xl font-medium text-neutral-950">Top Event</h4>
                                     <Select
                                         value={topEventFilter}
                                         onValueChange={(val) => {
@@ -213,7 +213,7 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                         <SelectTrigger className={selectTriggerClass}>
                                             <SelectValue placeholder="Metrik" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-white rounded-[20px] border border-gray-100 shadow-xl z-[100] p-1.5">
+                                        <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
                                             <SelectItem value="revenue" className="font-medium text-sm rounded-xl cursor-pointer">Pendapatan</SelectItem>
                                             <SelectItem value="attendance" className="font-medium text-sm rounded-xl cursor-pointer">Attendance</SelectItem>
                                         </SelectContent>
@@ -223,7 +223,7 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                     {topEvents.length > 0 ? topEvents.map((event, i) => (
                                         <div key={i} className="flex justify-between items-center gap-2">
                                             <div className="flex items-center gap-2.5 min-w-0">
-                                                <span className="w-6 h-6 rounded-full bg-[#e6f4fe] text-[#00a2ff] text-xs font-bold flex items-center justify-center shrink-0">
+                                                <span className="w-6 h-6 rounded-[8px] bg-sky-100 text-sky-500 text-xs font-bold flex items-center justify-center shrink-0">
                                                     {i + 1}
                                                 </span>
                                                 <p className="text-sm font-medium text-neutral-700 truncate">{event.name}</p>
@@ -242,13 +242,13 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                         </div>
 
                         {/* Area chart */}
-                        <div className="bg-white border border-gray-100 rounded-[24px] p-5 shadow-sm">
+                        <div className="bg-white border border-neutral-300 rounded-[24px] p-4 shadow-sm">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-                                <h4 className="text-base font-bold text-neutral-950">Pendapatan Penjualan</h4>
+                                <h4 className="text-xl font-medium text-neutral-950">Pendapatan Penjualan</h4>
                                 <div className="flex items-center gap-4 flex-wrap">
                                     <div className="flex items-center gap-3 text-xs font-medium text-neutral-500">
                                         <span className="flex items-center gap-1.5">
-                                            <span className="w-3 h-0.5 rounded-full bg-[#00a2ff]" /> Aktual
+                                            <span className="w-3 h-0.5 rounded-full bg-sky-500" /> Aktual
                                         </span>
                                         <span className="flex items-center gap-1.5">
                                             <span className="w-3 h-0.5 rounded-full border-t-2 border-dashed border-neutral-300" /> Target
@@ -264,7 +264,7 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                         <SelectTrigger className={selectTriggerClass}>
                                             <SelectValue>{chartPeriodLabel[chartFilter] || 'Tahun ini'}</SelectValue>
                                         </SelectTrigger>
-                                        <SelectContent className="bg-white rounded-[20px] border border-gray-100 shadow-xl z-[100] p-1.5">
+                                        <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
                                             <SelectItem value="tahun_ini" className="font-medium text-sm rounded-xl cursor-pointer">Tahun ini</SelectItem>
                                             <SelectItem value="3_bulan" className="font-medium text-sm rounded-xl cursor-pointer">3 Bulan Terakhir</SelectItem>
                                             <SelectItem value="6_bulan" className="font-medium text-sm rounded-xl cursor-pointer">6 Bulan Terakhir</SelectItem>
@@ -280,39 +280,39 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
 
                     {/* Kolom kanan */}
                     <div className="space-y-6">
-                        <div className="bg-white border border-gray-100 rounded-[24px] p-5 shadow-sm">
-                            <h4 className="text-base font-bold text-neutral-950 mb-4">Event Saat Ini</h4>
+                        <div className="bg-white border border-neutral-300 rounded-[24px] p-4 shadow-sm">
+                            <h4 className="text-xl font-medium text-neutral-950 mb-4">Event Saat Ini</h4>
                             {currentEvent ? (
-                                <div className="rounded-[16px] border border-gray-100 overflow-hidden">
+                                <div className="rounded-[16px] bg-sky-100 border border-neutral-300 overflow-hidden">
                                     <div className="relative h-36 bg-neutral-100">
                                         <img
                                             src={currentEvent.image}
                                             alt={currentEvent.name}
                                             className="w-full h-full object-cover"
                                         />
-                                        <span className="absolute top-3 left-3 bg-[#e6f4fe] text-[#00a2ff] text-[10px] font-bold px-3 py-1 rounded-full">
+                                        <span className="absolute top-3 left-3 bg-sky-100 text-sky-500 text-[10px] font-bold px-3 py-1 rounded-full">
                                             {currentEvent.category}
                                         </span>
                                     </div>
                                     <div className="p-4">
-                                        <h5 className="font-bold text-neutral-950 text-sm mb-1 truncate">{currentEvent.name}</h5>
-                                        <p className="text-xs text-neutral-500 mb-3 flex items-center gap-1 truncate">
-                                            <IconMapPin size={14} className="shrink-0" />
+                                        <h5 className="font-semibold text-neutral-950 text-xl mb-1 truncate">{currentEvent.name}</h5>
+                                        <p className="text-xs text-black mb-3 flex items-center gap-1 truncate">
+                                            {/* <IconMapPin size={14} className="shrink-0" /> */}
                                             {currentEvent.venue}{currentEvent.city ? `, ${currentEvent.city}` : ''}
                                         </p>
                                         <div className="flex items-center justify-between gap-2">
                                             <div className="flex items-center gap-2 min-w-0">
-                                                <div className="w-9 h-9 bg-[#e6f4fe] text-[#00a2ff] rounded-[10px] flex items-center justify-center shrink-0">
+                                                <div className="w-9 h-9 bg-white text-sky-500 rounded-[10px] flex items-center justify-center shrink-0">
                                                     <IconCalendarEvent size={18} stroke={2} />
                                                 </div>
-                                                <div className="text-[10px] text-neutral-600 min-w-0">
+                                                <div className="text-xs text-neutral-600 min-w-0">
                                                     <p className="font-bold text-neutral-900 truncate">{currentEvent.date_format}</p>
                                                     <p className="truncate">{currentEvent.time_format}</p>
                                                 </div>
                                             </div>
                                             <Link
                                                 href={route('organizer.events.show', currentEvent.id)}
-                                                className="bg-[#00a2ff] hover:bg-sky-600 text-white text-xs font-bold px-4 py-2 rounded-[10px] transition-colors shrink-0"
+                                                className="bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold px-4 py-2 rounded-[10px] transition-colors shrink-0"
                                             >
                                                 Lihat Detail
                                             </Link>
@@ -326,12 +326,12 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                             )}
                         </div>
 
-                        <div className="bg-white border border-gray-100 rounded-[24px] p-5 shadow-sm">
-                            <h4 className="text-base font-bold text-neutral-950 mb-4">Aktivitas Terakhir</h4>
+                        <div className="bg-white border border-neutral-300 rounded-[24px] p-4 shadow-sm">
+                            <h4 className="text-xl font-medium text-neutral-950 mb-4">Aktivitas Terakhir</h4>
                             <div className="space-y-4">
                                 {recentActivities?.length > 0 ? recentActivities.map((activity, index) => (
                                     <div key={index} className="flex items-start gap-3">
-                                        <div className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 bg-[#e6f4fe] text-[#00a2ff]">
+                                        <div className="w-9 h-9 rounded-[10px] flex items-center justify-center shrink-0 bg-[#e6f4fe] text-sky-500">
                                             {activity.type === 'ticket'
                                                 ? <IconTicket size={18} stroke={2} />
                                                 : <IconCalendarWeek size={18} stroke={2} />}
@@ -344,12 +344,12 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                                             {activity.title.replace(' membeli tiket', '')}
                                                         </span>
                                                         {' membeli tiket '}
-                                                        <span className="font-bold text-[#00a2ff]">{activity.target}</span>
+                                                        <span className="font-bold text-sky-500">{activity.target}</span>
                                                     </>
                                                 ) : (
                                                     <>
                                                         {activity.title}{' '}
-                                                        <span className="font-bold text-[#00a2ff]">{activity.target}</span>
+                                                        <span className="font-bold text-sky-500">{activity.target}</span>
                                                     </>
                                                 )}
                                             </p>
@@ -365,9 +365,9 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                 </div>
 
                 {/* Booking terkini */}
-                <div className="bg-white border border-gray-100 rounded-[24px] p-6 shadow-sm">
+                <div className="bg-white border border-neutral-300 rounded-[24px] p-4 shadow-sm">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                        <h4 className="text-base font-bold text-neutral-950">Booking Terkini</h4>
+                        <h4 className="text-xl font-medium text-neutral-950">Booking Terkini</h4>
                         <Search
                             value={searchTerm}
                             onChange={setSearchTerm}
@@ -380,15 +380,15 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm min-w-[900px]">
                             <thead>
-                                <tr className="border-b border-gray-100">
-                                    <th className="py-3 px-2 text-xs font-bold text-[#00a2ff] whitespace-nowrap">Order ID</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-[#00a2ff] whitespace-nowrap">Waktu</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-[#00a2ff] whitespace-nowrap">Nama</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-[#00a2ff] whitespace-nowrap">Email</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-[#00a2ff] whitespace-nowrap">Event</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-[#00a2ff] whitespace-nowrap text-center">Qty</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-[#00a2ff] whitespace-nowrap">Jumlah</th>
-                                    <th className="py-3 px-2 text-xs font-bold text-[#00a2ff] whitespace-nowrap">Status</th>
+                                <tr className="border-b border-neutral-300">
+                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Order ID</th>
+                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Waktu</th>
+                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Nama</th>
+                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Email</th>
+                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Event</th>
+                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap text-center">Qty</th>
+                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Jumlah</th>
+                                    <th className="py-3 px-2 text-xs font-bold text-sky-500 whitespace-nowrap">Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -432,14 +432,17 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
 
 function LegendRow({ label, value, percent, active }) {
     return (
-        <div className={`flex items-center justify-between p-3 rounded-[12px] ${active ? 'bg-[#e6f4fe]/60' : 'bg-neutral-50'}`}>
-            <div>
-                <p className="text-xs text-neutral-500">{label}</p>
-                <p className="text-base font-bold text-neutral-950">{formatNumber(value)}</p>
+        <div className={`flex items-center justify-between p-3`}>
+            <div className='flex gap-2'>
+            <div className={`w-2 h-12 rounded-full ${active? "bg-sky-500" : "bg-sky-100"}`}/>
+            <div className="flex flex-col h-full">
+                <p className="text-xs text-black">{label}</p>
+                <p className="text-xl font-semibold text-black">{formatNumber(value)}</p>
             </div>
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-lg ${active ? 'bg-[#00a2ff] text-white' : 'bg-white text-[#00a2ff] border border-[#e6f4fe]'}`}>
+            </div>
+            <div className={`text-lg font-semibold p-2.5 rounded-[8px] bg-sky-100 text-sky-500`}>
                 {percent}%
-            </span>
+            </div>
         </div>
     );
 }
