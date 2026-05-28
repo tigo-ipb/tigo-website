@@ -20,7 +20,7 @@ const PRIMARY = '#00a2ff';
 const PRIMARY_LIGHT = '#dff2fe';
 
 const selectTriggerClass =
-    "h-[36px] px-4 bg-sky-500 border-0 rounded-[12px] text-xs font-bold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0";
+    "h-[36px] px-4 bg-sky-500 border-0 rounded-[12px] text-xs font-semibold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0";
 
 const formatRupiah = (number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
@@ -226,12 +226,12 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                     {topEvents.length > 0 ? topEvents.map((event, i) => (
                                         <div key={i} className="flex justify-between items-center gap-2">
                                             <div className="flex items-center gap-2.5 min-w-0">
-                                                <span className="w-6 h-6 rounded-[8px] bg-sky-100 text-sky-500 text-xs font-bold flex items-center justify-center shrink-0">
+                                                <span className="w-6 h-6 rounded-[8px] bg-sky-100 text-sky-500 text-xs font-semibold flex items-center justify-center shrink-0">
                                                     {i + 1}
                                                 </span>
                                                 <p className="text-sm font-medium text-neutral-700 truncate">{event.name}</p>
                                             </div>
-                                            <p className="text-sm font-bold text-green-500 shrink-0">
+                                            <p className="text-sm font-semibold text-green-500 shrink-0">
                                                 {topEventFilter === 'revenue'
                                                     ? formatRupiah(event.revenue)
                                                     : `${formatNumber(event.attendance)} Tiket`}
@@ -293,7 +293,7 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                             alt={currentEvent.name}
                                             className="w-full h-full object-cover"
                                         />
-                                        <span className="absolute top-3 left-3 bg-sky-100 text-sky-500 text-[10px] font-bold px-3 py-1 rounded-full">
+                                        <span className="absolute top-3 left-3 bg-sky-100 text-sky-500 text-[10px] font-semibold px-3 py-1 rounded-full">
                                             {currentEvent.category}
                                         </span>
                                     </div>
@@ -309,13 +309,13 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                                     <IconCalendarEvent size={18} stroke={2} />
                                                 </div>
                                                 <div className="text-xs text-neutral-600 min-w-0">
-                                                    <p className="font-bold text-neutral-900 truncate">{currentEvent.date_format}</p>
+                                                    <p className="font-semibold text-neutral-900 truncate">{currentEvent.date_format}</p>
                                                     <p className="truncate">{currentEvent.time_format}</p>
                                                 </div>
                                             </div>
                                             <Link
                                                 href={route('organizer.events.show', currentEvent.id)}
-                                                className="bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold px-4 py-2 rounded-[10px] transition-colors shrink-0"
+                                                className="bg-sky-500 hover:bg-sky-600 text-white text-xs font-semibold px-4 py-2 rounded-[10px] transition-colors shrink-0"
                                             >
                                                 Lihat Detail
                                             </Link>
@@ -343,16 +343,16 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                             <p className="text-sm text-neutral-800 leading-snug">
                                                 {activity.type === 'ticket' ? (
                                                     <>
-                                                        <span className="font-bold text-neutral-950">
+                                                        <span className="font-semibold text-neutral-950">
                                                             {activity.title.replace(' membeli tiket', '')}
                                                         </span>
                                                         {' membeli tiket '}
-                                                        <span className="font-bold text-sky-500">{activity.target}</span>
+                                                        <span className="font-semibold text-sky-500">{activity.target}</span>
                                                     </>
                                                 ) : (
                                                     <>
                                                         {activity.title}{' '}
-                                                        <span className="font-bold text-sky-500">{activity.target}</span>
+                                                        <span className="font-semibold text-sky-500">{activity.target}</span>
                                                     </>
                                                 )}
                                             </p>
@@ -453,13 +453,13 @@ function LegendRow({ label, value, percent, active }) {
 function StatusBadge({ status }) {
     if (status === 'PENDING') {
         return (
-            <span className="px-3 py-1 rounded-[4px] text-[10px] font-bold border border-amber-500 text-amber-500">
+            <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-amber-500 text-amber-500">
                 Menunggu
             </span>
         );
     }
     return (
-        <span className="px-3 py-1 rounded-[4px] text-[10px] font-bold border border-green-500 text-green-500">
+        <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-green-500 text-green-500">
             Dibayar
         </span>
     );

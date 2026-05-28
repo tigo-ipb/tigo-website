@@ -234,7 +234,7 @@ class DashboardController extends Controller
             return [
                 'type' => 'event',
                 'title' => 'Menambahkan Event',
-                'target' => '"' . $event->name . '"',
+                'target' => $event->name,
                 'time_ago' => $event->created_at->translatedFormat('H.i, d F Y'),
                 'timestamp' => $event->created_at
             ];
