@@ -18,7 +18,7 @@ export default function Search({
     return (
         <form 
             onSubmit={handleSubmit}
-            className={`relative w-full bg-white border border-neutral-200 rounded-full hover:border-neutral-300 transition-all font-sans ${className}`}
+            className={`relative w-full bg-white border border-neutral-200 rounded-full hover:border-neutral-300 transition-all ${className}`}
         >
             {/* Input Pencarian */}
             <input
@@ -26,7 +26,7 @@ export default function Search({
                 value={value}
                 onChange={(e) => onChange && onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-transparent pl-6 pr-12 py-3 text-sm focus:outline-none text-neutral-800 placeholder-neutral-400 font-medium rounded-full"
+                className="w-full bg-transparent pl-6 pr-12 py-2 text-[10px] focus:outline-none text-neutral-800 placeholder-neutral-400 font-medium rounded-full"
             />
 
             {/* Tombol Kaca Pembesar di Sisi Kanan */}

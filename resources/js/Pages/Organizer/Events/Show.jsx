@@ -18,7 +18,7 @@ const formatRupiah = (number) => {
 
 export default function Show({ event }) {
     const customHeader = (
-        <div className="flex items-center text-lg font-bold">
+        <div className="flex items-center justify-center text-lg font-bold">
             <Link href={route('organizer.events.index')} className="text-gray-900 hover:text-blue-500 transition-colors">
                 Events
             </Link>

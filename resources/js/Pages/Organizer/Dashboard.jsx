@@ -58,7 +58,9 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
     const soldPercentage = donutTotal > 0 ? Math.round((donutSold / donutTotal) * 100) : 0;
     const availablePercentage = donutTotal > 0 ? Math.round((donutAvailable / donutTotal) * 100) : 0;
 
-    const chartTargetData = (stats.chart_data ?? []).map((v) => Math.round(v * 0.85));
+    
+
+    const chartTargetData = stats.chart_target ?? [];
 
     const donutOptions = {
         chart: { type: 'donut', fontFamily: 'inherit' },
@@ -109,9 +111,7 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
         yaxis: {
             labels: {
                 formatter: (value) => {
-                    if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(0)}jt`;
-                    if (value >= 1_000) return `${(value / 1_000).toFixed(0)}k`;
-                    return value;
+                   return formatNumber(value);
                 },
                 style: { colors: '#a3a3a3', fontSize: '11px' },
             },
@@ -138,6 +138,8 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
         tahun_kemarin: 'Tahun Kemarin',
         '5_tahun': '5 Tahun',
     };
+
+    console.log(stats);
 
     return (
         <DashboardLayout header="Dashboard">

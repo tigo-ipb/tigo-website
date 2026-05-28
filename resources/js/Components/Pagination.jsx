@@ -58,7 +58,7 @@ export default function Pagination({ pagination, onPageChange }) {
     const pages = getPages(current_page, last_page);
 
     return (
-        <div className="w-full bg-white border border-gray-100 rounded-[24px] px-6 py-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
+        <div className="w-full bg-white border border-neutral-300 rounded-[24px] px-6 py-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
             {/* Sisi Kiri: Info Jumlah Data */}
             <div className="text-sm text-neutral-500 font-medium">
                 Menampilkan <span className="font-semibold text-neutral-900">{showingCount}</span> dari <span className="font-semibold text-neutral-900">{new Intl.NumberFormat('id-ID').format(total)}</span>

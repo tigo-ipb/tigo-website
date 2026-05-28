@@ -136,7 +136,7 @@
                                 {(activeTab === 'active' || activeTab === 'draft' || activeTab === 'archive') && (
                                     <button
                                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleStatus(event.id, originalEvent.status || 'active'); }}
-                                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-orange-500 w-full text-left cursor-pointer"
+                                        className={`flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 ${originalEvent.status === 'active' ? 'hover:text-orange-500' : 'hover:text-green-500'} w-full text-left cursor-pointer`}
                                     >
                                         <IconPower size={18} stroke={2} /> {originalEvent.status === 'active' ? 'Archive Event' : 'Aktifkan Event' }
                                     </button>
@@ -157,7 +157,7 @@
                     <div className="flex flex-col xl:flex-row justify-between items-center gap-4 w-full">
 
                         {/* Tabs (Active, Draft, Riwayat, Archive) */}
-                        <div className="flex gap-2 w-full xl:w-auto overflow-x-auto scrollbar-hide">
+                        <div className="flex flex-wrap lg:flex-nowrap gap-2 w-full xl:w-auto">
                             {[
                                 { id: 'active', label: 'Active', icon: IconSquareRoundedCheck },
                                 { id: 'draft', label: 'Draft', icon: IconFileText },
@@ -167,7 +167,7 @@
                                 <button
                                     key={tab.id}
                                     onClick={() => handleTabChange(tab.id)}
-                                    className={`flex items-center justify-center gap-2 px-5 py-2.5 rounded-[12px] text-sm font-bold transition-all shrink-0 capitalize ${activeTab === tab.id ? 'bg-[#00a2ff] text-white shadow-sm shadow-[#00a2ff]/10' : 'bg-[#f0f2f5] text-neutral-400 hover:bg-gray-200 cursor-pointer'}`}
+                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-[16px] text-xs font-semibold transition-all shrink-0 capitalize ${activeTab === tab.id ? 'bg-[#00a2ff] text-white' : 'bg-neutral-100 text-neutral-400 hover:bg-gray-200 cursor-pointer'}`}
                                 >
                                     <tab.icon size={18} stroke={activeTab === tab.id ? 2.5 : 2} />
                                     {tab.label}
@@ -176,19 +176,19 @@
                         </div>
 
                         {/* Filters & Search */}
-                        <div className="flex w-full xl:w-auto gap-3 items-center">
+                        <div className="flex w-full gap-3 items-center">
                             <Search
                                 value={search}
                                 onChange={setSearch}
                                 onSubmit={(val) => fetchFilteredData({ search: val })}
                                 placeholder="Cari nama, event, atau yang lain"
-                                className="max-w-[300px]"
+                                className="max-w-[260px]"
                             />
 
                             {/* Filter Button */}
-                            <button className="w-[42px] h-[42px] bg-[#f0f2f5] text-neutral-400 rounded-[12px] hover:bg-gray-200 flex items-center justify-center shrink-0 transition-colors cursor-pointer border-0" title="Filter Pengaturan">
+                            {/* <button className="w-[42px] h-[42px] bg-neutral-100 text-neutral-400 rounded-[12px] hover:bg-gray-200 flex items-center justify-center shrink-0 transition-colors cursor-pointer border-0" title="Filter Pengaturan">
                                 <IconAdjustmentsHorizontal size={20} />
-                            </button>
+                            </button> */}
 
                             {/* Dropdown Kategori Menggunakan Shadcn */}
                             <div className="hidden md:block">
@@ -199,10 +199,10 @@
                                         fetchFilteredData({ category: val });
                                     }}
                                 >
-                                    <SelectTrigger className="w-[180px] h-[42px] px-5 py-2.5 bg-[#f0f2f5] border-0 rounded-[12px] text-sm font-bold text-neutral-500 hover:bg-gray-200 transition-colors focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=open]:ring-0 shadow-none shrink-0">
+                                    <SelectTrigger className="w-[180px] h-[42px] px-5 py-2.5 bg-neutral-100 border-0 rounded-[16px] text-xs font-semibold text-neutral-400 hover:bg-gray-200 transition-colors focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=open]:ring-0 shadow-none shrink-0">
                                         <SelectValue placeholder="Kategori" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-white rounded-[20px] border border-gray-100 shadow-xl z-[100] p-1.5 min-w-[180px]">
+                                    <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5 min-w-[180px]">
                                         {categoryOptions.map(cat => (
                                             <SelectItem
                                                 key={cat}
@@ -225,13 +225,13 @@
                                         fetchFilteredData({ time: val });
                                     }}
                                 >
-                                    <SelectTrigger className="w-[150px] h-[42px] px-5 py-2.5 bg-[#f0f2f5] border-0 rounded-[12px] text-sm font-bold text-neutral-500 hover:bg-gray-200 transition-colors focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=open]:ring-0 shadow-none shrink-0">
+                                    <SelectTrigger className="w-[150px] h-[42px] px-3 py-2 bg-neutral-100 border-0 rounded-[16px] text-xs font-semibold text-neutral-400 hover:bg-gray-200 transition-colors focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=open]:ring-0 shadow-none shrink-0">
                                         <div className="flex items-center gap-2">
                                             {timeFilter === 'Bulan Ini' && <IconCalendarEvent size={16} className="text-[#00a2ff]" />}
                                             <SelectValue placeholder="Waktu" />
                                         </div>
                                     </SelectTrigger>
-                                    <SelectContent className="bg-white rounded-[20px] border border-gray-100 shadow-xl z-[100] p-1.5 min-w-[150px]">
+                                    <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5 min-w-[150px]">
                                         {timeOptions.map(time => (
                                             <SelectItem
                                                 key={time}
@@ -261,7 +261,7 @@
                                 </div>
                                 <h3 className="text-lg font-bold text-gray-900 mb-1">Data Tidak Ditemukan</h3>
                                 <p className="text-sm text-gray-500 mb-6">Coba ubah filter pencarian atau buat event baru.</p>
-                                <Link href={route('organizer.events.create')} className="bg-sky-500 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-sm hover:bg-sky-600 transition">
+                                <Link href={route('organizer.events.create')} className="bg-sky-500 text-neutral-100 px-6 py-2.5 rounded-full text-sm font-bold shadow-sm hover:bg-sky-600 transition">
                                     Buat Event Baru
                                 </Link>
                             </div>

@@ -7,22 +7,22 @@ export function EventItem({ event, onActionClick, actionMenu }) {
     const {
         id,
         image,
-        category = "Hiburan & Festival",
-        title = "IPB Innovation Expo",
-        dateTime = "Sab, 13 Januari • 10.00 - 21.00",
-        location = "Grand Ballroom Sudirman",
-        soldPercentage = 65,
-        price = "Free"
+        category,
+        title ,
+        dateTime ,
+        location,
+        soldPercentage,
+        price
     } = event;
 
     return (
         <div 
             onClick={() => id && router.visit(route('organizer.events.show', id))}
-            className="w-full bg-white border border-gray-100 rounded-3xl p-5 shadow-sm hover:shadow-md hover:border-sky-200 transition-all flex flex-col xl:flex-row items-start xl:items-center gap-6 font-sans cursor-pointer group"
+            className="w-full bg-white border border-neutral-300 rounded-3xl p-4 hover:border-sky-200 transition-all flex flex-col xl:flex-row items-start xl:items-center gap-6 font-sans cursor-pointer group"
         >
             
             {/* 1. Thumbnail Event */}
-            <div className="w-full xl:w-48 h-32 xl:h-24 rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100">
+            <div className="w-full xl:w-40 h-32 xl:h-[90px] rounded-2xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100">
                 {image ? (
                     <img 
                         src={image} 
@@ -43,24 +43,24 @@ export function EventItem({ event, onActionClick, actionMenu }) {
 
             {/* 2. Tag & Judul Event */}
             <div className="flex-1 min-w-0 space-y-2">
-                <span className="inline-block px-3 py-1 border border-sky-400 text-sky-500 text-[10px] font-semibold rounded-lg uppercase tracking-wider bg-sky-50/20">
+                <span className="inline-block px-3 py-1 border border-sky-400 text-sky-500 text-[10px] rounded-lg uppercase tracking-wider bg-sky-50/20">
                     {category}
                 </span>
-                <h3 className="text-xl font-bold text-neutral-950 truncate xl:whitespace-normal xl:line-clamp-2 group-hover:text-sky-500 transition-colors" title={title}>
+                <h3 className="text-xl font-medium text-neutral-950 truncate xl:whitespace-normal xl:line-clamp-2 group-hover:text-sky-500 transition-colors" title={title}>
                     {title}
                 </h3>
             </div>
 
             {/* 3. Waktu & Lokasi */}
-            <div className="flex flex-col gap-2 shrink-0 text-sm text-neutral-600 xl:w-64">
+            <div className="flex flex-col gap-2 shrink-0 text-xs text-black xl:w-64">
                 <div className="flex items-center gap-2.5">
-                    <div className="w-6 h-6 rounded-full bg-sky-50 flex items-center justify-center text-sky-500 shrink-0">
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-sky-500 shrink-0">
                         <IconClock size={15} stroke={2.5} />
                     </div>
                     <span className="font-medium truncate">{dateTime}</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                    <div className="w-6 h-6 rounded-full bg-sky-50 flex items-center justify-center text-sky-500 shrink-0">
+                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-sky-500 shrink-0">
                         <IconMapPin size={15} stroke={2.5} />
                     </div>
                     <span className="font-medium truncate">{location}</span>
@@ -78,15 +78,15 @@ export function EventItem({ event, onActionClick, actionMenu }) {
                 </div>
                 {/* Teks Deskripsi */}
                 <div className="flex items-baseline gap-1.5">
-                    <span className="text-lg font-black text-neutral-950">{soldPercentage}%</span>
-                    <span className="text-xs text-neutral-400 font-medium">Tiket terjual</span>
+                    <span className="text-xl font-semibold text-neutral-950">{soldPercentage}%</span>
+                    <span className="text-xs text-neutral-950 font-medium">Tiket terjual</span>
                 </div>
             </div>
 
             {/* 5. Badge Harga */}
-            <div className="flex items-center gap-3 bg-[#e6f4fe] px-5 py-3 rounded-2xl shrink-0 min-w-[140px] shadow-sm">
-                <div className="w-8 h-8 rounded-xl bg-white/80 backdrop-blur-sm flex items-center justify-center text-sky-500 shrink-0">
-                    <IconTicket size={18} stroke={2} />
+            <div className="flex items-center gap-2.5 bg-sky-100 p-2.5 rounded-2xl shrink-0 min-w-[140px] shadow-sm">
+                <div className="w-6 h-6 rounded-xl backdrop-blur-sm flex items-center justify-center text-sky-500 shrink-0">
+                    <IconTicket size={24} stroke={2} />
                 </div>
                 <div className="flex flex-col">
                     <span className="text-[10px] text-sky-500/80 font-bold uppercase tracking-wider">Mulai dari</span>
@@ -116,7 +116,7 @@ export function EventItem({ event, onActionClick, actionMenu }) {
 export default function EventList({ events = [], onEventActionClick, actionMenu }) {
     if (!events || events.length === 0) {
         return (
-            <div className="w-full bg-white border border-gray-100 rounded-3xl p-12 text-center text-neutral-400 font-medium">
+            <div className="w-full bg-white border border-neutral-300 rounded-3xl p-12 text-center text-neutral-400 font-medium">
                 Belum ada event yang tersedia saat ini.
             </div>
         );
