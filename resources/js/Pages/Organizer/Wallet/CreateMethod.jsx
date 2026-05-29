@@ -1,7 +1,6 @@
 import React from 'react';
 import DashboardLayout from '@/Layouts/DashboardLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { IconBuildingBank, IconDeviceMobile, IconUserCircle, IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 
@@ -31,12 +30,12 @@ export default function CreateMethod() {
     const labels = getLabels();
 
     const customHeader = (
-        <div className="flex items-center text-lg font-bold">
-            <Link href={route('organizer.wallet.index')} className="text-gray-900 hover:text-blue-500 transition-colors">
+        <div className="flex items-center justify-center text-lg font-medium">
+            <Link href={route('organizer.wallet.index')} className="text-neutral-950 hover:text-sky-500 transition-colors">
                 Wallet
             </Link>
-            <IconChevronRight size={20} className="mx-2 text-gray-400" />
-            <span className="text-[#0ea5e9]">Tambah Metode Penarikan</span>
+            <IconChevronRight size={20} className="mx-2 text-neutral-500" />
+            <span className="text-sky-500">Tambah Metode Penarikan</span>
         </div>
     );
 
@@ -44,53 +43,55 @@ export default function CreateMethod() {
         <DashboardLayout header={customHeader}>
             <Head title="Tambah Metode Penarikan" />
 
-            <div className="max-w-4xl mx-auto space-y-6 pt-4">
+            <div className="flex flex-col h-full w-full gap-6">
                 
-                {/* Main Content Card (Breadcrumb di sini sudah dihapus) */}
-                <div className="bg-white p-8 rounded-[24px] border border-gray-200 shadow-sm">
-                    <h2 className="text-xl font-bold text-gray-900 mb-8">Tambah Metode Penarikan</h2>
+                <div className="bg-white p-4 rounded-[24px] border border-neutral-300 flex flex-col gap-4">
+                    <h2 className="text-xl font-medium text-neutral-950">Tambah Metode Penarikan</h2>
 
                     {/* CUSTOM TABS */}
-                    <div className="flex gap-4 border border-gray-100 p-1.5 rounded-full mb-8 bg-white shadow-sm w-full">
+                    <div className="flex gap-4 border border-neutral-300 p-1.5 rounded-full bg-white w-full">
                         <button 
+                            type="button"
                             onClick={() => setData({ ...data, type: 'bank', bank_code: 'Mandiri' })}
-                            className={`flex-1 flex justify-center items-center py-3 rounded-full text-sm font-bold transition-all ${
-                                data.type === 'bank' ? 'bg-[#0ea5e9] text-white' : 'text-gray-400 hover:bg-gray-50'
+                            className={`flex-1 flex justify-center items-center py-3 rounded-full text-sm font-medium transition-all ${
+                                data.type === 'bank' ? 'bg-sky-500 text-white' : 'bg-neutral-50 text-neutral-500 hover:bg-neutral-100'
                             }`}
                         >
                             <IconBuildingBank size={18} className="mr-2" stroke={2} /> Transfer bank
                         </button>
                         
                         <button 
+                            type="button"
                             onClick={() => setData({ ...data, type: 'e-wallet', bank_code: 'DANA' })}
-                            className={`flex-1 flex justify-center items-center py-3 rounded-full text-sm font-bold transition-all ${
-                                data.type === 'e-wallet' ? 'bg-[#0ea5e9] text-white' : 'text-gray-400 hover:bg-gray-50'
+                            className={`flex-1 flex justify-center items-center py-3 rounded-full text-sm font-medium transition-all ${
+                                data.type === 'e-wallet' ? 'bg-sky-500 text-white' : 'bg-neutral-50 text-neutral-500 hover:bg-neutral-100'
                             }`}
                         >
                             <IconDeviceMobile size={18} className="mr-2" stroke={2} /> E-Wallet
                         </button>
                         
                         <button 
+                            type="button"
                             onClick={() => setData({ ...data, type: 'virtual_account', bank_code: 'BCA VA' })}
-                            className={`flex-1 flex justify-center items-center py-3 rounded-full text-sm font-bold transition-all ${
-                                data.type === 'virtual_account' ? 'bg-[#0ea5e9] text-white' : 'text-gray-400 hover:bg-gray-50'
+                            className={`flex-1 flex justify-center items-center py-3 rounded-full text-sm font-medium transition-all ${
+                                data.type === 'virtual_account' ? 'bg-sky-500 text-white' : 'bg-neutral-50 text-neutral-500 hover:bg-neutral-100'
                             }`}
                         >
                             <IconUserCircle size={18} className="mr-2" stroke={2} /> Virtual Account
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit}>
-                        <div className="border border-gray-200 rounded-[24px] p-6 space-y-6 mb-8">
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                        <div className="border border-neutral-300 rounded-[24px] p-4 flex flex-col gap-4">
                             
                             {/* Pilih Provider */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{labels.provider}</label>
+                                <label className="block text-sm font-medium text-neutral-950 mb-2">{labels.provider}</label>
                                 <div className="relative">
                                     <select 
                                         value={data.bank_code} 
                                         onChange={e => setData('bank_code', e.target.value)}
-                                        className="w-full appearance-none p-[10px] pl-4 pr-10 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0ea5e9] focus:border-transparent bg-white text-sm text-gray-800 shadow-sm transition-all cursor-pointer h-12"
+                                        className="w-full appearance-none p-[10px] pl-4 pr-10 border border-neutral-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent bg-white text-sm text-neutral-950 transition-all cursor-pointer h-12 shadow-none"
                                         required
                                     >
                                         {data.type === 'bank' && (
@@ -117,7 +118,7 @@ export default function CreateMethod() {
                                             </>
                                         )}
                                     </select>
-                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-neutral-500">
                                         <IconChevronDown size={20} stroke={2} />
                                     </div>
                                 </div>
@@ -126,13 +127,13 @@ export default function CreateMethod() {
 
                             {/* Nomor Rekening */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{labels.number}</label>
+                                <label className="block text-sm font-medium text-neutral-950 mb-2">{labels.number}</label>
                                 <Input 
                                     type="text" 
                                     value={data.account_number}
                                     onChange={e => setData('account_number', e.target.value)}
                                     placeholder="Masukkan nomor..."
-                                    className="h-12 rounded-xl border-gray-200" 
+                                    className="h-12 rounded-xl border-neutral-300 text-sm focus:ring-sky-500" 
                                     required 
                                 />
                                 {errors.account_number && <span className="text-xs text-red-500 mt-1">{errors.account_number}</span>}
@@ -140,39 +141,41 @@ export default function CreateMethod() {
 
                             {/* Nama Pemilik */}
                             <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">{labels.name}</label>
+                                <label className="block text-sm font-medium text-neutral-950 mb-2">{labels.name}</label>
                                 <Input 
                                     type="text" 
                                     value={data.account_name}
                                     onChange={e => setData('account_name', e.target.value)}
                                     placeholder="Masukkan nama lengkap sesuai akun"
-                                    className="h-12 rounded-xl border-gray-200" 
+                                    className="h-12 rounded-xl border-neutral-300 text-sm focus:ring-sky-500" 
                                     required 
                                 />
                                 {errors.account_name && <span className="text-xs text-red-500 mt-1">{errors.account_name}</span>}
-                                <span className="text-[10px] text-gray-400 mt-2 block text-right font-medium">
+                                <p className="text-[11px] font-medium text-neutral-500 text-center mt-2">
                                     Pastikan nama sesuai agar proses penarikan tidak terhambat
-                                </span>
+                                </p>
                             </div>
 
                         </div>
 
+                        {/* =========================================
+                            TOMBOL ACTION
+                        ========================================== */}
                         <div className="flex gap-[10px] p-4 border border-neutral-300 bg-white rounded-[24px]">
-                            <Button 
-                                asChild 
-                                variant="outline" 
-                                className="flex-1 py-6 rounded-xl border-none text-white hover:text-white bg-red-500 hover:bg-red-600 font-bold text-base h-auto"
+                            <Link 
+                                href={route('organizer.wallet.index')}
+                                className="flex-1 rounded-xl text-white bg-red-500 hover:bg-red-600 font-semibold text-sm h-[40px] flex items-center justify-center transition-colors"
                             >
-                                <Link href={route('organizer.wallet.index')}>Kembali</Link>
-                            </Button>
+                                Kembali
+                            </Link>
                             
-                            <Button 
+                            <button 
                                 type="submit" 
                                 disabled={processing} 
-                                className="flex-1 py-6 rounded-xl bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-bold text-base shadow-sm h-auto"
+                                className="flex-1 rounded-xl bg-sky-500 hover:bg-sky-600 disabled:bg-sky-300 text-white font-semibold text-sm h-[40px] flex items-center justify-center transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {processing ? 'Menyimpan...' : 'Simpan Rekening'}
-                            </Button>
+                            </button>
                         </div>
                     </form>
                 </div>

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import DashboardLayout from '@/Layouts/DashboardLayout';
 import { Head, router } from '@inertiajs/react';
 import {
-    IconCalendarEvent, IconTicket, IconReportMoney, IconWallet,
-    IconCalendar, IconDownload,
+    IconTicket, IconWallet,
+    IconCalendar, IconDownload, IconCalendarWeek, IconCoin,
 } from '@tabler/icons-react';
 import { cn } from "@/lib/utils";
 import DateRangeModal from '@/Components/DateRangeModal';
@@ -143,9 +143,9 @@ export default function Export({ stats, histories, filters }) {
             <div className="flex flex-col flex-1 min-h-0 w-full gap-6">
                 {/* Stat cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                    <StatCard icon={IconCalendarEvent} label="Record Events" value={stats.events} />
+                    <StatCard icon={IconCalendarWeek} label="Record Events" value={stats.events} />
                     <StatCard icon={IconTicket} label="Record Bookings" value={stats.bookings} />
-                    <StatCard icon={IconReportMoney} label="Record Finance" value={stats.finance} />
+                    <StatCard icon={IconCoin} label="Record Finance" value={stats.finance} />
                     <StatCard icon={IconWallet} label="Record Wallet" value={stats.wallet} />
                 </div>
 
@@ -165,9 +165,9 @@ export default function Export({ stats, histories, filters }) {
                             </label>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            <DataToggleItem icon={IconCalendarEvent} title="Events" active={selectedData.events} onClick={() => toggleData('events')} />
+                            <DataToggleItem icon={IconCalendarWeek} title="Events" active={selectedData.events} onClick={() => toggleData('events')} />
                             <DataToggleItem icon={IconTicket} title="Bookings" active={selectedData.bookings} onClick={() => toggleData('bookings')} />
-                            <DataToggleItem icon={IconReportMoney} title="Finance" active={selectedData.finance} onClick={() => toggleData('finance')} />
+                            <DataToggleItem icon={IconCoin} title="Finance" active={selectedData.finance} onClick={() => toggleData('finance')} />
                             <DataToggleItem icon={IconWallet} title="Wallet" active={selectedData.wallet} onClick={() => toggleData('wallet')} />
                         </div>
                     </div>
@@ -284,7 +284,7 @@ export default function Export({ stats, histories, filters }) {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
                             <thead>
-                                <tr className="border-b border-neutral-300 text-sky-500 font-medium text-xs">
+                                <tr className="border-b border-neutral-300 text-sky-500 font-medium text-medium">
                                     <th className="py-3 px-2 whitespace-nowrap">Export ID</th>
                                     <th className="py-3 px-2 whitespace-nowrap">Waktu</th>
                                     <th className="py-3 px-2 whitespace-nowrap">Nama File</th>

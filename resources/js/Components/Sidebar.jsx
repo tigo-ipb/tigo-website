@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { IconLayoutDashboard, IconTicket, IconBook, IconCoin, IconLogout, IconPlus, IconWallet, IconFileExport, IconUser, IconArrowDownLeftCircle } from '@tabler/icons-react';
+import { IconLayoutDashboard, IconTicket, IconBook, IconCoin, IconLogout, IconPlus, IconWallet, IconFileExport, IconUser, IconArrowDownLeftCircle, IconCalendarWeek } from '@tabler/icons-react';
 
 export default function Sidebar({ isMobile, setIsMobileOpen }) {
     const { url } = usePage();
@@ -7,8 +7,8 @@ export default function Sidebar({ isMobile, setIsMobileOpen }) {
 
     const menuItemsOrganizer = [
         { name: 'Dashboard', href: '/organizer/dashboard', icon: IconLayoutDashboard },
-        { name: 'Events', href: '/organizer/events', icon: IconTicket },
-        { name: 'Bookings', href: '/organizer/bookings', icon: IconBook },
+        { name: 'Events', href: '/organizer/events', icon: IconCalendarWeek },
+        { name: 'Bookings', href: '/organizer/bookings', icon: IconTicket },
         { name: 'Finance', href: '/organizer/finance', icon: IconCoin },
         { name: 'Wallet', href: '/organizer/wallet', icon: IconWallet },
         { name: 'Export', href: '/organizer/export', icon: IconFileExport },
@@ -17,7 +17,7 @@ export default function Sidebar({ isMobile, setIsMobileOpen }) {
     const menuItemsAdmin = [
         { name: 'Dashboard', href: '/superadmin/dashboard', icon: IconLayoutDashboard },
         { name: 'Pengguna', href: '/superadmin/users', icon: IconUser },
-        { name: 'Events', href: '/superadmin/events', icon: IconTicket },
+        { name: 'Events', href: '/superadmin/events', icon: IconCalendarWeek },
         { name: 'Penarikan', href: '/superadmin/withdrawals', icon: IconArrowDownLeftCircle },
     ];
 
@@ -27,7 +27,7 @@ export default function Sidebar({ isMobile, setIsMobileOpen }) {
         `flex items-center gap-3 px-6 py-3 text-[20px] font-semibold transition-all relative ${
             isActive
                 ? 'bg-sky-50 text-sky-500 shadow-sm'
-                : 'text-slate-500 hover:bg-slate-50 hover:text-sky-500'
+                : 'text-slate-500 hover:bg-sky-50 hover:text-sky-500'
         }`;
 
     return (
