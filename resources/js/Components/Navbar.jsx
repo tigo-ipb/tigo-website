@@ -1,5 +1,5 @@
 import { usePage, Link } from '@inertiajs/react';
-import { IconBell, IconChevronDown, IconMenuDeep } from '@tabler/icons-react';
+import { IconBell, IconChevronDown, IconMenuDeep, IconUserCircle } from '@tabler/icons-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -15,7 +15,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
     const { auth } = usePage().props;
 
     return (
-        <header className="sticky top-0 h-20 z-50 flex shrink-0 items-center border-b border-neutral-300 bg-white p-4 font-sans md:p-6">
+        <header className="sticky top-0 h-20 z-50 flex shrink-0 items-center border-b border-neutral-300 bg-white px-4 font-sans md:px-6">
             <div className="flex items-center gap-2 shrink-0">
                 <div className="lg:hidden">
                     <Sheet open={isMobileOpen} onOpenChange={setIsMobileOpen}>
@@ -45,7 +45,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
             </div>
 
             <div className="flex-1 px-3">
-                <h1 className="text-center text-lg font-bold text-neutral-950 md:text-xl">
+                <h1 className="text-center text-lg font-semibold text-neutral-950 md:text-xl">
                     {header || 'Dashboard'}
                 </h1>
             </div>
@@ -53,22 +53,25 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
             <div className="flex items-center gap-3 md:gap-4 shrink-0">
                 <button
                     type="button"
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e6f4fe] text-sky-500 transition-colors hover:bg-sky-100 hover:text-sky-600 md:h-10 md:w-10"
+                    className="flex h-9 w-9 items-center justify-center rounded-2xl bg-sky-100 text-sky-500 transition-colors hover:bg-sky-200 hover:text-sky-600 md:h-10 md:w-10"
                     title="Notifikasi"
                 >
                     <IconBell size={20} stroke={2} />
                 </button>
 
                 <DropdownMenu>
-                    <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 rounded-xl border-0 pl-3 outline-none transition-colors hover:bg-[#f0f2f5] focus:outline-none md:gap-3 md:pl-4 ">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-sky-500 bg-sky-50 text-sm font-bold uppercase text-sky-500 md:h-10 md:w-10">
-                            {auth.user.name.charAt(0)}
+                    <DropdownMenuTrigger className="flex cursor-pointer items-center gap-2 border-0 outline-none transition-all focus:outline-none md:gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-sky-100 text-sky-500 md:h-10 md:w-10 overflow-hidden">
+                            {auth.user.profile_photo ? (
+                                <img src={auth.user.profile_photo} alt="Profile" className="w-full h-full object-cover" />
+                            ) : (
+                                <IconUserCircle size={22} stroke={2} />
+                            )}
                         </div>
-                        <div className="hidden text-left md:block">
-                            <p className="text-sm font-bold text-neutral-950">{auth.user.name}</p>
-                            <p className="text-xs capitalize text-neutral-400">{auth.user.role}</p>
-                        </div>
-                        <IconChevronDown size={16} className="hidden text-neutral-400 md:block" stroke={2} />
+                        <span className="hidden text-sm font-semibold text-neutral-950 md:block">
+                            {auth.user.name}
+                        </span>
+                        <IconChevronDown size={16} className="hidden text-neutral-950 md:block" stroke={2} />
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent

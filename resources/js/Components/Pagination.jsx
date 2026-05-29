@@ -58,20 +58,26 @@ export default function Pagination({ pagination, onPageChange }) {
     const pages = getPages(current_page, last_page);
 
     return (
-        <div className="w-full bg-white border border-neutral-300 rounded-[24px] px-6 py-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
+        <div className="w-full bg-white border border-neutral-300 rounded-[24px] px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
             {/* Sisi Kiri: Info Jumlah Data */}
-            <div className="text-sm text-neutral-500 font-medium">
-                Menampilkan <span className="font-semibold text-neutral-900">{showingCount}</span> dari <span className="font-semibold text-neutral-900">{new Intl.NumberFormat('id-ID').format(total)}</span>
+            <div className="text-sm text-neutral-950 font-medium flex items-center gap-4">
+                <span>Menampilkan</span>
+                <span className="text-sky-500 font-semibold">{showingCount}</span>
+                <span>dari</span>
+                <span>{new Intl.NumberFormat('id-ID').format(total)}</span>
             </div>
 
             {/* Sisi Kanan: Navigasi Halaman */}
-            <div className="flex items-center gap-1 bg-[#e6f4fe] p-1 rounded-[16px]">
+            <div className="flex items-center gap-2">
                 {/* Tombol Sebelumnya (Chevron Left) */}
                 <button
                     type="button"
                     onClick={() => current_page > 1 && onPageChange && onPageChange(current_page - 1)}
-                    disabled={current_page === 1}
-                    className="w-9 h-9 rounded-xl flex items-center justify-center bg-white text-sky-500 hover:bg-sky-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shrink-0"
+                    className={`w-9 h-9 rounded-[8px] flex items-center justify-center bg-sky-100 text-sky-500 transition-colors shrink-0 ${
+                        current_page === 1
+                            ? 'opacity-50 cursor-default'
+                            : 'cursor-pointer hover:bg-sky-500 hover:text-sky-100'
+                    }`}
                 >
                     <IconChevronLeft size={16} stroke={3} />
                 </button>
@@ -82,7 +88,7 @@ export default function Pagination({ pagination, onPageChange }) {
                         return (
                             <span
                                 key={`ellipsis-${index}`}
-                                className="w-9 h-9 flex items-center justify-center text-sky-400 font-bold select-none text-sm"
+                                className="w-9 h-9 flex items-center justify-center text-neutral-300 select-none text-sm font-medium"
                             >
                                 ...
                             </span>
@@ -96,10 +102,10 @@ export default function Pagination({ pagination, onPageChange }) {
                             key={page}
                             type="button"
                             onClick={() => onPageChange && onPageChange(page)}
-                            className={`w-9 h-9 rounded-xl text-sm font-bold flex items-center justify-center transition-all shrink-0 ${
+                            className={`w-9 h-9 rounded-[8px] text-sm font-semibold flex items-center justify-center transition-all shrink-0 ${
                                 isActive
-                                    ? 'bg-white text-sky-500 shadow-sm border border-sky-100'
-                                    : 'text-sky-600/80 hover:bg-white/40'
+                                    ? 'bg-transparent text-neutral-950 border border-sky-500'
+                                    : 'text-neutral-500 hover:text-sky-500 hover:bg-sky-100'
                             }`}
                         >
                             {page}
@@ -111,8 +117,11 @@ export default function Pagination({ pagination, onPageChange }) {
                 <button
                     type="button"
                     onClick={() => current_page < last_page && onPageChange && onPageChange(current_page + 1)}
-                    disabled={current_page === last_page}
-                    className="w-9 h-9 rounded-xl flex items-center justify-center bg-[#cce8ff] text-sky-600 hover:bg-sky-500 hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shrink-0"
+                    className={`w-9 h-9 rounded-[8px] flex items-center justify-center bg-sky-100 text-sky-500 transition-colors shrink-0 ${
+                        current_page === last_page
+                            ? 'opacity-50 cursor-default'
+                            : 'cursor-pointer hover:bg-sky-500 hover:text-sky-100'
+                    }`}
                 >
                     <IconChevronRight size={16} stroke={3} />
                 </button>
