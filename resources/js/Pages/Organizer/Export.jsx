@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import DateRangeModal from '@/Components/DateRangeModal';
 import Search from '@/Components/Search';
 import Pagination from '@/Components/Pagination';
+import StatCard from '@/Components/StatCard';
 import {
     Select,
     SelectContent,
@@ -142,10 +143,10 @@ export default function Export({ stats, histories, filters }) {
             <div className="flex flex-col flex-1 min-h-0 w-full gap-6">
                 {/* Stat cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                    <StatCard icon={IconCalendarEvent} title="Record Events" value={stats.events} />
-                    <StatCard icon={IconTicket} title="Record Bookings" value={stats.bookings} />
-                    <StatCard icon={IconReportMoney} title="Record Finance" value={stats.finance} />
-                    <StatCard icon={IconWallet} title="Record Wallet" value={stats.wallet} />
+                    <StatCard icon={IconCalendarEvent} label="Record Events" value={stats.events} />
+                    <StatCard icon={IconTicket} label="Record Bookings" value={stats.bookings} />
+                    <StatCard icon={IconReportMoney} label="Record Finance" value={stats.finance} />
+                    <StatCard icon={IconWallet} label="Record Wallet" value={stats.wallet} />
                 </div>
 
                 {/* Export config */}
@@ -337,21 +338,6 @@ export default function Export({ stats, histories, filters }) {
     );
 }
 
-function StatCard({ icon: Icon, title, value }) {
-    return (
-        <div className="bg-white border border-neutral-300 rounded-[24px] p-4 flex items-center gap-4">
-            <div className="w-11 h-11 bg-[#e6f4fe] text-sky-500 rounded-lg flex items-center justify-center shrink-0">
-                <Icon size={22} stroke={2} />
-            </div>
-            <div className="min-w-0">
-                <p className="text-sm text-neutral-950 font-medium">{title}</p>
-                <p className="text-2xl font-semibold text-neutral-950 leading-tight">
-                    {(value ?? 0).toLocaleString('id-ID')}
-                </p>
-            </div>
-        </div>
-    );
-}
 
 function DataToggleItem({ icon: Icon, title, active, onClick }) {
     return (
