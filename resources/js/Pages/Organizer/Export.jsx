@@ -149,14 +149,14 @@ export default function Export({ stats, histories, filters }) {
                 </div>
 
                 {/* Export config */}
-                <div className="bg-white border border-gray-100 rounded-[24px] p-4 shadow-sm flex flex-col gap-6">
+                <div className="bg-white border border-neutral-300 rounded-[24px] p-4 flex flex-col gap-6">
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-base font-bold text-neutral-950">Pilih Data yang Diekspor</h2>
+                            <h2 className="text-xl font-medium text-neutral-950">Pilih Data yang Diekspor</h2>
                             <label className="flex items-center gap-2 cursor-pointer shrink-0">
                                 <input
                                     type="checkbox"
-                                    className="w-4 h-4 rounded border-gray-300 text-[#00a2ff] focus:ring-[#00a2ff] cursor-pointer"
+                                    className="w-4 h-4 rounded border-neutral-300 text-sky-500 focus:ring-sky-500 cursor-pointer"
                                     checked={Object.values(selectedData).every(Boolean)}
                                     onChange={toggleAll}
                                 />
@@ -172,8 +172,8 @@ export default function Export({ stats, histories, filters }) {
                     </div>
 
                     <div>
-                        <h2 className="text-base font-bold text-neutral-950 mb-4">Rentang Tanggal</h2>
-                        <p className="text-sm font-medium text-neutral-500 mb-2">Tanggal Export</p>
+                        <h2 className="text-xl font-medium text-neutral-950 mb-4">Rentang Tanggal</h2>
+                        <p className="text-sm font-regular text-neutral-500 mb-2">Tanggal Export</p>
                         <DateRangeModal
                             title="Rentang Tanggal Export"
                             actionLabel="Terapkan Tanggal"
@@ -184,7 +184,7 @@ export default function Export({ stats, histories, filters }) {
                             triggerNode={
                                 <button
                                     type="button"
-                                    className="flex items-center justify-between w-full px-4 py-2.5 bg-white border border-gray-200 rounded-[12px] text-sm text-neutral-700 font-medium hover:border-[#00a2ff] focus:outline-none focus:ring-1 focus:ring-[#00a2ff] cursor-pointer transition-colors"
+                                    className="flex items-center justify-between w-full px-4 py-2.5 bg-white border border-neutral-300 rounded-[12px] text-sm text-neutral-700 font-medium hover:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 cursor-pointer transition-colors"
                                 >
                                     <span>{dateLabel}</span>
                                     <IconCalendar size={20} className="text-neutral-400 shrink-0" stroke={1.5} />
@@ -214,7 +214,7 @@ export default function Export({ stats, histories, filters }) {
                     <button
                         type="button"
                         onClick={handleExport}
-                        className="w-full flex items-center justify-center gap-2 py-3.5 bg-[#00a2ff] hover:bg-sky-600 text-white font-bold rounded-[12px] text-sm shadow-sm shadow-[#00a2ff]/10 transition-colors active:scale-[0.99] cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-[12px] text-sm transition-colors active:scale-[0.99] cursor-pointer"
                     >
                         <IconDownload size={20} stroke={2} />
                         Export
@@ -222,9 +222,9 @@ export default function Export({ stats, histories, filters }) {
                 </div>
 
                 {/* Riwayat export */}
-                <div className="bg-white border border-gray-100 rounded-[24px] p-6 shadow-sm">
+                <div className="bg-white border border-neutral-300 rounded-[24px] p-6">
                     <div className="flex flex-col gap-4 mb-6">
-                        <h2 className="text-base font-bold text-neutral-950">Riwayat Export</h2>
+                        <h2 className="text-base font-medium text-neutral-950">Riwayat Export</h2>
 
                         <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
                             <div className="flex gap-2 overflow-x-auto scrollbar-hide w-full xl:w-auto">
@@ -237,9 +237,9 @@ export default function Export({ stats, histories, filters }) {
                                             handleFilterChange({ type: tab });
                                         }}
                                         className={cn(
-                                            "px-5 py-2.5 rounded-[12px] text-sm font-bold transition-all shrink-0",
+                                            "px-5 py-2.5 rounded-[12px] text-sm font-medium transition-all shrink-0",
                                             activeTab === tab
-                                                ? "bg-[#00a2ff] text-white shadow-sm shadow-[#00a2ff]/10"
+                                                ? "bg-sky-500 text-white"
                                                 : "bg-[#f0f2f5] text-neutral-400 hover:bg-gray-200"
                                         )}
                                     >
@@ -263,10 +263,10 @@ export default function Export({ stats, histories, filters }) {
                                         handleFilterChange({ sort_order: val });
                                     }}
                                 >
-                                    <SelectTrigger className="w-[120px] h-[42px] px-4 bg-[#00a2ff] border-0 rounded-[12px] text-sm font-bold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0">
+                                    <SelectTrigger className="w-[120px] h-[42px] px-4 bg-sky-500 border-0 rounded-[12px] text-sm font-medium text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0">
                                         <SelectValue placeholder="Sortir" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-white rounded-[20px] border border-gray-100 shadow-xl z-[100] p-1.5">
+                                    <SelectContent className="bg-white rounded-[20px] border border-neutral-300 z-[100] p-1.5">
                                         <SelectItem value="terbaru" className="font-medium text-sm text-gray-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
                                             Terbaru
                                         </SelectItem>
@@ -282,7 +282,7 @@ export default function Export({ stats, histories, filters }) {
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
                             <thead>
-                                <tr className="border-b border-gray-100 text-[#00a2ff] font-bold">
+                                <tr className="border-b border-neutral-300 text-sky-500 font-medium">
                                     <th className="py-3 px-2 whitespace-nowrap">Export ID</th>
                                     <th className="py-3 px-2 whitespace-nowrap">Waktu</th>
                                     <th className="py-3 px-2 whitespace-nowrap">Nama File</th>
@@ -295,7 +295,7 @@ export default function Export({ stats, histories, filters }) {
                                 {histories?.data?.length > 0 ? histories.data.map((item, index) => {
                                     const formatted = formatDateStr(item.created_at);
                                     return (
-                                        <tr key={index} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                                        <tr key={index} className="border-b border-neutral-300 hover:bg-gray-50/50 transition-colors">
                                             <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">{item.export_id}</td>
                                             <td className="py-4 px-2 whitespace-nowrap">
                                                 <div className="font-medium text-neutral-950">{formatted?.date}</div>
@@ -309,7 +309,7 @@ export default function Export({ stats, histories, filters }) {
                                                     ))}
                                                 </div>
                                             </td>
-                                            <td className="py-4 px-2 text-center font-bold text-neutral-950 whitespace-nowrap">
+                                            <td className="py-4 px-2 text-center font-medium text-neutral-950 whitespace-nowrap">
                                                 {item.total_records.toLocaleString('id-ID')}
                                             </td>
                                             <td className="py-4 px-2 font-medium whitespace-nowrap">{item.file_size_mb}</td>
@@ -340,13 +340,13 @@ export default function Export({ stats, histories, filters }) {
 
 function StatCard({ icon: Icon, title, value }) {
     return (
-        <div className="bg-white border border-gray-100 rounded-[24px] p-5 shadow-sm flex items-center gap-4">
-            <div className="w-11 h-11 bg-[#e6f4fe] text-[#00a2ff] rounded-full flex items-center justify-center shrink-0">
+        <div className="bg-white border border-neutral-300 rounded-[24px] p-4 flex items-center gap-4">
+            <div className="w-11 h-11 bg-[#e6f4fe] text-sky-500 rounded-lg flex items-center justify-center shrink-0">
                 <Icon size={22} stroke={2} />
             </div>
             <div className="min-w-0">
-                <p className="text-sm text-neutral-500 font-medium mb-0.5">{title}</p>
-                <p className="text-2xl font-bold text-neutral-950 leading-tight">
+                <p className="text-sm text-neutral-950 font-medium">{title}</p>
+                <p className="text-2xl font-semibold text-neutral-950 leading-tight">
                     {(value ?? 0).toLocaleString('id-ID')}
                 </p>
             </div>
@@ -362,27 +362,27 @@ function DataToggleItem({ icon: Icon, title, active, onClick }) {
             className={cn(
                 "flex items-center justify-between w-full p-4 rounded-[16px] border transition-all cursor-pointer text-left",
                 active
-                    ? "border-[#00a2ff] bg-white shadow-sm"
-                    : "border-gray-100 bg-white hover:border-gray-200"
+                    ? "border-sky-500 bg-white"
+                    : "border-neutral-300 bg-white hover:border-sky-500"
             )}
         >
             <div className="flex items-center gap-3">
                 <div className={cn(
                     "w-10 h-10 rounded-[12px] flex items-center justify-center shrink-0 transition-colors",
-                    active ? "bg-[#e6f4fe] text-[#00a2ff]" : "bg-[#f0f2f5] text-neutral-400"
+                    active ? "bg-[#e6f4fe] text-sky-500" : "bg-[#f0f2f5] text-neutral-400"
                 )}>
                     <Icon size={22} stroke={active ? 2 : 1.5} />
                 </div>
-                <span className="font-bold text-neutral-950 text-sm">{title}</span>
+                <span className="font-semibold text-neutral-950 text-sm">{title}</span>
             </div>
 
             <div
                 className={cn(
                     "w-11 h-6 rounded-full p-0.5 transition-colors flex items-center shrink-0",
-                    active ? "bg-[#00a2ff] justify-end" : "bg-neutral-200 justify-start"
+                    active ? "bg-sky-500 justify-end" : "bg-neutral-200 justify-start"
                 )}
             >
-                <div className="w-5 h-5 bg-white rounded-full shadow-sm" />
+                <div className="w-5 h-5 bg-white rounded-full" />
             </div>
         </button>
     );
@@ -398,8 +398,8 @@ function DataBadge({ type }) {
 
     return (
         <span className={cn(
-            "px-2.5 py-0.5 rounded-md border text-[10px] font-bold capitalize",
-            colors[type] || "border-gray-300 text-gray-500 bg-gray-50"
+            "px-2.5 py-0.5 rounded-md border text-[10px] font-medium capitalize",
+            colors[type] || "border-neutral-300 text-gray-500 bg-gray-50"
         )}>
             {type}
         </span>

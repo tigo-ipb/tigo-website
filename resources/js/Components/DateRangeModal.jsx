@@ -37,11 +37,11 @@ export default function DateRangeModal({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{triggerNode}</DialogTrigger>
       
-     <DialogContent className="!max-w-full md:!max-w-fit w-screen h-[100dvh] md:h-auto flex flex-col p-0 bg-white !rounded-none md:!rounded-3xl !border-none overflow-hidden [&>button]:hidden shadow-2xl transition-all duration-300">
+     <DialogContent className="!max-w-full md:!max-w-fit w-screen h-[100dvh] md:h-auto flex flex-col gap-4 p-4 bg-white !rounded-none md:!rounded-2xl !border-none overflow-hidden [&>button]:hidden shadow-2xl transition-all duration-300">
         
         {/* Header Modal */}
-        <DialogHeader className="flex flex-row items-center justify-between px-6 md:px-8 py-2 shrink-0 md:pb-4 md:pt-4">
-          <DialogTitle className="text-xl md:text-2xl font-bold text-black">{title}</DialogTitle>
+        <DialogHeader className="flex flex-row items-center justify-between p-0 shrink-0">
+          <DialogTitle className="text-xl md:text-xl font-medium text-black">{title}</DialogTitle>
           <DialogClose asChild>
             <button className="p-2 bg-transparent hover:bg-neutral-100 rounded-lg transition-colors">
               <IconX className="w-6 h-6 text-black" stroke={2} />
@@ -50,8 +50,8 @@ export default function DateRangeModal({
         </DialogHeader>
 
         {/* 2. PERBAIKAN DI AREA KALENDER (Tambahkan overflow-x-hidden agar aman) */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 md:px-8 no-scrollbar pb-6 md:pb-0">
-          <div className="bg-sky-50 border border-sky-500 rounded-lg flex justify-center w-full md:w-max p-2 md:p-3 mx-auto">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-0 no-scrollbar">
+          <div className="bg-sky-50 border border-sky-500 rounded-[16px] flex justify-center w-full md:w-max p-2 md:p-3 mx-auto">
             <Calendar
               initialFocus
               mode="range"
@@ -60,17 +60,17 @@ export default function DateRangeModal({
               onSelect={setDate}
               numberOfMonths={2} 
               // Ubah background kalender
-              className="w-fit mx-auto flex justify-center rounded-3xl bg-sky-50 relative"
+              className="w-fit mx-auto flex justify-center rounded-[16px] bg-sky-50 relative"
               classNames={{
                 months: "flex flex-col md:flex-row gap-4 w-full justify-center items-center md:items-start",
                 month: "space-y-4",
                 
-                caption: "flex justify-center pt-1 relative items-center mb-4",
+                caption: "flex justify-center relative items-center h-9 mb-6",
                 caption_label: "text-base font-medium text-black",
-                nav: "rounded-md flex items-center justify-between w-full absolute top-2 left-0 px-2",
+                nav: "flex items-center justify-between w-full absolute top-0 left-0 h-9 px-2",
                 // Ubah hover state tombol prev/next
-                button_next: "h-9 w-9 bg-white rounded-[10px] border border-neutral-200 hover:border-sky-500 hover:bg-sky-50 flex items-center justify-center transition-colors z-10",
-                button_previous: "h-9 w-9 bg-white rounded-[10px] border border-neutral-200 hover:border-sky-500 hover:bg-sky-50 flex items-center justify-center transition-colors z-10",
+                button_next: "h-9 w-9 bg-sky-100 rounded-[8px] border border-sky-500 hover:border-sky-500 hover:bg-sky-50 flex items-center justify-center transition-colors z-10",
+                button_previous: "h-9 w-9 bg-sky-100 rounded-[8px] border border-sky-500 hover:border-sky-500 hover:bg-sky-50 flex items-center justify-center transition-colors z-10",
                 table: "border-collapse space-y-1",
                 head_row: "flex justify-center",
                 head_cell: "text-neutral-500 font-normal text-xs w-9 md:w-10",
@@ -94,12 +94,12 @@ export default function DateRangeModal({
         </div>
 
         {/* Footer Tombol */}
-        <div className="px-4 md:px-8 pb-2 pt-2 md:py-6 bg-white mt-auto shrink-0">
+        <div className="p-0 bg-white mt-auto shrink-0">
           <Button 
             onClick={handleActionClick}
             disabled={isLoading || !date?.from} 
             // Ubah warna tombol utama
-            className="w-full bg-sky-500 hover:bg-sky-400 text-white py-7 md:py-6 rounded-lg font-bold text-base transition-all active:scale-[0.98]"
+            className="w-full bg-sky-500 hover:bg-sky-400 text-white py-7 md:py-6 rounded-[10px] font-semibold text-base transition-all active:scale-[0.98]"
           >
             {isLoading ? <IconLoader2 className="w-5 h-5 mr-2 animate-spin" stroke={2} /> : isExport ? <IconDownload className="w-5 h-5 mr-2" stroke={2} /> : null}
             {actionLabel}
