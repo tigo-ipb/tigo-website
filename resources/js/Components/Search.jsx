@@ -18,7 +18,7 @@ export default function Search({
     return (
         <form 
             onSubmit={handleSubmit}
-            className={`relative w-full bg-white border border-neutral-200 rounded-full hover:border-neutral-300 transition-all ${className}`}
+            className={`relative w-full bg-white border border-neutral-300 rounded-full hover:border-neutral-300 transition-all ${className}`}
         >
             {/* Input Pencarian */}
             <input
@@ -26,13 +26,13 @@ export default function Search({
                 value={value}
                 onChange={(e) => onChange && onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-transparent pl-6 pr-12 py-2 text-[10px] focus:outline-none text-neutral-800 placeholder-neutral-400 font-medium rounded-full"
+                className="w-full bg-transparent pl-3 pr-12 py-2 text-xs border-0 focus:ring-0 focus:outline-none text-neutral-300 placeholder-neutral-300 font-medium rounded-full"
             />
 
             {/* Tombol Kaca Pembesar di Sisi Kanan */}
             <button
                 type="submit"
-                className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors flex items-center justify-center cursor-pointer"
+                className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-300 hover:text-neutral-300 transition-colors flex items-center justify-center cursor-pointer"
                 title="Cari"
             >
                 <IconSearch size={20} stroke={1.5} />

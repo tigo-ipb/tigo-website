@@ -192,14 +192,14 @@ export default function Export({ stats, histories, filters }) {
                             }
                         />
 
-                        <div className="flex flex-wrap justify-between mt-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-4">
                             {DATE_PRESETS.map(preset => (
                                 <button
                                     key={preset}
                                     type="button"
                                     onClick={() => handlePresetClick(preset)}
                                     className={cn(
-                                        "w-full max-w-[240px] px-4 py-2 rounded-full text-xs font-semibold transition-colors",
+                                        "w-full px-4 py-2.5 rounded-full text-xs font-semibold text-center transition-colors",
                                         activePreset === preset
                                             ? "bg-sky-500 text-white"
                                             : "bg-neutral-100 text-neutral-400 hover:bg-neutral-200"
@@ -214,7 +214,7 @@ export default function Export({ stats, histories, filters }) {
                     <button
                         type="button"
                         onClick={handleExport}
-                        className="w-full flex items-center justify-center gap-2 py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-medium rounded-[12px] text-sm transition-colors active:scale-[0.99] cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-[12px] text-sm transition-colors active:scale-[0.99] cursor-pointer"
                     >
                         <IconDownload size={20} stroke={2} />
                         Export
@@ -222,12 +222,12 @@ export default function Export({ stats, histories, filters }) {
                 </div>
 
                 {/* Riwayat export */}
-                <div className="bg-white border border-neutral-300 rounded-[24px] p-6">
-                    <div className="flex flex-col gap-4 mb-6">
-                        <h2 className="text-base font-medium text-neutral-950">Riwayat Export</h2>
-
-                        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
-                            <div className="flex gap-2 overflow-x-auto scrollbar-hide w-full xl:w-auto">
+                <div className="bg-white border border-neutral-300 rounded-[24px] p-4">
+                    <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+                        {/* Left Side: Title & Tabs */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
+                            <h2 className="text-xl font-medium text-neutral-950 shrink-0">Riwayat Export</h2>
+                            <div className="flex gap-2 overflow-x-auto scrollbar-hide w-full sm:w-auto">
                                 {historyTabs.map(tab => (
                                     <button
                                         key={tab}
@@ -237,52 +237,53 @@ export default function Export({ stats, histories, filters }) {
                                             handleFilterChange({ type: tab });
                                         }}
                                         className={cn(
-                                            "px-5 py-2.5 rounded-[12px] text-sm font-medium transition-all shrink-0",
+                                            "px-4 py-2 rounded-full text-xs font-semibold transition-all shrink-0",
                                             activeTab === tab
                                                 ? "bg-sky-500 text-white"
-                                                : "bg-[#f0f2f5] text-neutral-400 hover:bg-gray-200"
+                                                : "bg-neutral-100 text-neutral-400 hover:bg-neutral-200"
                                         )}
                                     >
                                         {tab}
                                     </button>
                                 ))}
                             </div>
+                        </div>
 
-                            <div className="flex w-full xl:w-auto gap-3 items-center">
-                                <Search
-                                    value={historySearch}
-                                    onChange={setHistorySearch}
-                                    onSubmit={(val) => handleFilterChange({ search: val })}
-                                    placeholder="Cari nama, file, atau ID..."
-                                    className="flex-1 xl:max-w-[280px]"
-                                />
-                                <Select
-                                    value={sortOrder}
-                                    onValueChange={(val) => {
-                                        setSortOrder(val);
-                                        handleFilterChange({ sort_order: val });
-                                    }}
-                                >
-                                    <SelectTrigger className="w-[120px] h-[42px] px-4 bg-sky-500 border-0 rounded-[12px] text-sm font-medium text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0">
-                                        <SelectValue placeholder="Sortir" />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-white rounded-[20px] border border-neutral-300 z-[100] p-1.5">
-                                        <SelectItem value="terbaru" className="font-medium text-sm text-gray-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
-                                            Terbaru
-                                        </SelectItem>
-                                        <SelectItem value="terlama" className="font-medium text-sm text-gray-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
-                                            Terlama
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        {/* Right Side: Search & Sortir */}
+                        <div className="flex w-full lg:w-auto gap-3 items-center shrink-0">
+                            <Search
+                                value={historySearch}
+                                onChange={setHistorySearch}
+                                onSubmit={(val) => handleFilterChange({ search: val })}
+                                placeholder="Cari nama, event, atau yang lain"
+                                className="flex-1 lg:w-[240px] xl:w-[280px]"
+                            />
+                            <Select
+                                value={sortOrder}
+                                onValueChange={(val) => {
+                                    setSortOrder(val);
+                                    handleFilterChange({ sort_order: val });
+                                }}
+                            >
+                                <SelectTrigger className="w-[120px] h-[42px] px-4 bg-sky-500 border-0 rounded-[10px] text-sm font-medium text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0">
+                                    <SelectValue placeholder="Sortir" />
+                                </SelectTrigger>
+                                <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 z-[100] p-1.5 min-w-[120px]">
+                                    <SelectItem value="terbaru" className="font-medium text-sm text-gray-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
+                                        Terbaru
+                                    </SelectItem>
+                                    <SelectItem value="terlama" className="font-medium text-sm text-gray-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
+                                        Terlama
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
 
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-sm">
                             <thead>
-                                <tr className="border-b border-neutral-300 text-sky-500 font-medium">
+                                <tr className="border-b border-neutral-300 text-sky-500 font-medium text-xs">
                                     <th className="py-3 px-2 whitespace-nowrap">Export ID</th>
                                     <th className="py-3 px-2 whitespace-nowrap">Waktu</th>
                                     <th className="py-3 px-2 whitespace-nowrap">Nama File</th>
@@ -295,7 +296,7 @@ export default function Export({ stats, histories, filters }) {
                                 {histories?.data?.length > 0 ? histories.data.map((item, index) => {
                                     const formatted = formatDateStr(item.created_at);
                                     return (
-                                        <tr key={index} className="border-b border-neutral-300 hover:bg-gray-50/50 transition-colors">
+                                        <tr key={index} className="border-b border-neutral-300 last:border-b-0 hover:bg-gray-50/50 transition-colors">
                                             <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">{item.export_id}</td>
                                             <td className="py-4 px-2 whitespace-nowrap">
                                                 <div className="font-medium text-neutral-950">{formatted?.date}</div>
@@ -325,14 +326,12 @@ export default function Export({ stats, histories, filters }) {
                             </tbody>
                         </table>
                     </div>
-
-                    <div className="mt-6">
-                        <Pagination
-                            pagination={histories}
-                            onPageChange={(page) => handleFilterChange({ page })}
-                        />
-                    </div>
                 </div>
+
+                <Pagination
+                    pagination={histories}
+                    onPageChange={(page) => handleFilterChange({ page })}
+                />
             </div>
         </DashboardLayout>
     );
@@ -391,8 +390,8 @@ function DataToggleItem({ icon: Icon, title, active, onClick }) {
 function DataBadge({ type }) {
     const colors = {
         events: "border-sky-500 text-sky-500 bg-sky-50",
-        finance: "border-green-500 text-green-600 bg-green-50",
-        wallet: "border-yellow-500 text-yellow-600 bg-yellow-50",
+        finance: "border-green-500 text-green-500 bg-green-50",
+        wallet: "border-yellow-500 text-yellow-500 bg-yellow-50",
         bookings: "border-red-500 text-red-500 bg-red-50",
     };
 

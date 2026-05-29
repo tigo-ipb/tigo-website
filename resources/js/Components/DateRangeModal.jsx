@@ -69,8 +69,8 @@ export default function DateRangeModal({
                 caption_label: "text-base font-medium text-black",
                 nav: "flex items-center justify-between w-full absolute top-0 left-0 h-9 px-2",
                 // Ubah hover state tombol prev/next
-                button_next: "h-9 w-9 bg-sky-100 rounded-[8px] border border-sky-500 hover:border-sky-500 hover:bg-sky-50 flex items-center justify-center transition-colors z-10",
-                button_previous: "h-9 w-9 bg-sky-100 rounded-[8px] border border-sky-500 hover:border-sky-500 hover:bg-sky-50 flex items-center justify-center transition-colors z-10",
+                button_next: "h-9 w-9 bg-sky-50 rounded-[8px] border border-sky-500 hover:border-sky-500 hover:bg-sky-100 flex items-center justify-center transition-colors z-10",
+                button_previous: "h-9 w-9 bg-sky-50 rounded-[8px] border border-sky-500 hover:border-sky-500 hover:bg-sky-100 flex items-center justify-center transition-colors z-10",
                 table: "border-collapse space-y-1",
                 head_row: "flex justify-center",
                 head_cell: "text-neutral-500 font-normal text-xs w-9 md:w-10",
@@ -99,7 +99,7 @@ export default function DateRangeModal({
             onClick={handleActionClick}
             disabled={isLoading || !date?.from} 
             // Ubah warna tombol utama
-            className="w-full bg-sky-500 hover:bg-sky-400 text-white py-7 md:py-6 rounded-[10px] font-semibold text-base transition-all active:scale-[0.98]"
+            className="w-full bg-sky-500 hover:bg-sky-600 text-white py-7 md:py-6 rounded-[10px] font-semibold text-base transition-all active:scale-[0.98]"
           >
             {isLoading ? <IconLoader2 className="w-5 h-5 mr-2 animate-spin" stroke={2} /> : isExport ? <IconDownload className="w-5 h-5 mr-2" stroke={2} /> : null}
             {actionLabel}
