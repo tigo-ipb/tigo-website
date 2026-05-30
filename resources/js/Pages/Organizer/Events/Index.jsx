@@ -202,12 +202,12 @@
                                     <SelectTrigger className="w-[180px] h-[42px] px-5 py-2.5 bg-neutral-100 border-0 rounded-[16px] text-xs font-semibold text-neutral-400 hover:bg-gray-200 transition-colors focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 data-[state=open]:ring-0 shadow-none shrink-0">
                                         <SelectValue placeholder="Kategori" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5 min-w-[180px]">
+                                    <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5 min-w-[180px]">
                                         {categoryOptions.map(cat => (
                                             <SelectItem
                                                 key={cat}
                                                 value={cat}
-                                                className="font-medium text-sm text-gray-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3"
+                                                className="font-medium text-xs text-gray-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3"
                                             >
                                                 {cat}
                                             </SelectItem>
@@ -231,12 +231,12 @@
                                             <SelectValue placeholder="Waktu" />
                                         </div>
                                     </SelectTrigger>
-                                    <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5 min-w-[150px]">
+                                    <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5 min-w-[150px]">
                                         {timeOptions.map(time => (
                                             <SelectItem
                                                 key={time}
                                                 value={time}
-                                                className="font-medium text-sm text-gray-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3"
+                                                className="font-medium text-xs text-gray-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3"
                                             >
                                                 {time}
                                             </SelectItem>

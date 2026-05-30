@@ -213,10 +213,10 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                         <SelectTrigger className={selectTriggerClass}>
                                             <SelectValue>{ticketPeriodLabel[ticketPeriod] || 'Minggu Ini'}</SelectValue>
                                         </SelectTrigger>
-                                        <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
-                                            <SelectItem value="minggu_ini" className="font-medium text-sm rounded-xl cursor-pointer">Minggu Ini</SelectItem>
-                                            <SelectItem value="bulan_ini" className="font-medium text-sm rounded-xl cursor-pointer">Bulan Ini</SelectItem>
-                                            <SelectItem value="semua" className="font-medium text-sm rounded-xl cursor-pointer">Semua Waktu</SelectItem>
+                                        <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
+                                            <SelectItem value="minggu_ini" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">Minggu Ini</SelectItem>
+                                            <SelectItem value="bulan_ini" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">Bulan Ini</SelectItem>
+                                            <SelectItem value="semua" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">Semua Waktu</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -251,9 +251,9 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                         <SelectTrigger className={selectTriggerClass}>
                                             <SelectValue placeholder="Metrik" />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
-                                            <SelectItem value="revenue" className="font-medium text-sm rounded-xl cursor-pointer">Pendapatan</SelectItem>
-                                            <SelectItem value="attendance" className="font-medium text-sm rounded-xl cursor-pointer">Attendance</SelectItem>
+                                        <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
+                                            <SelectItem value="revenue" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">Pendapatan</SelectItem>
+                                            <SelectItem value="attendance" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">Attendance</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -302,12 +302,12 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                         <SelectTrigger className={selectTriggerClass}>
                                             <SelectValue>{chartPeriodLabel[chartFilter] || 'Tahun ini'}</SelectValue>
                                         </SelectTrigger>
-                                        <SelectContent className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
-                                            <SelectItem value="tahun_ini" className="font-medium text-sm rounded-xl cursor-pointer">Tahun ini</SelectItem>
-                                            <SelectItem value="3_bulan" className="font-medium text-sm rounded-xl cursor-pointer">3 Bulan Terakhir</SelectItem>
-                                            <SelectItem value="6_bulan" className="font-medium text-sm rounded-xl cursor-pointer">6 Bulan Terakhir</SelectItem>
-                                            <SelectItem value="tahun_kemarin" className="font-medium text-sm rounded-xl cursor-pointer">Tahun Kemarin</SelectItem>
-                                            <SelectItem value="5_tahun" className="font-medium text-sm rounded-xl cursor-pointer">5 Tahun Terakhir</SelectItem>
+                                        <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
+                                            <SelectItem value="tahun_ini" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">Tahun ini</SelectItem>
+                                            <SelectItem value="3_bulan" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">3 Bulan Terakhir</SelectItem>
+                                            <SelectItem value="6_bulan" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">6 Bulan Terakhir</SelectItem>
+                                            <SelectItem value="tahun_kemarin" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">Tahun Kemarin</SelectItem>
+                                            <SelectItem value="5_tahun" className="font-medium text-xs rounded-xl focus:bg-sky-50 focus:text-sky-500 cursor-pointer">5 Tahun Terakhir</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>

@@ -73,17 +73,17 @@ export default function Bookings({ bookings, stats, charts, filters }) {
     // --- Komponen Opsi Dropdown Shadcn ---
     const timeOptions = (
         <>
-            <SelectItem value="minggu_ini" className="text-xs cursor-pointer focus:bg-sky-50">Minggu ini</SelectItem>
-            <SelectItem value="bulan_ini" className="text-xs cursor-pointer focus:bg-sky-50">Bulan ini</SelectItem>
-            <SelectItem value="tahun_ini" className="text-xs cursor-pointer focus:bg-sky-50">Tahun ini</SelectItem>
-            <SelectItem value="semua" className="text-xs cursor-pointer focus:bg-sky-50">Semua Waktu</SelectItem>
+            <SelectItem value="minggu_ini" className="text-xs cursor-pointer focus:text-sky-500 focus:bg-sky-50">Minggu ini</SelectItem>
+            <SelectItem value="bulan_ini" className="text-xs cursor-pointer focus:text-sky-500 focus:bg-sky-50">Bulan ini</SelectItem>
+            <SelectItem value="tahun_ini" className="text-xs cursor-pointer focus:text-sky-500 focus:bg-sky-50">Tahun ini</SelectItem>
+            <SelectItem value="semua" className="text-xs cursor-pointer focus:text-sky-500 focus:bg-sky-50">Semua Waktu</SelectItem>
         </>
     );
 
     const sortOptions = (
         <>
-            <SelectItem value="terbaru" className="text-xs cursor-pointer focus:bg-sky-50">Terbaru</SelectItem>
-            <SelectItem value="terlama" className="text-xs cursor-pointer focus:bg-sky-50">Terlama</SelectItem>
+            <SelectItem value="terbaru" className="text-xs cursor-pointer focus:text-sky-500 focus:bg-sky-50">Terbaru</SelectItem>
+            <SelectItem value="terlama" className="text-xs cursor-pointer focus:text-sky-500 focus:bg-sky-50">Terlama</SelectItem>
         </>
     );
 
@@ -200,7 +200,7 @@ export default function Bookings({ bookings, stats, charts, filters }) {
                                 <SelectTrigger className="bg-[#0099ff] text-white text-xs font-medium px-4 py-1.5 h-auto rounded-full border-0 focus:ring-0 shadow-none w-auto">
                                     <SelectValue placeholder="Waktu" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-white rounded-xl border border-neutral-300 shadow-xl">
+                                <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
                                     {timeOptions}
                                 </SelectContent>
                             </Select>
@@ -218,7 +218,7 @@ export default function Bookings({ bookings, stats, charts, filters }) {
                             <SelectTrigger className="bg-[#0099ff] text-white text-xs font-medium px-4 py-1.5 h-auto rounded-full border-0 focus:ring-0 shadow-none w-auto">
                                 <SelectValue placeholder="Waktu" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white rounded-xl border border-neutral-300 shadow-xl">
+                            <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
                                 {timeOptions}
                             </SelectContent>
                         </Select>
@@ -304,7 +304,7 @@ export default function Bookings({ bookings, stats, charts, filters }) {
                             <SelectTrigger className="bg-[#0099ff] text-white text-xs font-medium px-4 py-2 h-auto rounded-full border-0 focus:ring-0 shadow-none w-auto shrink-0">
                                 <SelectValue placeholder="Urutkan" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white rounded-xl border border-neutral-300 shadow-xl">
+                            <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
                                 {sortOptions}
                             </SelectContent>
                         </Select>

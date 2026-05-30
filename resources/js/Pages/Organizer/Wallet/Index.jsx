@@ -376,14 +376,14 @@ export default function Index({ balances, methods, history, filters }) {
                                     handleFilterChange('sort', val); 
                                 }}
                             >
-                                <SelectTrigger className="p-2 bg-sky-500 border-0 rounded-[16px] text-[10px] font-semibold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0">
+                                <SelectTrigger className="px-4 py-2 bg-sky-500 border-0 rounded-[16px] text-xs font-semibold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0">
                                     <SelectValue placeholder="Sortir" />
                                 </SelectTrigger>
                                 <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 z-[100] p-1.5 min-w-[120px]">
-                                    <SelectItem value="terbaru" className="font-medium text-[10px] text-neutral-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
+                                    <SelectItem value="terbaru" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3">
                                         Terbaru
                                     </SelectItem>
-                                    <SelectItem value="terlama" className="font-medium text-[10px] text-neutral-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
+                                    <SelectItem value="terlama" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3">
                                         Terlama
                                     </SelectItem>
                                 </SelectContent>

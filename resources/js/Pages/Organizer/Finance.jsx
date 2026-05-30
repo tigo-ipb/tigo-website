@@ -226,7 +226,7 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
                                     <SelectTrigger className="bg-sky-500 text-white text-xs font-medium px-4 py-1.5 h-auto rounded-full flex items-center gap-1 border-0 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 shadow-none">
                                         <SelectValue placeholder="Waktu" />
                                     </SelectTrigger>
-                                    <SelectContent className="bg-white rounded-[24px] border border-gray-100 shadow-xl z-[100] p-1.5">
+                                    <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[24px] border border-gray-100 shadow-xl z-[100] p-1.5">
                                         <SelectItem value="tahun_ini" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun Ini</SelectItem>
                                         <SelectItem value="tahun_kemarin" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun Kemarin</SelectItem>
                                         <SelectItem value="5_tahun_kemarin" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">5 Tahun Terakhir</SelectItem>
@@ -277,13 +277,25 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
                             <SelectTrigger className="bg-sky-500 text-white text-xs font-medium px-4 py-1.5 h-auto rounded-full flex items-center gap-1 border-0 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 shadow-none">
                                 <SelectValue placeholder="Pilih Waktu" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white rounded-[24px] border border-gray-100 shadow-xl z-[100] p-1.5">
-                                <SelectItem value="minggu_ini" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Minggu Ini</SelectItem>
-                                <SelectItem value="bulan_ini" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Bulan Ini</SelectItem>
-                                <SelectItem value="6_bulan" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">6 Bulan Terakhir</SelectItem>
-                                <SelectItem value="tahun_ini" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun Ini</SelectItem>
-                                <SelectItem value="tahun_kemarin" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun Kemarin</SelectItem>
-                                <SelectItem value="5_tahun_kemarin" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">5 Tahun Terakhir</SelectItem>
+                            <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
+                                <SelectItem value="minggu_ini" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3">
+                                    Minggu Ini
+                                </SelectItem>
+                                <SelectItem value="bulan_ini" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3">
+                                    Bulan Ini
+                                </SelectItem>
+                                <SelectItem value="6_bulan" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3">
+                                    6 Bulan Terakhir
+                                </SelectItem>
+                                <SelectItem value="tahun_ini" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3">
+                                    Tahun Ini
+                                </SelectItem>
+                                <SelectItem value="tahun_kemarin" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3">
+                                    Tahun Kemarin
+                                </SelectItem>
+                                <SelectItem value="5_tahun_kemarin" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer py-2.5 px-3">
+                                    5 Tahun Terakhir
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -364,9 +376,13 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
                                 <SelectTrigger className="bg-sky-500 text-white text-xs font-medium px-4 py-2 h-auto rounded-full flex justify-between items-center gap-1 border-0 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 shadow-none">
                                     <SelectValue placeholder="Sortir" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-white rounded-[24px] border border-gray-100 shadow-xl z-[100] p-1.5">
-                                    <SelectItem value="terbaru" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Terbaru</SelectItem>
-                                    <SelectItem value="terlama" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Terlama</SelectItem>
+                                <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
+                                    <SelectItem value="terbaru" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3">
+                                        Terbaru
+                                    </SelectItem>
+                                    <SelectItem value="terlama" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 cursor-pointer rounded-xl py-2.5 px-3">
+                                        Terlama
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
 

@@ -37,7 +37,7 @@ export default function Show({ event }) {
                 <div className="xl:col-span-2 space-y-8">
                     
                     {/* Banner & Title Card */}
-                    <div className="bg-white rounded-[24px] border border-gray-100 overflow-hidden shadow-sm">
+                    <div className="bg-white rounded-[24px] border border-neutral-300 overflow-hidden shadow-sm">
                         {/* Banner Image */}
                         <div className="relative h-64 sm:h-80 w-full bg-gray-100">
                             <img 
@@ -60,31 +60,31 @@ export default function Show({ event }) {
                         </div>
 
                         {/* Title & Info */}
-                        <div className="p-8">
-                            <h1 className="text-3xl font-bold text-gray-900 mb-6">{event.name}</h1>
+                        <div className="p-4">
+                            <h1 className="text-2xl font-medium text-gray-900 mb-2">{event.name}</h1>
                             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-6">
-                                <div className="space-y-3">
-                                    <div className="flex items-center gap-3 text-sm font-medium text-gray-700">
+                                <div className="flex flex-col">
+                                    <div className="flex items-center gap-3 text-xs font-medium text-black">
                                         <IconClock size={20} className="text-blue-500" />
                                         <span>{event.schedule_format}</span>
                                     </div>
-                                    <div className="flex items-center gap-3 text-sm font-medium text-gray-700">
+                                    <div className="flex items-center gap-3 text-xs font-medium text-black">
                                         <IconMapPin size={20} className="text-blue-500" />
                                         <span>{event.location?.venue}</span>
                                     </div>
                                 </div>
                                 <div className="text-left sm:text-right">
-                                    <p className="text-xs text-gray-500 font-medium mb-1">Mulai dari</p>
-                                    <p className="text-2xl font-black text-gray-900">{formatRupiah(event.lowest_price)}</p>
+                                    <p className="text-[10px] text-gray-500 font-medium">Mulai dari</p>
+                                    <p className="text-[14px] font-medium text-gray-900">{formatRupiah(event.lowest_price)}</p>
                                 </div>
                             </div>
 
-                            <hr className="my-8 border-gray-100" />
+                            <hr className="my-6 border-solid border-neutral-300" />
 
                             <div className="space-y-6">
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-900 mb-2">Tentang Event</h3>
-                                    <p className="text-sm text-gray-600 leading-relaxed text-justify">
+                                    <h3 className="text-sm font-semibold text-gray-900 mb-2">Tentang Event</h3>
+                                    <p className="text-xs text-gray-600 leading-relaxed text-justify">
                                         {event.description}
                                     </p>
                                 </div>
@@ -93,7 +93,7 @@ export default function Show({ event }) {
                     </div>
 
                     {/* Ketentuan Card */}
-                    <div className="bg-white p-8 rounded-[24px] border border-gray-100 shadow-sm">
+                    <div className="bg-white p-8 rounded-[24px] border border-neutral-300 shadow-sm">
                         <h2 className="text-xl font-bold text-gray-900 mb-4">Ketentuan</h2>
                         {event.terms_conditions && event.terms_conditions.length > 0 ? (
                             <ol className="list-decimal list-outside ml-4 space-y-2 text-sm text-gray-600">
@@ -111,7 +111,7 @@ export default function Show({ event }) {
                 <div className="space-y-8">
                     
                     {/* Widget Tiket Terjual & Keuangan */}
-                    <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm">
+                    <div className="bg-white p-6 rounded-[24px] border border-neutral-300 shadow-sm">
                         <h3 className="text-lg font-bold text-gray-900 mb-4">Tiket Terjual</h3>
                         
                         {/* Progress */}
@@ -130,7 +130,7 @@ export default function Show({ event }) {
 
                         {/* Income Cards */}
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="border border-gray-100 rounded-2xl p-4 flex items-center gap-3">
+                            <div className="border border-neutral-300 rounded-2xl p-4 flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-[#e0f2fe] text-blue-500 flex items-center justify-center shrink-0">
                                     <IconCurrencyDollar size={24} stroke={2} />
                                 </div>
@@ -139,7 +139,7 @@ export default function Show({ event }) {
                                     <p className="text-sm font-bold text-blue-500">{new Intl.NumberFormat('id-ID').format(event.stats.revenue_paid)}</p>
                                 </div>
                             </div>
-                            <div className="border border-gray-100 rounded-2xl p-4 flex items-center gap-3">
+                            <div className="border border-neutral-300 rounded-2xl p-4 flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-gray-50 text-blue-300 flex items-center justify-center shrink-0">
                                     <IconClockHour4 size={24} stroke={2} />
                                 </div>
@@ -152,7 +152,7 @@ export default function Show({ event }) {
                     </div>
 
                     {/* Widget Tipe Tiket */}
-                    <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm">
+                    <div className="bg-white p-6 rounded-[24px] border border-neutral-300 shadow-sm">
                         <h3 className="text-lg font-bold text-gray-900 mb-4">Tipe Tiket</h3>
                         <div className="space-y-4">
                             {event.ticket_types.map((ticket, index) => (
@@ -178,15 +178,15 @@ export default function Show({ event }) {
                     </div>
 
                     {/* Widget Lokasi (Map Placeholder) */}
-                    <div className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm">
+                    <div className="bg-white p-6 rounded-[24px] border border-neutral-300 shadow-sm">
                         <h3 className="text-lg font-bold text-gray-900 mb-4">Lokasi</h3>
                         <iframe 
                             src={event.location.map_link} 
-                            className="w-full h-48 border border-gray-100 rounded-2xl"
+                            className="w-full h-48 border border-neutral-300 rounded-2xl"
                             title="Event Location"
                         ></iframe>
                             {/* Jika Anda punya Google Maps iframe, bisa dimasukkan di sini */}
-                            <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl text-xs font-bold text-gray-500 shadow-sm border border-gray-100">
+                            <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-xl text-xs font-bold text-gray-500 shadow-sm border border-neutral-300">
                                 Area Maps
                             </div>
                     </div>
