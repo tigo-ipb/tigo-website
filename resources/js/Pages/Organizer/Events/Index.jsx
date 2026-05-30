@@ -167,7 +167,7 @@
                                 <button
                                     key={tab.id}
                                     onClick={() => handleTabChange(tab.id)}
-                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-[16px] text-xs font-semibold transition-all shrink-0 capitalize ${activeTab === tab.id ? 'bg-[#00a2ff] text-white' : 'bg-neutral-100 text-neutral-400 hover:bg-gray-200 cursor-pointer'}`}
+                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-[16px] text-xs font-semibold transition-all shrink-0 capitalize ${activeTab === tab.id ? 'bg-sky-500 text-white' : 'bg-neutral-100 text-neutral-400 hover:bg-neutral-200 cursor-pointer'}`}
                                 >
                                     <tab.icon size={18} stroke={activeTab === tab.id ? 2.5 : 2} />
                                     {tab.label}

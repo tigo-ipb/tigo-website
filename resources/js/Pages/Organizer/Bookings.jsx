@@ -6,8 +6,6 @@ import {
     IconTicket,
     IconShoppingCart,
     IconSearch,
-    IconChevronLeft,
-    IconChevronRight,
 } from '@tabler/icons-react'
 
 // Import Shadcn UI
@@ -15,6 +13,9 @@ import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/Components/ui/select"
 import StatCard from '@/Components/StatCard'
+import Pagination from '@/Components/Pagination'
+import DynamicTable from '@/Components/Table'
+import Search from '@/Components/Search'
 
 const formatRupiah = (number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -25,34 +26,47 @@ const formatRupiah = (number) => {
 }
 
 const STATUS_TABS = [
-    { label: 'Semua', value: 'semua' },
-    { label: 'Dibayar', value: 'PAID' },
-    { label: 'Menunggu', value: 'PENDING' },
-    { label: 'Dibatalkan', value: 'CANCELLED' },
+    { id: 'semua', label: 'Semua', value: 'semua' },
+    { id: 'dibayar', label: 'Dibayar', value: 'PAID' },
+    { id: 'menunggu', label: 'Menunggu', value: 'PENDING' },
+    { id: 'dibatalkan', label: 'Dibatalkan', value: 'CANCELLED' },
 ]
 
-export default function Bookings({ bookings, stats, charts, pagination, filters }) {
+function StatusBadge({ status }) {
+    if (status === 'PAID') {
+        return <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-green-200 text-green-500 bg-white">Dibayar</span>;
+    }
+    if (status === 'PENDING') {
+        return <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-yellow-200 text-yellow-500 bg-white">Menunggu</span>;
+    }
+    return <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-red-200 text-red-500 bg-white">Dibatalkan</span>;
+}
+
+export default function Bookings({ bookings, stats, charts, filters }) {
 
     // 3 State Independen
     const [search, setSearch] = useState(filters.search ?? '')
+    const [activeTab, setActiveTab] = useState(filters?.tab || 'semua');
     const [filterOverview, setFilterOverview] = useState(filters.filter_overview ?? 'minggu_ini')
     const [filterCategory, setFilterCategory] = useState(filters.filter_category ?? 'minggu_ini')
     const [sortTable, setSortTable] = useState(filters.sort_table ?? 'terbaru')
 
+    
+    // 🔥 Fungsi serbaguna untuk Update Filter (Reset ke page 1)
     const updateFilter = (key, value) => {
         router.get(route('organizer.bookings'), {
             ...filters, [key]: value, page: 1
         }, { preserveState: true, preserveScroll: true })
     }
-
-    const handleSearch = (e) => {
-        e.preventDefault()
-        updateFilter('search', search)
-    }
-
+    const handleTabChange = (status) => {
+            setActiveTab(status);
+            updateFilter('status', status == 'semua' ? null : status);
+        };
+    
+    // 🔥 Fungsi khusus untuk Pindah Halaman Pagination
     const handlePage = (page) => {
         router.get(route('organizer.bookings'), {
-            ...filters, page,
+            ...filters, page: page,
         }, { preserveState: true, preserveScroll: true })
     }
 
@@ -115,6 +129,46 @@ export default function Bookings({ bookings, stats, charts, pagination, filters 
         grid: { borderColor: '#f1f5f9', strokeDashArray: 4 },
         tooltip: { y: { formatter: (v) => v + ' booking' } }
     }
+    
+
+    const bookingColumns = [
+        { 
+            header: 'Order ID', 
+            accessor: 'order_id', 
+            cellClassName: 'font-medium text-gray-900 whitespace-nowrap',
+            render: (row) => `#${row.order_id}` // Tambahkan hashtag di depannya
+        },
+        { 
+            header: 'Waktu', 
+            render: (row) => (
+                <div className="whitespace-nowrap">
+                    <span className="text-gray-900">{row.date}</span><br />
+                    <span className="text-gray-500">{row.time}</span>
+                </div>
+            )
+        },
+        { header: 'Nama', accessor: 'buyer_name', cellClassName: 'font-medium text-gray-900 whitespace-nowrap' },
+        { header: 'Email', accessor: 'email', cellClassName: 'font-medium text-gray-900 whitespace-nowrap' },
+        { 
+            header: 'Event', 
+            render: (row) => (
+                <>
+                    <p className="text-xs font-medium text-gray-900 line-clamp-1">{row.event_name}</p>
+                    <p className="text-xs text-gray-500">{row.category}</p>
+                </>
+            )
+        },
+        { header: 'Qty', accessor: 'qty', cellClassName: 'font-medium text-gray-900' },
+        { 
+            header: 'Jumlah', 
+            cellClassName: 'font-medium text-gray-900 whitespace-nowrap',
+            render: (row) => formatRupiah(row.amount) 
+        },
+        { 
+            header: 'Status', 
+            render: (row) => <StatusBadge status={row.status} /> 
+        },
+    ];
 
     return (
         <DashboardLayout header={"Bookings"}>
@@ -139,14 +193,14 @@ export default function Bookings({ bookings, stats, charts, pagination, filters 
                     </div>
 
                     {/* ===== BOOKINGS OVERVIEW ===== */}
-                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                    <div className="bg-white p-6 rounded-[24px] border border-neutral-300 shadow-sm">
                         <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-bold text-xl text-gray-900">Bookings Overview</h4>
+                            <h4 className="text-xl font-medium text-neutral-950">Bookings Overview</h4>
                             <Select value={filterOverview} onValueChange={(val) => { setFilterOverview(val); updateFilter('filter_overview', val); }}>
                                 <SelectTrigger className="bg-[#0099ff] text-white text-xs font-medium px-4 py-1.5 h-auto rounded-full border-0 focus:ring-0 shadow-none w-auto">
                                     <SelectValue placeholder="Waktu" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-white rounded-xl border border-gray-100 shadow-xl">
+                                <SelectContent className="bg-white rounded-xl border border-neutral-300 shadow-xl">
                                     {timeOptions}
                                 </SelectContent>
                             </Select>
@@ -157,14 +211,14 @@ export default function Bookings({ bookings, stats, charts, pagination, filters 
 
                 {/* ================= BAGIAN KANAN ================= */}
                 {/* ===== BOOKINGS CATEGORY ===== */}
-                <div className="lg:col-span-1 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col h-full">
+                <div className="lg:col-span-1 bg-white p-6 rounded-[24px] border border-neutral-300 shadow-sm flex flex-col h-full">
                     <div className="flex justify-between items-center mb-8">
-                        <h4 className="font-bold text-xl text-gray-900">Bookings Category</h4>
+                        <h4 className="text-xl font-medium text-neutral-950">Bookings Category</h4>
                         <Select value={filterCategory} onValueChange={(val) => { setFilterCategory(val); updateFilter('filter_category', val); }}>
                             <SelectTrigger className="bg-[#0099ff] text-white text-xs font-medium px-4 py-1.5 h-auto rounded-full border-0 focus:ring-0 shadow-none w-auto">
                                 <SelectValue placeholder="Waktu" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white rounded-xl border border-gray-100 shadow-xl">
+                            <SelectContent className="bg-white rounded-xl border border-neutral-300 shadow-xl">
                                 {timeOptions}
                             </SelectContent>
                         </Select>
@@ -177,23 +231,33 @@ export default function Bookings({ bookings, stats, charts, pagination, filters 
                     <div className="flex-1 space-y-4">
                         {charts.donut.labels.map((cat, i) => {
                             const value = charts.donut.data[i];
-                            const percent = totalDonutValue > 0 ? ((value / totalDonutValue) * 100).toFixed(1) : 0;
-                            const color = donutOptions.colors[i % donutOptions.colors.length];
+                            const isEmpty = cat === 'Belum ada data'; // 🔥 Cek apakah ini data kosong
+                            
+                            // Jika kosong, persentase 0, jika ada isi baru hitung persennya
+                            const percent = (totalDonutValue > 0 && !isEmpty) ? ((value / totalDonutValue) * 100).toFixed(1) : 0;
+                            const color = isEmpty ? '#f1f5f9' : donutOptions.colors[i % donutOptions.colors.length];
                             
                             return (
                                 <div key={i} className="flex items-center justify-between text-xs">
                                     <div className="flex-1 pr-4">
                                         <div className="flex justify-between items-center mb-1.5">
-                                            <span className="text-gray-900 font-medium truncate" title={cat}>{cat}</span>
-                                            <span className="text-gray-500">({percent}%)</span>
+                                            <span className={`${isEmpty ? 'text-gray-400' : 'text-gray-900'} font-medium truncate`} title={cat}>
+                                                {cat}
+                                            </span>
+                                            <span className="text-gray-400">
+                                                {isEmpty ? '(-)' : `(${percent}%)`}
+                                            </span>
                                         </div>
                                         {/* Custom Progress Bar */}
                                         <div className="w-full bg-gray-100 rounded-full h-1.5">
-                                            <div className="h-1.5 rounded-full transition-all duration-500" style={{ width: `${percent}%`, backgroundColor: color }}></div>
+                                            <div 
+                                                className="h-1.5 rounded-full transition-all duration-500" 
+                                                style={{ width: isEmpty ? '100%' : `${percent}%`, backgroundColor: color }}
+                                            ></div>
                                         </div>
                                     </div>
-                                    <div className="font-bold text-gray-900 w-12 text-right mt-3">
-                                        {new Intl.NumberFormat('id-ID').format(value)}
+                                    <div className={`font-bold w-12 text-right mt-3 ${isEmpty ? 'text-gray-400' : 'text-gray-900'}`}>
+                                        {isEmpty ? '-' : new Intl.NumberFormat('id-ID').format(value)}
                                     </div>
                                 </div>
                             )
@@ -204,24 +268,20 @@ export default function Bookings({ bookings, stats, charts, pagination, filters 
             </div>
 
             {/* ===== TABEL RIWAYAT BOOKING ===== */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-[24px] border p-4 border-neutral-300 shadow-sm overflow-hidden flex flex-col gap-6 mb-6">
                 
                 {/* Header Table & Filters */}
-                <div className="p-6 border-b border-gray-100 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+                <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
                     
                     <div className="flex items-center flex-wrap gap-4 w-full xl:w-auto">
-                        <h4 className="font-bold text-xl text-gray-900 mr-2">Riwayat Booking</h4>
+                        <h4 className="text-xl font-medium text-neutral-950 mr-2">Riwayat Booking</h4>
                         {/* Status Tabs */}
-                        <div className="flex gap-1 bg-gray-50 p-1 rounded-full border border-gray-100 overflow-x-auto scrollbar-hide">
-                            {STATUS_TABS.map((tab) => (
+                         <div className="flex flex-wrap lg:flex-nowrap gap-2 w-full xl:w-auto">
+                            {STATUS_TABS.map(tab => (
                                 <button
-                                    key={tab.value}
-                                    onClick={() => updateFilter('status', tab.value)}
-                                    className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
-                                        filters.status === tab.value || (tab.value === 'semua' && !filters.status)
-                                            ? 'bg-[#0099ff] text-white shadow-sm'
-                                            : 'text-gray-500 hover:bg-gray-200'
-                                    }`}
+                                    key={tab.id}
+                                    onClick={() => handleTabChange(tab.value)}
+                                    className={`flex items-center justify-center gap-2 px-3 py-2 rounded-[16px] text-xs font-semibold transition-all shrink-0 capitalize ${activeTab === tab.value ? 'bg-sky-500 text-white' : 'bg-neutral-100 text-neutral-400 hover:bg-neutral-200 cursor-pointer'}`}
                                 >
                                     {tab.label}
                                 </button>
@@ -231,23 +291,20 @@ export default function Bookings({ bookings, stats, charts, pagination, filters 
 
                     <div className="flex items-center gap-3 w-full xl:w-auto">
                         {/* Search */}
-                        <form onSubmit={handleSearch} className="relative flex-1 xl:w-64">
-                            <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                            <input
-                                type="text"
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                                placeholder="Cari nama, event..."
-                                className="w-full pl-9 pr-4 py-2 text-xs border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-100 focus:border-sky-400"
-                            />
-                        </form>
+                         <Search
+                            value={search}
+                            onChange={setSearch}
+                            onSubmit={(val) => updateFilter('search', val)} // Langsung kirim val ke updateFilter
+                            placeholder="Cari ID, nama..."
+                            className="w-full xl:w-64"
+                        />
 
                         {/* Sort Dropdown */}
                         <Select value={sortTable} onValueChange={(val) => { setSortTable(val); updateFilter('sort_table', val); }}>
                             <SelectTrigger className="bg-[#0099ff] text-white text-xs font-medium px-4 py-2 h-auto rounded-full border-0 focus:ring-0 shadow-none w-auto shrink-0">
                                 <SelectValue placeholder="Urutkan" />
                             </SelectTrigger>
-                            <SelectContent className="bg-white rounded-xl border border-gray-100 shadow-xl">
+                            <SelectContent className="bg-white rounded-xl border border-neutral-300 shadow-xl">
                                 {sortOptions}
                             </SelectContent>
                         </Select>
@@ -256,100 +313,20 @@ export default function Bookings({ bookings, stats, charts, pagination, filters 
 
                 {/* Table */}
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left min-w-[1000px]">
-                        <thead>
-                            <tr className="border-b border-gray-100 text-sky-500">
-                                <th className="py-4 px-6 text-xs font-bold">Order ID</th>
-                                <th className="py-4 px-6 text-xs font-bold">Waktu</th>
-                                <th className="py-4 px-6 text-xs font-bold">Nama</th>
-                                <th className="py-4 px-6 text-xs font-bold">Email</th>
-                                <th className="py-4 px-6 text-xs font-bold">Event</th>
-                                <th className="py-4 px-6 text-xs font-bold">Qty</th>
-                                <th className="py-4 px-6 text-xs font-bold">Jumlah</th>
-                                <th className="py-4 px-6 text-xs font-bold">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {bookings?.length > 0 ? bookings.map((booking, i) => (
-                                <tr key={i} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
-                                    <td className="py-4 px-6 text-sm font-medium text-gray-900">#{booking.order_id}</td>
-                                    <td className="py-4 px-6 text-xs text-gray-900">
-                                        <span className="font-medium">{booking.date}</span><br />
-                                        <span className="text-gray-500">{booking.time}</span>
-                                    </td>
-                                    <td className="py-4 px-6 text-sm font-bold text-gray-900">{booking.buyer_name}</td>
-                                    <td className="py-4 px-6 text-sm font-medium text-gray-900">{booking.email}</td>
-                                    <td className="py-4 px-6">
-                                        <p className="text-xs font-bold text-gray-900 line-clamp-1">{booking.event_name}</p>
-                                        <p className="text-xs text-gray-500">{booking.category}</p>
-                                    </td>
-                                    <td className="py-4 px-6 text-sm font-bold text-gray-900">{booking.qty}</td>
-                                    <td className="py-4 px-6 text-sm font-bold text-gray-900">{formatRupiah(booking.amount)}</td>
-                                    <td className="py-4 px-6">
-                                        {booking.status === 'PAID' ? (
-                                            <span className="px-3 py-1 rounded-full text-[10px] font-bold border border-green-200 text-green-500 bg-white">
-                                                Dibayar
-                                            </span>
-                                        ) : booking.status === 'PENDING' ? (
-                                            <span className="px-3 py-1 rounded-full text-[10px] font-bold border border-yellow-200 text-yellow-500 bg-white">
-                                                Menunggu
-                                            </span>
-                                        ) : (
-                                            <span className="px-3 py-1 rounded-full text-[10px] font-bold border border-red-200 text-red-500 bg-white">
-                                                Dibatalkan
-                                            </span>
-                                        )}
-                                    </td>
-                                </tr>
-                            )) : (
-                                <tr>
-                                    <td colSpan="8" className="py-16 text-center text-gray-400 text-sm">
-                                        Belum ada data booking.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                    <DynamicTable 
+                    columns={bookingColumns} 
+                    data={bookings?.data} 
+                    emptyMessage="Belum ada data booking."
+                    minWidth="min-w-[1000px]" 
+                />
                 </div>
 
-                {/* Pagination */}
-                {pagination && pagination.last_page > 1 && (
-                    <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
-                        <p className="text-sm font-medium text-gray-900">
-                            Menampilkan {((pagination.current_page - 1) * pagination.per_page) + 1} dari {new Intl.NumberFormat('id-ID').format(pagination.total)}
-                        </p>
-                        <div className="flex items-center gap-1">
-                            <button
-                                onClick={() => handlePage(pagination.current_page - 1)}
-                                disabled={pagination.current_page === 1}
-                                className="p-2 rounded-lg text-[#0099ff] bg-[#e0f2fe] hover:bg-sky-200 disabled:opacity-50 disabled:hover:bg-[#e0f2fe]"
-                            >
-                                <IconChevronLeft size={16} />
-                            </button>
-                            {Array.from({ length: Math.min(pagination.last_page, 5) }, (_, i) => i + 1).map((p) => (
-                                <button
-                                    key={p}
-                                    onClick={() => handlePage(p)}
-                                    className={`w-8 h-8 rounded-lg text-sm font-bold border transition-colors ${
-                                        pagination.current_page === p
-                                            ? 'border-[#0099ff] text-[#0099ff] bg-white'
-                                            : 'border-transparent text-gray-500 hover:bg-gray-50'
-                                    }`}
-                                >
-                                    {p}
-                                </button>
-                            ))}
-                            <button
-                                onClick={() => handlePage(pagination.current_page + 1)}
-                                disabled={pagination.current_page === pagination.last_page}
-                                className="p-2 rounded-lg text-[#0099ff] bg-[#e0f2fe] hover:bg-sky-200 disabled:opacity-50 disabled:hover:bg-[#e0f2fe]"
-                            >
-                                <IconChevronRight size={16} />
-                            </button>
-                        </div>
-                    </div>
-                )}
+                {/* 🔥 Ganti fungsi onPageChange menjadi handlePage 🔥 */}
             </div>
+                <Pagination
+                    pagination={bookings}
+                    onPageChange={(page) => handlePage(page)}
+                />
 
         </DashboardLayout>
     )

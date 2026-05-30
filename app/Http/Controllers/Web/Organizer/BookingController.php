@@ -94,18 +94,33 @@ class BookingController extends Controller
             $categoryCounts[$cat] += $qty; 
         }
 
-        // --- 4. TABLE (Riwayat Booking) ---
+      // --- 4. TABLE (Riwayat Booking) ---
         $tableQuery = clone $baseQuery;
         
         // Filter Status & Search
         if ($request->status && $request->status !== 'semua') {
             $tableQuery->where('payment_status', strtoupper($request->status));
         }
+        // 🔥 PERBAIKAN LOGIKA SEARCH MONGODB (Dengan customer_info) 🔥
         if ($request->search) {
             $search = $request->search;
-            $tableQuery->where(function($q) use ($search) {
-                $q->where('buyer_name', 'like', '%'.$search.'%')
-                  ->orWhere('buyer_email', 'like', '%'.$search.'%');
+            $safeSearch = preg_quote($search, '/');
+            $regexPattern = "/.*{$safeSearch}.*/i";
+
+            // Cari ID Event yang namanya cocok
+            $eventIds = Event::where('name', 'regex', $regexPattern)
+                ->select('_id')->limit(100)->get()
+                ->map(fn($e) => $e->id)->filter()->toArray();
+
+            // Terapkan ke query tabel Payment
+            $tableQuery->where(function($q) use ($regexPattern, $eventIds) {
+                $q->where('_id', 'regex', $regexPattern)
+                  // 🔥 Cukup tembak regex ke field customer_info!
+                  ->orWhere('customer_info', 'regex', $regexPattern);
+
+                if (!empty($eventIds)) {
+                    $q->orWhereIn('event_id', $eventIds);
+                }
             });
         }
 
@@ -114,11 +129,7 @@ class BookingController extends Controller
         $tableQuery->orderBy('created_at', $sortOrder);
 
         // Pagination
-        $perPage = 10;
-        $allPaymentsTable = $tableQuery->get();
-        $total = $allPaymentsTable->count();
-        $page = $request->page ?? 1;
-        $payments = $allPaymentsTable->slice(($page - 1) * $perPage, $perPage)->values();
+        $payments = $tableQuery->paginate(10);
 
         // Optimasi N+1 Query
         $userIds = $payments->pluck('user_id')->filter()->unique();
@@ -126,16 +137,17 @@ class BookingController extends Controller
         $users = User::whereIn('_id', $userIds)->get()->keyBy('_id');
         $events = Event::whereIn('_id', $eventIds)->get()->keyBy('_id');
 
-        $bookings = $payments->map(function ($payment) use ($users, $events) {
-            $user = $users->get($payment->user_id);
-            $event = $events->get($payment->event_id);
+        // 🔥 UBAH map() MENJADI through() DI SINI 🔥
+        $bookings = $payments->through(function ($payment) use ($users, $events) {
+        $user = $users->get($payment->user_id);
+        $event = $events->get($payment->event_id);
 
             return [
                 'order_id' => strtoupper(substr($payment->_id, -8)),
                 'date' => Carbon::parse($payment->created_at)->format('d/m/Y'),
                 'time' => Carbon::parse($payment->created_at)->format('H:i'),
-                'buyer_name' => $payment->buyer_name ?? ($user ? $user->name : 'Pengunjung'),
-                'email' => $payment->buyer_email ?? ($user ? $user->email : '-'),
+                'buyer_name' => $payment->customer_info['name'] ?? ($user ? $user->name : 'Pengunjung'),
+                'email' => $payment->customer_info['email'] ?? ($user ? $user->email : '-'),
                 'event_name' => $event ? $event->name : 'Event Dihapus',
                 'category' => $event ? ($event->category_name ?? 'Lainnya') : '-',
                 'qty' => collect($payment->ticket_items)->sum('quantity'),
@@ -157,14 +169,8 @@ class BookingController extends Controller
                 ],
                 'donut' => [
                     'labels' => empty($categoryCounts) ? ['Belum ada data'] : array_keys($categoryCounts),
-                    'data' => empty($categoryCounts) ? [1] : array_values($categoryCounts)
+                    'data' => empty($categoryCounts) ? [0] : array_values($categoryCounts)
                 ]
-            ],
-            'pagination' => [
-                'total' => $total,
-                'per_page' => $perPage,
-                'current_page' => (int) $page,
-                'last_page' => ceil($total / $perPage),
             ],
             'filters' => [
                 'status' => $request->status ?? 'semua',

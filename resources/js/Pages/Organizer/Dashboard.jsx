@@ -15,12 +15,13 @@ import {
     SelectValue,
 } from "@/Components/ui/select";
 import StatCard from '@/Components/StatCard';
+import DynamicTable from '@/Components/Table';
 
 const PRIMARY = '#00a2ff';
 const PRIMARY_LIGHT = '#dff2fe';
 
 const selectTriggerClass =
-    "h-[36px] px-4 bg-sky-500 border-0 rounded-[12px] text-xs font-semibold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0";
+    "h-[36px] px-4 bg-sky-500 border-0 rounded-full text-xs font-semibold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0";
 
 const formatRupiah = (number) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
@@ -139,7 +140,41 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
         '5_tahun': '5 Tahun',
     };
 
-    console.log(stats);
+    const bookingColumns = [
+        { header: 'Order ID', accessor: 'order_id', cellClassName: 'font-medium text-neutral-950 whitespace-nowrap' },
+        { 
+            header: 'Waktu', 
+            // Render khusus jika butuh HTML di dalam cell (contoh: baris atas tanggal, bawah jam)
+            render: (row) => (
+                <div className="whitespace-nowrap">
+                    <div className="font-medium text-neutral-800">{row.date}</div>
+                    <div className="text-xs text-neutral-500">{row.time}</div>
+                </div>
+            )
+        },
+        { header: 'Nama', accessor: 'buyer_name', cellClassName: 'font-medium text-neutral-950 whitespace-nowrap' },
+        { header: 'Email', accessor: 'email', cellClassName: 'font-medium text-neutral-950 whitespace-nowrap' },
+        { 
+            header: 'Event', 
+            render: (row) => (
+                <>
+                    <p className="text-neutral-950">{row.event_name}</p>
+                    <p className="text-xs text-neutral-500">{row.category}</p>
+                </>
+            )
+        },
+        { header: 'Qty', accessor: 'qty', headerClassName: 'text-center', cellClassName: 'text-center font-medium text-neutral-950' },
+        { 
+            header: 'Jumlah', 
+            cellClassName: 'font-medium text-neutral-950 whitespace-nowrap',
+            render: (row) => formatRupiah(row.amount) 
+        },
+        { 
+            header: 'Status', 
+            render: (row) => <StatusBadge status={row.status} /> 
+        },
+    ];
+
 
     return (
         <DashboardLayout header="Dashboard">
@@ -381,50 +416,11 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                     </div>
 
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm min-w-[900px]">
-                            <thead>
-                                <tr className="border-b border-neutral-300">
-                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Order ID</th>
-                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Waktu</th>
-                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Nama</th>
-                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Email</th>
-                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Event</th>
-                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap text-center">Qty</th>
-                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Jumlah</th>
-                                    <th className="py-3 px-2 text-xs font-medium text-sky-500 whitespace-nowrap">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {recentBookings.length > 0 ? recentBookings.map((booking, i) => (
-                                    <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                                        <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">
-                                            {booking.order_id}
-                                        </td>
-                                        <td className="py-4 px-2 whitespace-nowrap">
-                                            <div className="font-medium text-neutral-800">{booking.date}</div>
-                                            <div className="text-xs text-neutral-500">{booking.time}</div>
-                                        </td>
-                                        <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">{booking.buyer_name}</td>
-                                        <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">{booking.email}</td>
-                                        <td className="py-4 px-2">
-                                            <p className="text-neutral-950">{booking.event_name}</p>
-                                            <p className="text-xs text-neutral-500">{booking.category}</p>
-                                        </td>
-                                        <td className="py-4 px-2 text-center font-medium text-neutral-950">{booking.qty}</td>
-                                        <td className="py-4 px-2 font-medium text-neutral-950 whitespace-nowrap">{formatRupiah(booking.amount)}</td>
-                                        <td className="py-4 px-2">
-                                            <StatusBadge status={booking.status} />
-                                        </td>
-                                    </tr>
-                                )) : (
-                                    <tr>
-                                        <td colSpan="8" className="py-10 text-center text-neutral-400 text-sm">
-                                            Belum ada data booking.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                        <DynamicTable 
+                        columns={bookingColumns} 
+                        data={recentBookings} 
+                        emptyMessage="Belum ada data booking." 
+                    />
                     </div>
                 </div>
             </div>

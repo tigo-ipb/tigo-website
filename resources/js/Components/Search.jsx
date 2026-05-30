@@ -26,7 +26,7 @@ export default function Search({
                 value={value}
                 onChange={(e) => onChange && onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full bg-transparent pl-3 pr-12 py-2 text-xs border-0 focus:ring-0 focus:outline-none text-neutral-300 placeholder-neutral-300 font-medium rounded-full"
+                className="w-full bg-transparent pl-3 pr-12 py-2 text-xs border-0 focus:ring-0 focus:outline-none text-neutral-800 placeholder-neutral-300 font-medium rounded-full"
             />
 
             {/* Tombol Kaca Pembesar di Sisi Kanan */}
