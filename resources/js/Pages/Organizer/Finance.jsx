@@ -68,7 +68,7 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
     ];
 
     const areaOptions = {
-        chart: { type: 'line', toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'inherit' },
+        chart: { type: 'line', toolbar: { show: false }, fontFamily: 'inherit' },
         colors: ['#0ea5e9', '#94a3b8'],
         fill: {
             type: ['gradient', 'solid'],
@@ -236,7 +236,7 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
                             </div>
                         </div>
                         <div className="w-full h-[300px] -ml-4">
-                            <Chart key={`chart-${chartFilter}`} options={areaOptions} series={areaSeries} type="line" height="100%" />
+                            <Chart key={`chart-${chartFilter}`} options={areaOptions} series={areaSeries} type="area" height="100%" />
                         </div>
                     </div>
 
@@ -297,15 +297,15 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
                             {categories.map((cat, idx) => (
                                 <div key={idx} className="flex items-center justify-between p-3">
                                      <div className='flex gap-2'>
-            <div className={`w-2 h-12 rounded-full`} style={{ backgroundColor: cat.color }} />
-            <div className="flex flex-col h-full">
-                <p className="text-xs text-black">{cat.name}</p>
-                <p className="text-xl font-semibold text-black">{formatRupiah(cat.value)}</p>
-            </div>
-            </div>
-                                   <div className={`text-lg font-semibold p-2.5 rounded-[8px] bg-sky-100 text-sky-500`}>
-                {cat.percentage}%
-            </div>
+                                        <div className={`w-2 h-12 rounded-full`} style={{ backgroundColor: cat.color }} />
+                                        <div className="flex flex-col h-full">
+                                            <p className="text-xs text-black">{cat.name}</p>
+                                            <p className="text-xl font-semibold text-black">{formatRupiah(cat.value)}</p>
+                                        </div>
+                                        </div>
+                                                            <div className={`text-lg font-semibold p-2.5 rounded-[8px] bg-sky-100 text-sky-500`}>
+                                            {cat.percentage}%
+                                        </div>
                                 </div>
                                 
                             ))}
