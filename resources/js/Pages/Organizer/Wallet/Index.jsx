@@ -19,6 +19,7 @@ import {
 import StatCard from '@/Components/StatCard';
 import Search from '@/Components/Search';
 import Pagination from '@/Components/Pagination';
+import DynamicTable from '@/Components/Table';
 
 export default function Index({ balances, methods, history, filters }) {
     
@@ -122,6 +123,76 @@ export default function Index({ balances, methods, history, filters }) {
         </div>
     );
 
+    const walletColumns = [
+        { 
+            header: 'Withdrawal ID', 
+            cellClassName: 'font-medium text-neutral-950',
+            render: (row) => `WD-${(row?._id || row?.id || '000000').toString().substring(0,6).toUpperCase()}` 
+        },
+        { 
+            header: 'Waktu', 
+            render: (row) => {
+                const dt = formatDate(row.created_at);
+                return (
+                    <>
+                        <div className="font-medium text-neutral-950">{dt.date}</div>
+                        <div className="text-xs text-neutral-400">{dt.time}</div>
+                    </>
+                );
+            }
+        },
+        { 
+            header: 'Tujuan', 
+            render: (row) => (
+                <>
+                    <div className="font-medium text-neutral-950">{row.bank_info?.bank_code}</div>
+                    <div className="text-xs text-neutral-400">{row.bank_info?.account_number}</div>
+                </>
+            )
+        },
+        { 
+            header: 'Nama', 
+            cellClassName: 'font-medium text-neutral-950 whitespace-nowrap',
+            render: (row) => row.bank_info?.account_name 
+        },
+        { 
+            header: 'Nominal', 
+            cellClassName: 'font-semibold text-neutral-950 whitespace-nowrap',
+            render: (row) => formatRupiah(row.amount) 
+        },
+        { 
+            header: 'Fee', 
+            cellClassName: 'text-red-500 font-medium whitespace-nowrap',
+            render: () => `-${formatRupiah(2775)}` // dummyFee 
+        },
+        { 
+            header: 'Diterima', 
+            cellClassName: 'text-green-500 font-semibold whitespace-nowrap',
+            render: (row) => formatRupiah(row.amount - 2775) // dummyFee 
+        },
+        { 
+            header: 'Status', 
+            render: (row) => {
+                let statusColor, statusText;
+                if(row.status === 'SUCCESS') { 
+                    statusColor = 'text-green-500 border-green-500'; 
+                    statusText = 'Berhasil'; 
+                } else if(row.status === 'PENDING' || row.status === 'PROCESSING') { 
+                    statusColor = 'text-yellow-500 border-yellow-500'; 
+                    statusText = 'Diproses'; 
+                } else { 
+                    statusColor = 'text-red-500 border-red-500'; 
+                    statusText = 'Gagal'; 
+                }
+                return (
+                    <span className={`px-2 py-[2px] rounded-[4px] text-[8px] font-semibold border whitespace-nowrap ${statusColor}`}>
+                        {statusText}
+                    </span>
+                );
+            }
+        },
+    ];
+
     return (
         <DashboardLayout header={"Wallet"}>
             <Head title="Wallet Dashboard" />
@@ -216,7 +287,7 @@ export default function Index({ balances, methods, history, filters }) {
                 <div className="bg-white p-4 rounded-[24px] border border-neutral-300 flex flex-col gap-4">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                         <h2 className="text-xl font-medium text-neutral-900">Metode Penarikan</h2>
-                        <Button asChild className="rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-medium cursor-pointer p-2 h-auto">
+                        <Button asChild className="rounded-lg bg-sky-500 hover:bg-sky-600 text-white font-semibold cursor-pointer p-2 h-auto text-xs">
                             <Link href={route('organizer.wallet.createMethod')} className="flex items-center gap-2">
                                 <IconPlus size={16} stroke={2.5} />
                                 Tambah Metode Penarikan
@@ -229,7 +300,7 @@ export default function Index({ balances, methods, history, filters }) {
                         <div>
                             <p className="text-xs font-medium text-neutral-400 mb-3 uppercase tracking-wider">Transfer Bank</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {methods.bank.map(m => <MethodCard key={m._id} method={m} icon={IconBuildingBank} colorClass="text-sky-500 bg-sky-50" />)}
+                                {methods.bank.map(m => <MethodCard key={m.id} method={m} icon={IconBuildingBank} colorClass="text-sky-500 bg-sky-50" />)}
                             </div>
                         </div>
                     )}
@@ -239,7 +310,7 @@ export default function Index({ balances, methods, history, filters }) {
                         <div>
                             <p className="text-xs font-medium text-neutral-400 mb-3 uppercase tracking-wider">E-Wallet</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {methods['e-wallet'].map(m => <MethodCard key={m._id} method={m} icon={IconDeviceMobile} colorClass="text-[#00C951] bg-[#00C951]/10" />)}
+                                {methods['e-wallet'].map(m => <MethodCard key={m.id} method={m} icon={IconDeviceMobile} colorClass="text-[#00C951] bg-[#00C951]/10" />)}
                             </div>
                         </div>
                     )}
@@ -249,7 +320,7 @@ export default function Index({ balances, methods, history, filters }) {
                         <div>
                             <p className="text-xs font-medium text-neutral-400 mb-3 uppercase tracking-wider">Virtual Account</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {methods.virtual_account.map(m => <MethodCard key={m._id} method={m} icon={IconUserCircle} colorClass="text-sky-700 bg-sky-50" />)}
+                                {methods.virtual_account.map(m => <MethodCard key={m.id} method={m} icon={IconUserCircle} colorClass="text-sky-700 bg-sky-50" />)}
                             </div>
                         </div>
                     )}
@@ -305,14 +376,14 @@ export default function Index({ balances, methods, history, filters }) {
                                     handleFilterChange('sort', val); 
                                 }}
                             >
-                                <SelectTrigger className="w-[120px] h-[42px] px-4 bg-sky-500 border-0 rounded-[10px] text-sm font-medium text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0">
+                                <SelectTrigger className="p-2 bg-sky-500 border-0 rounded-[16px] text-[10px] font-semibold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0">
                                     <SelectValue placeholder="Sortir" />
                                 </SelectTrigger>
                                 <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[20px] border border-neutral-300 z-[100] p-1.5 min-w-[120px]">
-                                    <SelectItem value="terbaru" className="font-medium text-sm text-neutral-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
+                                    <SelectItem value="terbaru" className="font-medium text-[10px] text-neutral-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
                                         Terbaru
                                     </SelectItem>
-                                    <SelectItem value="terlama" className="font-medium text-sm text-neutral-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
+                                    <SelectItem value="terlama" className="font-medium text-[10px] text-neutral-700 focus:bg-sky-50 focus:text-sky-600 cursor-pointer rounded-xl py-2.5 px-3">
                                         Terlama
                                     </SelectItem>
                                 </SelectContent>
@@ -322,62 +393,12 @@ export default function Index({ balances, methods, history, filters }) {
 
                     {/* Table Container */}
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left text-sm whitespace-nowrap">
-                            <thead>
-                                <tr className="border-b border-neutral-300 text-sky-500 font-medium text-medium">
-                                    <th className="py-3 px-2">Withdrawal ID</th>
-                                    <th className="py-3 px-2">Waktu</th>
-                                    <th className="py-3 px-2">Tujuan</th>
-                                    <th className="py-3 px-2">Nama</th>
-                                    <th className="py-3 px-2">Nominal</th>
-                                    <th className="py-3 px-2">Fee</th>
-                                    <th className="py-3 px-2">Diterima</th>
-                                    <th className="py-3 px-2">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody className="text-neutral-700">
-                                {history?.data?.length > 0 ? history.data.map((item, index) => {
-                                    // Status Logic
-                                    let statusColor, statusText;
-                                    if(item.status === 'SUCCESS') { statusColor = 'text-green-500 border-green-500 bg-green-50'; statusText = 'Berhasil'; }
-                                    else if(item.status === 'PENDING' || item.status === 'PROCESSING') { statusColor = 'text-yellow-500 border-yellow-500 bg-yellow-50'; statusText = 'Diproses'; }
-                                    else { statusColor = 'text-red-500 border-red-500 bg-red-50'; statusText = 'Gagal'; }
-
-                                    const dummyFee = 2775; 
-
-                                    return (
-                                        <tr key={index} className="border-b border-neutral-300 last:border-b-0 hover:bg-neutral-50/50 transition-colors">
-                                            <td className="py-4 px-2 font-medium text-neutral-950">
-                                                WD-{(item?._id || item?.id || '000000').toString().substring(0,6).toUpperCase()}
-                                            </td>
-                                            <td className="py-4 px-2">
-                                                <div className="font-medium text-neutral-950">{formatDate(item.created_at).date}</div>
-                                                <div className="text-xs text-neutral-400">{formatDate(item.created_at).time}</div>
-                                            </td>
-                                            <td className="py-4 px-2">
-                                                <div className="font-medium text-neutral-950">{item.bank_info?.bank_code}</div>
-                                                <div className="text-xs text-neutral-400">{item.bank_info?.account_number}</div>
-                                            </td>
-                                            <td className="py-4 px-2 font-medium text-neutral-950">{item.bank_info?.account_name}</td>
-                                            <td className="py-4 px-2 font-semibold text-neutral-950">{formatRupiah(item.amount)}</td>
-                                            <td className="py-4 px-2 text-red-500 font-medium">-{formatRupiah(dummyFee)}</td>
-                                            <td className="py-4 px-2 text-green-500 font-semibold">{formatRupiah(item.amount - dummyFee)}</td>
-                                            <td className="py-4 px-2">
-                                                <span className={`px-2.5 py-0.5 rounded-md border text-[10px] font-medium whitespace-nowrap ${statusColor}`}>
-                                                    {statusText}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    );
-                                }) : (
-                                    <tr>
-                                        <td colSpan="8" className="py-10 text-center text-neutral-400 text-sm">
-                                            Belum ada riwayat penarikan
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
+                         <DynamicTable 
+                            columns={walletColumns} 
+                            data={history?.data} 
+                            emptyMessage="Belum ada transaksi ditemukan."
+                            minWidth="min-w-[1000px]" 
+                        />
                     </div>
                 </div>
 
