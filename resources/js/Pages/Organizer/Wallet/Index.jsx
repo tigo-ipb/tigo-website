@@ -104,11 +104,11 @@ export default function Index({ balances, methods, history, filters }) {
                     <Icon size={24} stroke={2} />
                 </div>
                 <div className="min-w-0">
-                    <h4 className="font-medium text-neutral-950 text-base leading-tight truncate">{method.bank_code}</h4>
+                    <h4 className="font-semibold text-neutral-950 text-[14px] leading-tight truncate">{method.bank_code}</h4>
                     <p className="text-xs text-neutral-500 mt-1">{method.account_number}</p>
                 </div>
             </div>
-            <div className="text-sm text-neutral-500 truncate hidden sm:block">
+            <div className="text-xs text-neutral-500 truncate hidden sm:block">
                 {method.account_name}
             </div>
             <button 
@@ -298,7 +298,7 @@ export default function Index({ balances, methods, history, filters }) {
                     {/* Transfer Bank */}
                     {methods.bank.length > 0 && (
                         <div>
-                            <p className="text-xs font-medium text-neutral-400 mb-3 uppercase tracking-wider">Transfer Bank</p>
+                            <p className="text-xs font-semibold text-neutral-400 mb-3 tracking-wider">Transfer Bank</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {methods.bank.map(m => <MethodCard key={m.id} method={m} icon={IconBuildingBank} colorClass="text-sky-500 bg-sky-50" />)}
                             </div>
@@ -308,7 +308,7 @@ export default function Index({ balances, methods, history, filters }) {
                     {/* E-Wallet */}
                     {methods['e-wallet'].length > 0 && (
                         <div>
-                            <p className="text-xs font-medium text-neutral-400 mb-3 uppercase tracking-wider">E-Wallet</p>
+                            <p className="text-xs font-semibold text-neutral-400 mb-3 tracking-wider">E-Wallet</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {methods['e-wallet'].map(m => <MethodCard key={m.id} method={m} icon={IconDeviceMobile} colorClass="text-[#00C951] bg-[#00C951]/10" />)}
                             </div>
@@ -318,7 +318,7 @@ export default function Index({ balances, methods, history, filters }) {
                     {/* Virtual Account */}
                     {methods.virtual_account.length > 0 && (
                         <div>
-                            <p className="text-xs font-medium text-neutral-400 mb-3 uppercase tracking-wider">Virtual Account</p>
+                            <p className="text-xs font-semibold text-neutral-400 mb-3 tracking-wider">Virtual Account</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {methods.virtual_account.map(m => <MethodCard key={m.id} method={m} icon={IconUserCircle} colorClass="text-sky-700 bg-sky-50" />)}
                             </div>
