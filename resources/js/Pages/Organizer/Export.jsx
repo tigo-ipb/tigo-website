@@ -388,7 +388,7 @@ function DataBadge({ type }) {
 
     return (
         <span className={cn(
-            "px-2 py-0.5 rounded-lg border text-[10px] font-medium capitalize",
+            "px-2 py-0.5 rounded-[4px] border text-[10px] font-medium capitalize",
             colors[type] || "border-neutral-300 text-gray-500 bg-gray-50"
         )}>
             {type}

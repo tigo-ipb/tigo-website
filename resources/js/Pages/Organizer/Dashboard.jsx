@@ -449,13 +449,13 @@ function LegendRow({ label, value, percent, active }) {
 function StatusBadge({ status }) {
     if (status === 'PENDING') {
         return (
-            <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-amber-500 text-amber-500">
+            <span className="px-2 py-0.5 rounded-[4px] text-[10px] font-semibold border border-amber-500 text-amber-500">
                 Menunggu
             </span>
         );
     }
     return (
-        <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-green-500 text-green-500">
+        <span className="px-2 py-0.5 rounded-[4px] text-[10px] font-semibold border border-green-500 text-green-500">
             Dibayar
         </span>
     );

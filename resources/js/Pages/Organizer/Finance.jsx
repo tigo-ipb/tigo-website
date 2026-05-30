@@ -179,7 +179,7 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
                 if(row.payment_status === 'CANCELLED') { statusColor = 'border-red-500 text-red-500 bg-white'; statusText = 'Dibatalkan'; }
 
                 return (
-                    <span className={`px-2 py-[2px] rounded-[4px] text-[8px] font-semibold border ${statusColor}`}>
+                    <span className={`px-2 py-[2px] rounded-[4px] text-[10px] font-semibold border ${statusColor}`}>
                         {statusText}
                     </span>
                 );

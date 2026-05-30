@@ -34,12 +34,12 @@ const STATUS_TABS = [
 
 function StatusBadge({ status }) {
     if (status === 'PAID') {
-        return <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-green-200 text-green-500 bg-white">Dibayar</span>;
+        return <span className="px-2 py-0.5 rounded-[4px] text-[10px] font-semibold border border-green-500 text-green-500 bg-white">Dibayar</span>;
     }
     if (status === 'PENDING') {
-        return <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-yellow-200 text-yellow-500 bg-white">Menunggu</span>;
+        return <span className="px-2 py-0.5 rounded-[4px] text-[10px] font-semibold border border-yellow-500 text-yellow-500 bg-white">Menunggu</span>;
     }
-    return <span className="px-3 py-1 rounded-[4px] text-[10px] font-semibold border border-red-200 text-red-500 bg-white">Dibatalkan</span>;
+    return <span className="px-2 py-[2px] rounded-[4px] text-[10px] border border-red-500 text-red-500 bg-white">Dibatalkan</span>;
 }
 
 export default function Bookings({ bookings, stats, charts, filters }) {

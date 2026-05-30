@@ -185,7 +185,7 @@ export default function Index({ balances, methods, history, filters }) {
                     statusText = 'Gagal'; 
                 }
                 return (
-                    <span className={`px-2 py-[2px] rounded-[4px] text-[8px] font-semibold border whitespace-nowrap ${statusColor}`}>
+                    <span className={`px-2 py-[2px] rounded-[4px] text-[10px] font-semibold border whitespace-nowrap ${statusColor}`}>
                         {statusText}
                     </span>
                 );
