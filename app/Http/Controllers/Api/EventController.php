@@ -29,8 +29,8 @@ class EventController extends Controller
         $formattedSchedules = collect($event->schedules ?? [])->map(function ($schedule) {
             return [
                 'date' => isset($schedule['date']) ? Carbon::parse($schedule['date'])->translatedFormat('l, j F Y') : 'TBA',
-                'start_time' => $schedule['start_time'] ?? '',
-                'end_time' => $schedule['end_time'] ?? '',
+                'time_start' => $schedule['time_start'] ?? '',
+                'time_end' => $schedule['time_end'] ?? '',
             ];
         });
 
@@ -57,8 +57,8 @@ class EventController extends Controller
                 ? Carbon::parse($firstSchedule['date'])->translatedFormat('D, j M Y') 
                 : 'TBA';
             
-            $time = (isset($firstSchedule['start_time']) && isset($firstSchedule['end_time']))
-                ? $firstSchedule['start_time'] . ' - ' . $firstSchedule['end_time']
+            $time = (isset($firstSchedule['time_start']) && isset($firstSchedule['end_time']))
+                ? $firstSchedule['time_start'] . ' - ' . $firstSchedule['end_time']
                 : '';
 
             return $time ? "$date • $time" : $date;
