@@ -8,7 +8,7 @@ export default function Footer({auth}) {
         <div className={`w-full bg-white ${auth ? 'border-t' : 'border  rounded-[24px]'} border-neutral-300 px-4 py-4 shadow-sm flex items-center justify-between gap-4 font-sans mt-auto shrink-0`}>
             {/* Sisi Kiri: Teks Hak Cipta Sesuai Mockup */}
             <p className="text-xs sm:text-sm text-black font-medium select-none">
-                Copyright @ 2026 Tigo
+                Copyright @ {currentYear} Tigo
             </p>
 
             {/* Sisi Kanan: Tombol Kontak WhatsApp Bulat Sesuai Mockup */}
