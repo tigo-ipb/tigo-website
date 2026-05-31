@@ -23,10 +23,9 @@ export default function Register() {
 
     return (
         <GuestLayout>
-            <div className="min-h-screen bg-white flex flex-col font-sans">
-                <Head title="Register" />
+            <Head title="Register" />
 
-                <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+                <main className="flex-1 flex flex-col items-center justify-center px-4 py-4">
                     <h1 className="text-4xl font-black text-sky-500 mb-2 text-center">
                         Buat Akun Baru
                     </h1>
@@ -136,7 +135,6 @@ export default function Register() {
                         </p>
                     </div>
                 </main>
-            </div>
         </GuestLayout>
     );
 }
