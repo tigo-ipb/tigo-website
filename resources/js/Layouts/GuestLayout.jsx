@@ -13,7 +13,7 @@ export default function GuestLayout({ children }) {
                 </div>
             </header>
                 {children}
-            <Footer/>
+            <Footer auth={true}/>
         </div>
     );
 }

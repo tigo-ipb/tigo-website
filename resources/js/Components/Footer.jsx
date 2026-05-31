@@ -1,11 +1,11 @@
 import React from 'react';
 import { IconBrandWhatsapp } from '@tabler/icons-react';
 
-export default function Footer() {
+export default function Footer({auth}) {
     const currentYear = new Date().getFullYear();
 
     return (
-        <div className={`w-full bg-white border border-neutral-300 rounded-[24px] px-4 py-4 shadow-sm flex items-center justify-between gap-4 font-sans mt-auto shrink-0`}>
+        <div className={`w-full bg-white ${auth ? 'border-t' : 'border  rounded-[24px]'} border-neutral-300 px-4 py-4 shadow-sm flex items-center justify-between gap-4 font-sans mt-auto shrink-0`}>
             {/* Sisi Kiri: Teks Hak Cipta Sesuai Mockup */}
             <p className="text-xs sm:text-sm text-black font-medium select-none">
                 Copyright @ 2026 Tigo

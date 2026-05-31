@@ -16,6 +16,7 @@ import {
 } from "@/Components/ui/select";
 import StatCard from '@/Components/StatCard';
 import DynamicTable from '@/Components/Table';
+import LegendRow from '@/Components/LegendRow';
 
 const PRIMARY = '#00a2ff';
 const PRIMARY_LIGHT = '#dff2fe';
@@ -228,12 +229,13 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                                         label="Terjual"
                                         value={donutSold}
                                         percent={soldPercentage}
-                                        active
+                                        color={'bg-sky-500'}
                                     />
                                     <LegendRow
                                         label="Tersedia"
                                         value={donutAvailable}
                                         percent={availablePercentage}
+                                        color={'bg-sky-100'}
                                     />
                                 </div>
                             </div>
@@ -425,24 +427,6 @@ export default function Dashboard({ stats, topEvents, recentBookings, recentActi
                 </div>
             </div>
         </DashboardLayout>
-    );
-}
-
-
-function LegendRow({ label, value, percent, active }) {
-    return (
-        <div className={`flex items-center justify-between p-3`}>
-            <div className='flex gap-2'>
-            <div className={`w-2 h-12 rounded-full ${active? "bg-sky-500" : "bg-sky-100"}`}/>
-            <div className="flex flex-col h-full">
-                <p className="text-xs text-black">{label}</p>
-                <p className="text-xl font-semibold text-black">{formatNumber(value)}</p>
-            </div>
-            </div>
-            <div className={`text-lg font-semibold p-2.5 rounded-[8px] bg-sky-100 text-sky-500`}>
-                {percent}%
-            </div>
-        </div>
     );
 }
 

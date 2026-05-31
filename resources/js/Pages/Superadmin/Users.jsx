@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import DashboardLayout from '@/Layouts/DashboardLayout'; 
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import Chart from 'react-apexcharts';
 import { 
-    IconUser, IconTicket, IconCalendarEvent, IconSearch, IconEdit, IconTrash 
+    IconUser, IconTicket, IconCalendarEvent, IconEdit, IconTrash 
 } from '@tabler/icons-react';
 
 import {
@@ -11,44 +11,60 @@ import {
 } from "@/Components/ui/select";
 import Modal from '@/Components/Modal';
 
+// --- IMPORT KOMPONEN TIGO ---
+import StatCard from '@/Components/StatCard';
+import Search from '@/Components/Search';
+import DynamicTable from '@/Components/Table';
+import Pagination from '@/Components/Pagination';
+import LegendRow from '@/Components/LegendRow';
+
 const formatRupiah = (number) => new Intl.NumberFormat('id-ID').format(number);
 
-// PERUBAHAN PROPS: stats dipecah menjadi topStats dan donutStats sesuai Controller
+const selectTriggerClass = "h-[36px] px-4 bg-sky-500 border-0 rounded-full text-xs font-semibold text-white hover:bg-sky-600 transition-colors focus:ring-0 focus:ring-offset-0 shadow-none shrink-0";
+
 export default function UserManagement({ topStats, donutStats, chartData, users, filters }) {
     
-    // ================= STATE FILTER =================
-    const [search, setSearch] = useState(filters?.search || '');
+    // ================= STATE FILTER (BULLETPROOF) =================
+    const safeFilters = filters || {};
+    const [search, setSearch] = useState(safeFilters.search || '');
     
     // 3 State Filter Waktu Independen
-    const [filterRole, setFilterRole] = useState(filters?.filter_role || 'minggu_ini');
-    const [filterGrowth, setFilterGrowth] = useState(filters?.filter_growth || 'minggu_ini');
-    const [filterTable, setFilterTable] = useState(filters?.filter_table || 'semua');
+    const [filterRole, setFilterRole] = useState(safeFilters.filter_role || 'minggu_ini');
+    const [filterGrowth, setFilterGrowth] = useState(safeFilters.filter_growth || 'minggu_ini');
 
-    const updateFilter = (key, value) => {
-        router.get(route('superadmin.users'), {
-            ...filters, [key]: value
-        }, { preserveState: true, preserveScroll: true });
-    };
+    const handleFilterChange = (newFilters = {}) => {
+        const query = {
+            search: search,
+            filter_role: filterRole,
+            filter_growth: filterGrowth,
+            ...newFilters
+        };
 
-    const handleSearch = (e) => {
-        if (e.key === 'Enter') updateFilter('search', search);
+        // Bersihkan filter kosong
+        Object.keys(query).forEach(key => (!query[key] || query[key] === 'semua') && delete query[key]);
+
+        router.get(route('superadmin.users'), query, { 
+            preserveState: true, 
+            preserveScroll: true,
+            replace: true
+        });
     };
 
     // --- Komponen Opsi Dropdown Reusable ---
     const filterOptions = (
         <>
-            <SelectItem value="minggu_ini" className="text-xs cursor-pointer focus:bg-blue-50">Minggu ini</SelectItem>
-            <SelectItem value="bulan_ini" className="text-xs cursor-pointer focus:bg-blue-50">Bulan ini</SelectItem>
-            <SelectItem value="3_bulan" className="text-xs cursor-pointer focus:bg-blue-50">3 Bulan Terakhir</SelectItem>
-            <SelectItem value="6_bulan" className="text-xs cursor-pointer focus:bg-blue-50">6 Bulan Terakhir</SelectItem>
-            <SelectItem value="tahun_ini" className="text-xs cursor-pointer focus:bg-blue-50">Tahun ini</SelectItem>
-            <SelectItem value="tahun_kemarin" className="text-xs cursor-pointer focus:bg-blue-50">Tahun kemarin</SelectItem>
-            <SelectItem value="5_tahun" className="text-xs cursor-pointer focus:bg-blue-50">5 Tahun Terakhir</SelectItem>
-            <SelectItem value="semua" className="text-xs cursor-pointer focus:bg-blue-50">Semua Waktu</SelectItem>
+            <SelectItem value="minggu_ini" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">Minggu ini</SelectItem>
+            <SelectItem value="bulan_ini" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">Bulan ini</SelectItem>
+            <SelectItem value="3_bulan" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">3 Bulan Terakhir</SelectItem>
+            <SelectItem value="6_bulan" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">6 Bulan Terakhir</SelectItem>
+            <SelectItem value="tahun_ini" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun ini</SelectItem>
+            <SelectItem value="tahun_kemarin" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun kemarin</SelectItem>
+            <SelectItem value="5_tahun" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">5 Tahun Terakhir</SelectItem>
+            <SelectItem value="semua" className="font-medium text-xs text-neutral-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">Semua Waktu</SelectItem>
         </>
     );
 
-    // --- Persentase Donut (Menggunakan donutStats) ---
+    // --- Persentase Donut ---
     const totalDonut = donutStats.total > 0 ? donutStats.total : 1;
     const pemesanPct = Math.round((donutStats.pemesan / totalDonut) * 100);
     const penyelenggaraPct = Math.round((donutStats.penyelenggara / totalDonut) * 100);
@@ -56,7 +72,7 @@ export default function UserManagement({ topStats, donutStats, chartData, users,
     // --- Konfigurasi Donut Chart ---
     const donutOptions = {
         chart: { type: 'donut', fontFamily: 'inherit' },
-        colors: ['#0ea5e9', '#e0f2fe'], 
+        colors: ['#0ea5e9', '#e0f2fe'], // sky-500 & sky-100
         labels: ['Pemesan', 'Penyelenggara'],
         dataLabels: { enabled: false },
         plotOptions: { 
@@ -125,49 +141,65 @@ export default function UserManagement({ topStats, donutStats, chartData, users,
         });
     };
 
+    // ================= DEFINISI KOLOM TABEL =================
+    const userColumns = [
+        { 
+            header: 'User ID', 
+            render: (row) => `U-${(row.id || row._id || '').substring(0,7).toUpperCase()}`, 
+            cellClassName: 'font-medium text-neutral-900 whitespace-nowrap' 
+        },
+        { 
+            header: 'Role', 
+            render: (row) => row.role === 'organizer' ? 'Penyelenggara' : 'Pemesan', 
+            cellClassName: 'font-medium text-neutral-900 capitalize whitespace-nowrap' 
+        },
+        { header: 'Username', accessor: 'username', cellClassName: 'font-medium text-neutral-900 whitespace-nowrap' },
+        { header: 'Email', accessor: 'email', cellClassName: 'font-semibold text-neutral-900 whitespace-nowrap' },
+        { header: 'Nama', accessor: 'name', cellClassName: 'font-semibold text-neutral-900 whitespace-nowrap' },
+        { header: 'Kode', render: (row) => row.phone_code || '+62', cellClassName: 'font-medium text-neutral-900' },
+        { header: 'Nomor Handphone', accessor: 'phone_number', cellClassName: 'font-medium text-neutral-900 whitespace-nowrap' },
+        { 
+            header: 'Aksi', 
+            headerClassName: 'text-center', 
+            cellClassName: 'text-center', 
+            render: (row) => (
+                <div className="flex justify-center gap-2">
+                    <button onClick={() => openEditUser(row)} className="p-1.5 bg-sky-50 text-sky-500 rounded-md hover:bg-sky-100 transition-colors">
+                        <IconEdit size={16}/>
+                    </button>
+                    <button onClick={() => openDeleteModal(route('superadmin.users.destroy', row._id || row.id), `Pengguna ${row.name}`)} className="p-1.5 bg-red-50 text-red-500 rounded-md hover:bg-red-100 transition-colors">
+                        <IconTrash size={16}/>
+                    </button>
+                </div>
+            ) 
+        }
+    ];
+
     return (
         <DashboardLayout header="Pengguna">
             <Head title="Pengguna" />
 
-            <div className="space-y-6">
+            <div className="flex flex-col flex-1 min-h-0 w-full gap-6">
                 
-                {/* 1. STATS CARDS (Menggunakan topStats - Sepanjang Masa) */}
+                {/* 1. STATS CARDS */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-4 shadow-sm">
-                        <div className="p-4 rounded-xl bg-blue-50 text-blue-500"><IconUser size={24} stroke={2} /></div>
-                        <div>
-                            <p className="text-xs font-bold text-gray-800 mb-0.5">Total Pengguna</p>
-                            <h3 className="text-2xl font-black text-blue-500">{formatRupiah(topStats.total)}</h3>
-                        </div>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-4 shadow-sm">
-                        <div className="p-4 rounded-xl bg-blue-50 text-blue-500"><IconTicket size={24} stroke={2} /></div>
-                        <div>
-                            <p className="text-xs font-bold text-gray-800 mb-0.5">Total Pemesan</p>
-                            <h3 className="text-2xl font-black text-blue-500">{formatRupiah(topStats.pemesan)}</h3>
-                        </div>
-                    </div>
-                    <div className="bg-white p-6 rounded-2xl border border-gray-100 flex items-center gap-4 shadow-sm">
-                        <div className="p-4 rounded-xl bg-blue-50 text-blue-500"><IconCalendarEvent size={24} stroke={2} /></div>
-                        <div>
-                            <p className="text-xs font-bold text-gray-800 mb-0.5">Total Penyelenggara</p>
-                            <h3 className="text-2xl font-black text-blue-500">{formatRupiah(topStats.penyelenggara)}</h3>
-                        </div>
-                    </div>
+                    <StatCard icon={IconUser} label="Total Pengguna" value={formatRupiah(topStats.total)} />
+                    <StatCard icon={IconTicket} label="Total Pemesan" value={formatRupiah(topStats.pemesan)} />
+                    <StatCard icon={IconCalendarEvent} label="Total Penyelenggara" value={formatRupiah(topStats.penyelenggara)} />
                 </div>
 
                 {/* 2. CHARTS SECTION */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
-                    {/* Donut Chart (Menggunakan donutStats & filterRole) */}
-                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col h-full">
+                    {/* Donut Chart */}
+                    <div className="bg-white p-4 rounded-[24px] border border-neutral-300 shadow-sm flex flex-col h-full">
                         <div className="flex justify-between items-center mb-6">
-                            <h4 className="font-bold text-lg text-gray-900">Role Pengguna</h4>
-                            <Select value={filterRole} onValueChange={(val) => { setFilterRole(val); updateFilter('filter_role', val); }}>
-                                <SelectTrigger className="bg-blue-500 text-white text-xs font-medium px-4 py-1.5 h-auto rounded-full border-0 focus:ring-0 shadow-none">
+                            <h4 className="font-medium text-xl text-neutral-950">Role Pengguna</h4>
+                            <Select value={filterRole} onValueChange={(val) => { setFilterRole(val); handleFilterChange({ filter_role: val }); }}>
+                                <SelectTrigger className={selectTriggerClass}>
                                     <SelectValue placeholder="Waktu" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-white rounded-xl border border-gray-100 shadow-xl z-[100] p-1.5">
+                                <SelectContent position="popper" sideOffset={4} className="w-[var(--radix-select-trigger-width)] bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5">
                                     {filterOptions}
                                 </SelectContent>
                             </Select>
@@ -177,33 +209,31 @@ export default function UserManagement({ topStats, donutStats, chartData, users,
                                 <Chart options={donutOptions} series={donutSeries} type="donut" height={260} />
                             </div>
                             <div className="mt-4 space-y-3">
-                                <div className="flex items-center justify-between bg-blue-500 text-white p-3 rounded-xl border-l-4 border-blue-700">
-                                    <div>
-                                        <p className="text-xs font-medium opacity-80">Pemesan</p>
-                                        <p className="text-lg font-bold">{formatRupiah(donutStats.pemesan)}</p>
-                                    </div>
-                                    <span className="bg-white/20 text-white text-sm font-bold px-3 py-1 rounded-lg">{pemesanPct}%</span>
-                                </div>
-                                <div className="flex items-center justify-between bg-gray-50 p-3 rounded-xl border-l-4 border-blue-100">
-                                    <div>
-                                        <p className="text-xs font-medium text-gray-500">Penyelenggara</p>
-                                        <p className="text-lg font-bold text-gray-900">{formatRupiah(donutStats.penyelenggara)}</p>
-                                    </div>
-                                    <span className="bg-blue-50 text-blue-600 text-sm font-bold px-3 py-1 rounded-lg">{penyelenggaraPct}%</span>
-                                </div>
+                                <LegendRow
+                                        label="Pemesan"
+                                        value={formatRupiah(donutStats.pemesan)}
+                                        percent={pemesanPct}
+                                        color={'bg-sky-500'}
+                                    />
+                                <LegendRow
+                                        label="Penyelenggara"
+                                        value={formatRupiah(donutStats.penyelenggara)}
+                                        percent={penyelenggaraPct}
+                                        color={'bg-sky-100'}
+                                    />
                             </div>
                         </div>
                     </div>
 
-                    {/* Area Chart (Menggunakan filterGrowth) */}
-                    <div className="lg:col-span-2 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col">
-                        <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-bold text-lg text-gray-900">Pertumbuhan Pengguna</h4>
-                            <Select value={filterGrowth} onValueChange={(val) => { setFilterGrowth(val); updateFilter('filter_growth', val); }}>
-                                <SelectTrigger className="bg-blue-500 text-white text-xs font-medium px-4 py-1.5 h-auto rounded-full border-0 focus:ring-0 shadow-none">
+                    {/* Area Chart */}
+                    <div className="lg:col-span-2 bg-white p-4 rounded-[24px] border border-neutral-300 shadow-sm flex flex-col">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                            <h4 className="font-medium text-xl text-neutral-950">Pertumbuhan Pengguna</h4>
+                            <Select value={filterGrowth} onValueChange={(val) => { setFilterGrowth(val); handleFilterChange({ filter_growth: val }); }}>
+                                <SelectTrigger className={selectTriggerClass}>
                                     <SelectValue placeholder="Waktu" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-white rounded-xl border border-gray-100 shadow-xl z-[100] p-1.5">
+                                <SelectContent position="popper" sideOffset={4} className="w-[var(--radix-select-trigger-width)] bg-white rounded-[20px] border border-neutral-300 shadow-xl z-[100] p-1.5 min-w-[120px]">
                                     {filterOptions}
                                 </SelectContent>
                             </Select>
@@ -215,132 +245,67 @@ export default function UserManagement({ topStats, donutStats, chartData, users,
                 </div>
 
                 {/* 3. TABEL PENGGUNA */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
-                    <div className="p-6 flex flex-col md:flex-row justify-between items-center gap-4 border-b border-gray-100">
-                        <h4 className="font-bold text-lg text-gray-900">Daftar Pengguna</h4>
+                <div className="bg-white rounded-[24px] border border-neutral-300 shadow-sm p-4 flex flex-col gap-6">
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <h4 className="font-medium text-xl text-neutral-950">Daftar Pengguna</h4>
                         
-                        <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-                            <div className="relative w-full md:w-80">
-                                <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                                <input 
-                                    type="text" placeholder="Cari email, username, nama..." 
-                                    value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={handleSearch}
-                                    className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-full text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                                />
-                            </div>
-                            {/* <Select value={filterTable} onValueChange={(val) => { setFilterTable(val); updateFilter('filter_table', val); }}>
-                                <SelectTrigger className="bg-blue-500 text-white text-xs font-medium px-4 py-2 h-auto rounded-full border-0 focus:ring-0 shadow-none w-full md:w-32">
-                                    <SelectValue placeholder="Waktu" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white rounded-xl border border-gray-100 shadow-xl z-[100] p-1.5">
-                                    {filterOptions}
-                                </SelectContent>
-                            </Select> */}
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            {/* 🔥 Menggunakan Komponen Search Tigo 🔥 */}
+                            <Search
+                                value={search}
+                                onChange={setSearch}
+                                onSubmit={(val) => handleFilterChange({ search: val })}
+                                placeholder="Cari email, username, nama..."
+                                className="w-full md:w-80"
+                            />
                         </div>
                     </div>
                     
+                    {/* 🔥 Menggunakan Komponen DynamicTable 🔥 */}
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse min-w-[1000px]">
-                            <thead>
-                                <tr className="border-b border-gray-100">
-                                    <th className="py-4 px-6 text-xs font-bold text-blue-500">User ID</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-blue-500">Role</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-blue-500">Username</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-blue-500">Email</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-blue-500">Nama</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-blue-500">Kode</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-blue-500">Nomor Handphone</th>
-                                    <th className="py-4 px-6 text-xs font-bold text-blue-500 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {users.data.map((user, i) => (
-                                    <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50">
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-900 uppercase">U-{(user.id || user._id || '').substring(0,7)}</td>
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-900 capitalize">{user.role === 'organizer' ? 'Penyelenggara' : 'Pemesan'}</td>
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-900">{user.username}</td>
-                                        <td className="py-4 px-6 text-sm font-bold text-gray-900">{user.email}</td>
-                                        <td className="py-4 px-6 text-sm font-bold text-gray-900">{user.name}</td>
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-900">{user.phone_code || '+62'}</td>
-                                        <td className="py-4 px-6 text-sm font-medium text-gray-900">{user.phone_number}</td>
-                                        <td className="py-4 px-6 flex justify-center gap-2">
-                                            <button 
-                                                onClick={() => openEditUser(user)}
-                                                className="p-1.5 bg-blue-50 text-blue-500 rounded-md hover:bg-blue-100 transition-colors"
-                                            >
-                                                <IconEdit size={16}/>
-                                            </button>
-                                            <button 
-                                                onClick={() => openDeleteModal(route('superadmin.users.destroy', user._id || user.id), `Pengguna ${user.name}`)}
-                                                className="p-1.5 bg-red-50 text-red-500 rounded-md hover:bg-red-100 transition-colors"
-                                            >
-                                                <IconTrash size={16}/>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {users.data.length === 0 && (
-                                    <tr><td colSpan="8" className="py-8 text-center text-gray-400 text-sm">Data pengguna tidak ditemukan pada periode ini.</td></tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Pagination Custom */}
-                    <div className="flex flex-col md:flex-row items-center justify-between p-6 border-t border-gray-100 gap-4">
-                        <span className="text-sm text-gray-500 font-medium">
-                            Menampilkan {users.from || 0} dari {users.total ? formatRupiah(users.total) : 0}
-                        </span>
-                        <div className="flex gap-1">
-                            {users.links.map((link, key) => (
-                                link.url ? (
-                                    <Link 
-                                        key={key} href={link.url} preserveState preserveScroll
-                                        className={`px-4 py-2 rounded-xl text-sm font-bold border transition-colors ${
-                                            link.active 
-                                                ? 'border-[#0ea5e9] bg-white text-[#0ea5e9]' 
-                                                : 'border-gray-100 bg-white text-gray-500 hover:bg-gray-50' 
-                                        }`}
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    />
-                                ) : (
-                                    <span 
-                                        key={key}
-                                        className="px-4 py-2 rounded-xl text-sm font-bold border border-transparent text-gray-300 cursor-not-allowed"
-                                        dangerouslySetInnerHTML={{ __html: link.label }}
-                                    ></span>
-                                )
-                            ))}
-                        </div>
+                        <DynamicTable 
+                            columns={userColumns} 
+                            data={users?.data} 
+                            emptyMessage="Data pengguna tidak ditemukan."
+                            minWidth="min-w-[1000px]" 
+                        />
                     </div>
                 </div>
 
+                {/* 🔥 Menggunakan Komponen Pagination Tigo 🔥 */}
+                {users && users.data && users.data.length > 0 && (
+                    <Pagination
+                        pagination={users}
+                        onPageChange={(page) => handleFilterChange({ page })}
+                    />
+                )}
+
                 {/* ================= MODAL COMPONENTS ================= */}
                 <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} title="Konfirmasi Hapus" maxWidth="max-w-sm">
-                    <p className="text-gray-600 mb-6">Apakah Anda yakin ingin menghapus <strong>{deleteConfig.text}</strong>? Data yang dihapus tidak dapat dikembalikan.</p>
+                    <p className="text-neutral-600 mb-6">Apakah Anda yakin ingin menghapus <strong>{deleteConfig.text}</strong>? Data yang dihapus tidak dapat dikembalikan.</p>
                     <div className="flex justify-end gap-3">
-                        <button onClick={() => setIsDeleteModalOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Batal</button>
-                        <button onClick={confirmDelete} className="px-4 py-2 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-lg">Ya, Hapus</button>
+                        <button onClick={() => setIsDeleteModalOpen(false)} className="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors">Batal</button>
+                        <button onClick={confirmDelete} className="px-4 py-2 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors">Ya, Hapus</button>
                     </div>
                 </Modal>
                 
                 <Modal isOpen={isEditUserOpen} onClose={() => setIsEditUserOpen(false)} title="Edit Data Pengguna">
                     <form onSubmit={submitEditUser} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                            <input type="text" value={userData.name} onChange={e => setUserData('name', e.target.value)} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm" required />
+                            <label className="block text-sm font-medium text-neutral-700 mb-1">Nama Lengkap</label>
+                            <input type="text" value={userData.name} onChange={e => setUserData('name', e.target.value)} className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 text-sm" required />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" value={userData.email} onChange={e => setUserData('email', e.target.value)} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm" required />
+                            <label className="block text-sm font-medium text-neutral-700 mb-1">Email</label>
+                            <input type="email" value={userData.email} onChange={e => setUserData('email', e.target.value)} className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 text-sm" required />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Handphone</label>
-                            <input type="text" value={userData.phone_number} onChange={e => setUserData('phone_number', e.target.value)} className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-blue-500 focus:border-blue-500 text-sm" />
+                            <label className="block text-sm font-medium text-neutral-700 mb-1">Nomor Handphone</label>
+                            <input type="text" value={userData.phone_number} onChange={e => setUserData('phone_number', e.target.value)} className="w-full px-4 py-2 border border-neutral-300 rounded-xl focus:ring-sky-500 focus:border-sky-500 text-sm" />
                         </div>
                         <div className="flex justify-end gap-3 mt-6">
-                            <button type="button" onClick={() => setIsEditUserOpen(false)} className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Batal</button>
-                            <button type="submit" disabled={processingUser} className="px-4 py-2 text-sm font-bold text-white bg-blue-500 hover:bg-blue-600 rounded-lg disabled:opacity-50">Simpan Perubahan</button>
+                            <button type="button" onClick={() => setIsEditUserOpen(false)} className="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors">Batal</button>
+                            <button type="submit" disabled={processingUser} className="px-4 py-2 text-sm font-bold text-white bg-sky-500 hover:bg-sky-600 rounded-lg disabled:opacity-50 transition-colors">Simpan Perubahan</button>
                         </div>
                     </form>
                 </Modal>
