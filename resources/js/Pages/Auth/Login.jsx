@@ -20,8 +20,7 @@ export default function Login({ status, canResetPassword }) {
 
     return (
         <GuestLayout>
-            <div className="min-h-screen bg-white flex flex-col font-sans">
-                <Head title="Login" />
+            <Head title="Login" />
 
                 {/* Header */}
                 {/* <header className="px-8 py-4 border-b border-gray-100 flex items-center justify-between">
@@ -31,7 +30,7 @@ export default function Login({ status, canResetPassword }) {
             </header> */}
 
                 {/* Content */}
-                <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+                <main className="flex-1 flex flex-col items-center justify-center px-4 py-6">
                     <h1 className="text-4xl font-black text-sky-500 mb-2 text-center">
                         Your Ticket on the Go!
                     </h1>
@@ -161,10 +160,6 @@ export default function Login({ status, canResetPassword }) {
                         </p>
                     </div>
                 </main>
-
-                {/* Footer */}
-                {/* <Footer/> */}
-            </div>
         </GuestLayout>
     );
 }

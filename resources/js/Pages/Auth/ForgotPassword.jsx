@@ -15,10 +15,9 @@ export default function ForgotPassword({ status }) {
 
     return (
         <GuestLayout>
-            <div className="min-h-screen bg-white flex flex-col font-sans">
-                <Head title="Lupa Password" />
+            <Head title="Lupa Password" />
 
-                <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+                <main className="flex-1 flex flex-col items-center justify-center px-4 py-4">
                     <h1 className="text-4xl font-black text-sky-500 mb-2 text-center">
                         Lupa Password
                     </h1>
@@ -29,7 +28,7 @@ export default function ForgotPassword({ status }) {
                     <img
                         src={FORGOT_PASSWORD_ILLUSTRATION}
                         alt="Lupa Password"
-                        className="w-64 h-auto mb-6 object-contain"
+                        className="w-40 h-auto mb-4 object-contain"
                     />
 
                     {status && (
@@ -70,7 +69,6 @@ export default function ForgotPassword({ status }) {
                         </form>
                     </div>
                 </main>
-            </div>
         </GuestLayout>
     );
 }
