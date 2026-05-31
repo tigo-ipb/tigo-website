@@ -177,7 +177,7 @@ class EventController extends Controller
         ];
         $eventData['schedule_format'] = $scheduleFormat;
         $eventData['lowest_price'] = $lowestPrice;
-        $eventData['status'] = $event->date_end >= now() ? 'Active' : 'History';
+        $eventData['status'] = $event->date_end >= now() ? ($event->status ?? 'active') : 'History';
 
         return Inertia::render('Organizer/Events/Show', [
             'event' => $eventData
