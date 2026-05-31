@@ -20,12 +20,12 @@ const formatRupiah = (number) => {
 export default function Show({ event }) {
     console.log( event.status);
     const customHeader = (
-        <div className="flex items-center justify-center text-lg font-bold">
+        <div className="flex items-center justify-center text-lg md:text-xl font-semibold">
             <Link href={route('organizer.events.index')} className="text-gray-900 hover:text-blue-500 transition-colors">
                 Events
             </Link>
             <IconChevronRight size={20} className="mx-2 text-gray-400" />
-            <span className="text-blue-500">Events Detail</span>
+            <span className="text-blue-500">Event Detail</span>
         </div>
     );
 

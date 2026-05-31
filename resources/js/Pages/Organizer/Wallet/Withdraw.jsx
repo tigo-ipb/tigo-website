@@ -31,7 +31,7 @@ export default function Withdraw({ wallet, methods }) {
     // HEADER BREADCRUMBS UNTUK NAVBAR
     // ==========================================
     const customHeader = (
-        <div className="flex items-center justify-center text-lg font-medium">
+        <div className="flex items-center justify-center text-lg md:text-xl font-semibold">
             <Link href={route('organizer.wallet.index')} className="text-neutral-900 hover:text-sky-500 transition-colors">
                 Wallet
             </Link>
@@ -112,7 +112,7 @@ export default function Withdraw({ wallet, methods }) {
                         {/* Transfer Bank */}
                         {methods.bank.length > 0 && (
                             <div>
-                                <h3 className="text-xs font-medium text-neutral-400 mb-3 uppercase tracking-wider">Transfer Bank</h3>
+                                <h3 className="text-xs font-medium text-neutral-400 mb-3 tracking-wider">Transfer Bank</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {methods.bank.map(method => <MethodCard key={method.id} method={method} icon={IconBuildingBank} type="bank" />)}
                                 </div>
@@ -122,7 +122,7 @@ export default function Withdraw({ wallet, methods }) {
                         {/* E-Wallet */}
                         {methods['e-wallet'].length > 0 && (
                             <div>
-                                <h3 className="text-xs font-medium text-neutral-400 mb-3 uppercase tracking-wider">E-Wallet</h3>
+                                <h3 className="text-xs font-medium text-neutral-400 mb-3 tracking-wider">E-Wallet</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {methods['e-wallet'].map(method => <MethodCard key={method.id} method={method} icon={IconDeviceMobile} type="e-wallet" />)}
                                 </div>
@@ -132,7 +132,7 @@ export default function Withdraw({ wallet, methods }) {
                         {/* Virtual Account */}
                         {methods.virtual_account.length > 0 && (
                             <div>
-                                <h3 className="text-xs font-medium text-neutral-400 mb-3 uppercase tracking-wider">Virtual Account</h3>
+                                <h3 className="text-xs font-medium text-neutral-400 mb-3 tracking-wider">Virtual Account</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {methods.virtual_account.map(method => <MethodCard key={method.id} method={method} icon={IconUserCircle} type="virtual_account" />)}
                                 </div>

@@ -30,7 +30,7 @@ export default function CreateMethod() {
     const labels = getLabels();
 
     const customHeader = (
-        <div className="flex items-center justify-center text-lg font-medium">
+        <div className="flex items-center justify-center text-lg md:text-xl font-semibold">
             <Link href={route('organizer.wallet.index')} className="text-neutral-950 hover:text-sky-500 transition-colors">
                 Wallet
             </Link>

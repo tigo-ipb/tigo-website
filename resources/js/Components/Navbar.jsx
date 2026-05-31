@@ -45,7 +45,7 @@ export default function Navbar({ header, toggleDesktop, isMobileOpen, setIsMobil
             </div>
 
             <div className="flex-1 px-3">
-                <h1 className="text-center text-lg font-semibold text-neutral-950 md:text-xl">
+                <h1 className="text-center text-lg md:text-xl font-semibold text-neutral-950 ">
                     {header || 'Dashboard'}
                 </h1>
             </div>

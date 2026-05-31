@@ -3,21 +3,24 @@ import DashboardLayout from '@/Layouts/DashboardLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { 
     IconUpload, IconPlus, IconTrash, IconMapPin, 
-    IconTicket, IconEdit 
-} from '@tabler/icons-react';
+    IconTicket, IconEdit, IconFile, IconCalendar 
+} from '@tabler/icons-react'; // 🔥 Tambahkan IconCalendar
 
 // --- IMPORT SHADCN COMPONENTS ---
 import { Input } from '@/Components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
 import { Button } from '@/Components/ui/button';
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+    Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/Components/ui/select";
-import { Switch } from '@/Components/ui/switch';
+import DateModal from '@/Components/DateModal'; // 🔥 Import komponen DateModal
+
+// --- Helper Format Tanggal untuk Tombol ---
+const formatDisplayDate = (dateString) => {
+    if (!dateString) return 'Pilih Tanggal';
+    const date = new Date(dateString);
+    return `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}-${date.getFullYear()}`;
+};
 
 export default function Form({ event }) {
     const isEdit = !!event;
@@ -134,8 +137,7 @@ export default function Form({ event }) {
                 
                 <form onSubmit={handleSubmit} className="relative w-full">
                     
-                    {/* GARIS BIRU VERTIKAL PENGHUBUNG (Membentang dari atas ke bawah) */}
-                    {/* right-16 menyesuaikan posisi center dari w-32 (128px / 2 = 64px = 4rem = 16) */}
+                    {/* GARIS BIRU VERTIKAL PENGHUBUNG */}
                     <div className="hidden xl:block absolute right-[62px] top-16 bottom-32 w-[4px] bg-sky-500 z-0 rounded-full"></div>
 
                     {/* =========================================
@@ -147,9 +149,9 @@ export default function Form({ event }) {
                         <div className="flex-1 bg-white p-4 rounded-[24px] border border-neutral-300 space-y-10">
                             {/* --- BANNER --- */}
                             <div>
-                                <h2 className="text-xl font-semibold text-gray-900 mb-6">Banner Event</h2>
+                                <h2 className="text-xl font-medium text-neutral-900 mb-6">Banner Event</h2>
                                 <div className="flex flex-col md:flex-row gap-6">
-                                    <label className="flex-1 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition relative overflow-hidden min-h-[200px] group bg-gray-50 hover:bg-gray-100">
+                                    <label className="flex-1 border-2 border-dashed border-neutral-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition relative overflow-hidden min-h-[200px] group bg-neutral-50 hover:bg-neutral-100">
                                         <input type="file" className="hidden" onChange={e => handleBannerChange(e, 'banner_16x9')} accept="image/*" />
                                         {preview16x9 ? (
                                             <>
@@ -160,16 +162,16 @@ export default function Form({ event }) {
                                             </>
                                         ) : (
                                             <div className="p-8 text-center flex flex-col items-center z-10">
-                                                <div className="w-12 h-12 bg-[#e0f2fe] text-sky-500 rounded-[14px] flex items-center justify-center mb-3">
+                                                <div className="w-12 h-12 bg-sky-100 text-sky-500 rounded-[14px] flex items-center justify-center mb-3">
                                                     <IconUpload size={22} stroke={2.5} />
                                                 </div>
-                                                <span className="text-sm font-semibold text-gray-900 leading-tight">Klik untuk upload banner</span>
-                                                <span className="text-xs text-gray-400 mt-1">PNG, JPG, WEBP • Maks. 20MB • Rasio 16:9</span>
+                                                <span className="text-sm font-semibold text-neutral-900 leading-tight">Klik untuk upload banner</span>
+                                                <span className="text-xs text-neutral-400 mt-1">PNG, JPG, WEBP • Maks. 20MB • Rasio 16:9</span>
                                             </div>
                                         )}
                                     </label>
 
-                                    <label className="w-full md:w-[250px] border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition relative overflow-hidden aspect-square group bg-gray-50 hover:bg-gray-100">
+                                    <label className="w-full md:w-[250px] border-2 border-dashed border-neutral-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition relative overflow-hidden aspect-square group bg-neutral-50 hover:bg-neutral-100">
                                         <input type="file" className="hidden" onChange={e => handleBannerChange(e, 'banner_1x1')} accept="image/*" />
                                         {preview1x1 ? (
                                             <>
@@ -179,12 +181,12 @@ export default function Form({ event }) {
                                                 </div>
                                             </>
                                         ) : (
-                                            <div className="p-6 text-center flex flex-col items-center z-10">
-                                                <div className="w-12 h-12 bg-[#e0f2fe] text-sky-500 rounded-[14px] flex items-center justify-center mb-3">
+                                            <div className="p-4 text-center flex flex-col items-center z-10">
+                                                <div className="w-12 h-12 bg-sky-100 text-sky-500 rounded-[14px] flex items-center justify-center mb-3">
                                                     <IconUpload size={22} stroke={2.5} />
                                                 </div>
-                                                <span className="text-sm font-semibold text-gray-900 leading-tight">Klik upload</span>
-                                                <span className="text-xs text-gray-400 mt-1">PNG, JPG • Maks. 15MB • 1:1</span>
+                                                <span className="text-sm font-semibold text-neutral-900 leading-tight">Klik upload</span>
+                                                <span className="text-xs text-neutral-400 mt-1">PNG, JPG • Maks. 15MB • 1:1</span>
                                             </div>
                                         )}
                                     </label>
@@ -193,10 +195,10 @@ export default function Form({ event }) {
 
                             {/* --- GALLERY --- */}
                             <div>
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Gallery</h3>
+                                <h3 className="text-xl font-medium text-neutral-900 mb-4">Gallery</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {[0, 1, 2, 3].map((index) => (
-                                        <label key={index} className="w-full border-2 border-dashed border-neutral-300 rounded-2xl flex flex-col items-center justify-center p-3 cursor-pointer transition relative overflow-hidden aspect-square group bg-white hover:bg-gray-50">
+                                        <label key={index} className="w-full border-2 border-dashed border-neutral-300 rounded-2xl flex flex-col items-center justify-center p-3 cursor-pointer transition relative overflow-hidden aspect-square group bg-white hover:bg-neutral-50">
                                             <input type="file" className="hidden" onChange={e => handleGalleryChange(e, index)} accept="image/*" />
                                             {previewGalleries[index] ? (
                                                 <>
@@ -207,11 +209,11 @@ export default function Form({ event }) {
                                                 </>
                                             ) : (
                                                 <div className="text-center flex flex-col items-center z-10 w-full">
-                                                    <div className="w-10 h-10 bg-[#e0f2fe] text-sky-500 rounded-xl flex items-center justify-center mb-2">
+                                                    <div className="w-10 h-10 bg-sky-100 text-sky-500 rounded-xl flex items-center justify-center mb-2">
                                                         <IconUpload size={18} stroke={2.5} />
                                                     </div>
-                                                    <span className="text-[10px] font-semibold text-gray-900 leading-tight">Klik upload</span>
-                                                    <span className="text-[9px] text-gray-400 mt-1">Maks. 15MB</span>
+                                                    <span className="text-[10px] font-semibold text-neutral-900 leading-tight">Klik upload</span>
+                                                    <span className="text-[9px] text-neutral-400 mt-1">Maks. 15MB</span>
                                                 </div>
                                             )}
                                         </label>
@@ -221,52 +223,42 @@ export default function Form({ event }) {
 
                             {/* --- INFORMASI EVENT --- */}
                             <div>
-                                <h2 className="text-xl font-semibold text-gray-900 mb-6">Informasi Event</h2>
+                                <h2 className="text-xl font-medium text-neutral-900 mb-6">Informasi Event</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Event</label>
-                                        <Input type="text" value={data.name} onChange={e => setData('name', e.target.value)} required />
+                                        <label className="block text-base font-medium text-neutral-950 mb-2">Nama Event</label>
+                                        <Input className="border-neutral-300 rounded-2xl h-12" type="text" value={data.name} onChange={e => setData('name', e.target.value)} required />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Kategori</label>
+                                        <label className="block text-base font-medium text-neutral-950 mb-2">Kategori</label>
+                                        {/* Hapus className di <Select> karena tidak ada gunanya */}
                                         <Select value={data.category_name} onValueChange={value => setData('category_name', value)}>
-    
-                                            {/* TRIGGER: Kotak input utama */}
-                                            <SelectTrigger className="w-full h-11 px-3 rounded-xl focus:ring-2 focus:ring-sky-500 focus:ring-offset-0 bg-white text-gray-800 ">
+                                            
+                                            {/* 🔥 Tambahkan class 'border' (wajib ada agar border-neutral-300 berfungsi) dan pindahkan h-12, rounded-2xl ke sini 🔥 */}
+                                            <SelectTrigger className="w-full !h-12 px-4 border border-neutral-300 rounded-2xl focus:ring-2 focus:ring-sky-500 focus:ring-offset-0 bg-white text-neutral-800">
                                                 <SelectValue placeholder="Pilih Kategori" />
                                             </SelectTrigger>
                                             
-                                            {/* CONTENT: Dropdown yang melayang (Pakai bg-white dan z-[100] agar tidak transparan) */}
-                                            <SelectContent className="bg-white border border-neutral-300 rounded-xl shadow-xl z-[100] overflow-hidden">
-                                                <SelectItem value="Hiburan & Festival" className="cursor-pointer focus:bg-[#e0f2fe] focus:text-sky-500 py-2.5">
-                                                    Hiburan & Festival
-                                                </SelectItem>
-                                                <SelectItem value="Edukasi" className="cursor-pointer focus:bg-[#e0f2fe] focus:text-sky-500 py-2.5">
-                                                    Edukasi
-                                                </SelectItem>
-                                                <SelectItem value="Seni & Budaya" className="cursor-pointer focus:bg-[#e0f2fe] focus:text-sky-500 py-2.5">
-                                                    Seni & Budaya
-                                                </SelectItem>
-                                                <SelectItem value="Olahraga" className="cursor-pointer focus:bg-[#e0f2fe] focus:text-sky-500 py-2.5">
-                                                    Olahraga
-                                                </SelectItem>
+                                            <SelectContent position="popper" className="w-[var(--radix-select-trigger-width)] bg-white border border-neutral-300 rounded-xl shadow-xl z-[100] overflow-hidden">
+                                                <SelectItem value="Hiburan & Festival" className="cursor-pointer focus:bg-sky-100 focus:text-sky-500 py-2.5">Hiburan & Festival</SelectItem>
+                                                <SelectItem value="Edukasi" className="cursor-pointer focus:bg-sky-100 focus:text-sky-500 py-2.5">Edukasi</SelectItem>
+                                                <SelectItem value="Seni & Budaya" className="cursor-pointer focus:bg-sky-100 focus:text-sky-500 py-2.5">Seni & Budaya</SelectItem>
+                                                <SelectItem value="Olahraga" className="cursor-pointer focus:bg-sky-100 focus:text-sky-500 py-2.5">Olahraga</SelectItem>
                                             </SelectContent>
-                                            
                                         </Select>
                                     </div>
                                 </div>
                                 <div className="mb-6">
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Tentang Event</label>
-                                    <Textarea rows={4} value={data.description} onChange={e => setData('description', e.target.value)} required />
+                                    <label className="block text-base font-medium text-neutral-950 mb-2">Tentang Event</label>
+                                    <Textarea className="border-neutral-300 rounded-2xl" rows={4} value={data.description} onChange={e => setData('description', e.target.value)} required />
                                 </div>
                                 <div className="mb-6">
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Ketentuan</label>
-                                    <Textarea rows={4} value={data.terms_conditions} onChange={e => setData('terms_conditions', e.target.value)} placeholder="Gunakan enter/baris baru untuk setiap poin" />
+                                    <label className="block text-base font-medium text-neutral-950 mb-2">Ketentuan</label>
+                                    <Textarea className="border-neutral-300 rounded-2xl" rows={4} value={data.terms_conditions} onChange={e => setData('terms_conditions', e.target.value)} placeholder="Gunakan enter/baris baru untuk setiap poin" />
                                 </div>
-                                {/* 🔥 TAB FORMAT EVENT (Gaya Full Width) 🔥 */}
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-2">Format Event</label>
-                                    <div className="flex w-full bg-gray-50 p-1 rounded-full border border-neutral-200">
+                                    <label className="block text-base font-medium text-neutral-950 mb-2">Format Event</label>
+                                    <div className="flex w-full bg-neutral-50 px-1 rounded-full border border-neutral-200">
                                         {['offline', 'online'].map((formatOption) => (
                                             <button
                                                 key={formatOption}
@@ -275,7 +267,7 @@ export default function Form({ event }) {
                                                 className={`flex-1 py-2 rounded-full text-sm font-bold transition-all capitalize ${
                                                     data.format === formatOption 
                                                         ? 'bg-sky-500 text-white shadow-sm scale-[1.02]' 
-                                                        : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                                                        : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100'
                                                 }`}
                                             >
                                                 {formatOption}
@@ -292,14 +284,14 @@ export default function Form({ event }) {
                                 <div className="bg-white p-[6px] rounded-2xl">
                                     <div className={`w-14 h-14 rounded-[16px] flex items-center justify-center transition-all duration-300 ${
                                         activeSection === 'form-utama' 
-                                            ? 'bg-[#e0f2fe] text-sky-500 scale-110 ' 
-                                            : 'bg-white text-gray-300 border-[3px] border-neutral-300 group-hover:border-sky-500 group-hover:text-sky-500'
+                                            ? 'bg-sky-100 text-sky-500 scale-110 ' 
+                                            : 'bg-white text-neutral-300 border-[3px] border-neutral-300 group-hover:border-sky-500 group-hover:text-sky-500'
                                     }`}>
-                                        <IconUpload size={24} stroke={3} />
+                                        <IconFile size={24} stroke={3} />
                                     </div>
                                 </div>
-                                <span className={`text-[13px] font-semibold mt-2 text-center transition-colors ${
-                                    activeSection === 'form-utama' ? 'text-sky-500' : 'text-gray-400'
+                                <span className={`text-sm font-medium mt-2 text-center transition-colors ${
+                                    activeSection === 'form-utama' ? 'text-sky-500' : 'text-neutral-400'
                                 }`}>Form Utama</span>
                             </a>
                         </div>
@@ -312,21 +304,37 @@ export default function Form({ event }) {
                         
                         {/* KIRI: Form Content */}
                         <div className="flex-1 bg-white p-4 rounded-[24px] border border-neutral-300">
-                            <h2 className="text-xl font-semibold text-gray-900 mb-6">Tanggal & Lokasi</h2>
+                            <h2 className="text-sm font-medium text-neutral-900 mb-6">Tanggal & Lokasi</h2>
                             
                             {data.schedules.map((schedule, index) => (
-                                <div key={index} className="flex flex-col md:flex-row gap-4 mb-4 items-end bg-white p-6 rounded-2xl border border-neutral-300">
+                                <div key={index} className="flex flex-col md:flex-row gap-4 mb-4 items-end bg-white p-4 rounded-2xl border border-neutral-300">
+                                    
+                                    {/* 🔥 MENGGUNAKAN KOMPONEN DATEMODAL 🔥 */}
                                     <div className="flex-1 w-full">
-                                        <label className="block text-xs font-semibold text-gray-700 mb-2">Tanggal Event</label>
-                                        <Input type="date" value={schedule.date} onChange={e => updateSchedule(index, 'date', e.target.value)} required />
+                                        <label className="block text-base font-medium text-neutral-950 mb-2">Tanggal Event</label>
+                                        <DateModal
+                                            title="Pilih Tanggal Event"
+                                            actionLabel="Simpan Tanggal"
+                                            onAction={(dateStr) => updateSchedule(index, 'date', dateStr)}
+                                            triggerNode={
+                                                <button
+                                                    type="button"
+                                                    className="flex items-center justify-between w-full h-12 px-3 bg-white border border-neutral-300 rounded-2xl text-sm text-neutral-700 font-medium hover:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-0 cursor-pointer transition-colors"
+                                                >
+                                                    <span>{formatDisplayDate(schedule.date)}</span>
+                                                    <IconCalendar size={18} className="text-neutral-400 shrink-0" stroke={2} />
+                                                </button>
+                                            }
+                                        />
+                                    </div>
+
+                                    <div className="flex-1 w-full">
+                                        <label className="block text-base font-medium text-neutral-950 mb-2">Jam Mulai</label>
+                                        <Input className="border-neutral-300 rounded-2xl h-12" type="time" value={schedule.time_start} onChange={e => updateSchedule(index, 'time_start', e.target.value)} required />
                                     </div>
                                     <div className="flex-1 w-full">
-                                        <label className="block text-xs font-semibold text-gray-700 mb-2">Jam Mulai</label>
-                                        <Input type="time" value={schedule.time_start} onChange={e => updateSchedule(index, 'time_start', e.target.value)} required />
-                                    </div>
-                                    <div className="flex-1 w-full">
-                                        <label className="block text-xs font-semibold text-gray-700 mb-2">Jam Berakhir</label>
-                                        <Input type="time" value={schedule.time_end} onChange={e => updateSchedule(index, 'time_end', e.target.value)} required />
+                                        <label className="block text-base font-medium text-neutral-950 mb-2">Jam Berakhir</label>
+                                        <Input className="border-neutral-300 rounded-2xl h-12" type="time" value={schedule.time_end} onChange={e => updateSchedule(index, 'time_end', e.target.value)} required />
                                     </div>
                                     {index > 0 && (
                                         <Button type="button" variant="destructive" size="icon" onClick={() => removeSchedule(index)} className="rounded-xl shrink-0 h-10 w-10 hover:text-red-500 hover:bg-red-50">
@@ -343,17 +351,17 @@ export default function Form({ event }) {
                             </div>
 
                             <div className="mb-6">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Venue / Lokasi Event</label>
-                                <Input type="text" value={data.venue} onChange={e => setData('venue', e.target.value)} placeholder="Contoh: Gedung Dungkedung" required />
+                                <label className="block text-base font-medium text-neutral-950 mb-2">Nama Venue / Lokasi Event</label>
+                                <Input className="border-neutral-300 rounded-2xl h-12" type="text" value={data.venue} onChange={e => setData('venue', e.target.value)} placeholder="Contoh: Gedung Dungkedung" required />
                             </div>
                             <div className="mb-6">
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Alamat Detail Lokasi</label>
-                                <Input type="text" value={data.address} onChange={e => setData('address', e.target.value)} placeholder="Jl. Raya Kemerdekaan No.17" required />
+                                <label className="block text-base font-medium text-neutral-950 mb-2">Alamat Detail Lokasi</label>
+                                <Input className="border-neutral-300 rounded-2xl h-12" type="text" value={data.address} onChange={e => setData('address', e.target.value)} placeholder="Jl. Raya Kemerdekaan No.17" required />
                             </div>
                             
                             <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">Lokasi Maps</label>
-                                    <Textarea rows={4} type="url" value={data.map_link} onChange={e => setData('map_link', e.target.value)} placeholder="https://maps.app.goo.gl/..." required/>
+                                <label className="block text-base font-medium text-neutral-950 mb-2">Lokasi Maps</label>
+                                    <Textarea className="border-neutral-300 rounded-2xl" rows={4} type="url" value={data.map_link} onChange={e => setData('map_link', e.target.value)} placeholder="https://maps.app.goo.gl/..." required/>
                             </div>
                         </div>
 
@@ -363,14 +371,14 @@ export default function Form({ event }) {
                                 <div className="bg-white p-[6px] rounded-2xl">
                                     <div className={`w-14 h-14 rounded-[16px] flex items-center justify-center transition-all duration-300 ${
                                         activeSection === 'tanggal-lokasi' 
-                                            ? 'bg-[#e0f2fe] text-sky-500 scale-110 ' 
-                                            : 'bg-white text-gray-300 border-[3px] border-neutral-300 group-hover:border-sky-500 group-hover:text-sky-500'
+                                            ? 'bg-sky-100 text-sky-500 scale-110 ' 
+                                            : 'bg-white text-neutral-300 border-[3px] border-neutral-300 group-hover:border-sky-500 group-hover:text-sky-500'
                                     }`}>
                                         <IconMapPin size={24} stroke={3} />
                                     </div>
                                 </div>
                                 <span className={`text-[13px] font-semibold mt-2 text-center leading-tight transition-colors ${
-                                    activeSection === 'tanggal-lokasi' ? 'text-sky-500' : 'text-gray-400'
+                                    activeSection === 'tanggal-lokasi' ? 'text-sky-500' : 'text-neutral-400'
                                 }`}>Tanggal &<br/>Lokasi</span>
                             </a>
                         </div>
@@ -383,36 +391,36 @@ export default function Form({ event }) {
                         
                         {/* KIRI: Form Content */}
                         <div className="flex-1 bg-white p-4 rounded-[24px] border border-neutral-300">
-                            <h2 className="text-xl font-semibold text-gray-900 mb-6">Tiket</h2>
+                            <h2 className="text-xl font-semibold text-neutral-900 mb-6">Tiket</h2>
                             
                             {data.ticket_types.map((ticket, index) => (
-                                <div key={index} className="border border-neutral-300 rounded-2xl p-6 mb-6 relative">
+                                <div key={index} className="border border-neutral-300 rounded-2xl p-4 mb-6 relative">
                                     {index > 0 && (
                                         <Button type="button" variant="destructive" size="icon" onClick={() => removeTicket(index)} className="absolute top-4 right-4 rounded-lg h-10 w-10  hover:text-red-500 hover:bg-red-50">
                                             <IconTrash size={16} />
                                         </Button>
                                     )}
                                     <div className="mb-4 pr-10">
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Nama Tiket</label>
-                                        <Input type="text" value={ticket.type_name} onChange={e => updateTicket(index, 'type_name', e.target.value)} required />
+                                        <label className="block text-base font-medium text-neutral-950 mb-2">Nama Tiket</label>
+                                        <Input className="border-neutral-300 rounded-2xl h-12" type="text" value={ticket.type_name} onChange={e => updateTicket(index, 'type_name', e.target.value)} required />
                                     </div>
                                     <div className="mb-4">
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Deskripsi Tiket</label>
-                                        <Textarea rows={2} value={ticket.description} onChange={e => updateTicket(index, 'description', e.target.value)} placeholder="Deskripsi tiket" />
+                                        <label className="block text-base font-medium text-neutral-950 mb-2">Deskripsi Tiket</label>
+                                        <Textarea className="border-neutral-300 rounded-2xl" rows={2} value={ticket.description} onChange={e => updateTicket(index, 'description', e.target.value)} placeholder="Deskripsi tiket" />
                                     </div>
                                     <div className="mb-4">
-                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Fitur & Benefit </label>
-                                        <Textarea rows={2} value={ticket.features} onChange={e => updateTicket(index, 'features', e.target.value)} placeholder="Contoh: VIP Lounge - E-Certificate - Free Drinks" />
-                                        <span className="text-[10px] text-gray-400 inline-block mt-1">Pisahkan dengan tanda strip (-)</span>
+                                        <label className="block text-base font-medium text-neutral-950 mb-2">Fitur & Benefit </label>
+                                        <Textarea className="border-neutral-300 rounded-2xl" rows={2} value={ticket.features} onChange={e => updateTicket(index, 'features', e.target.value)} placeholder="Contoh: VIP Lounge - E-Certificate - Free Drinks" />
+                                        <span className="text-[10px] text-neutral-400 inline-block mt-1">Pisahkan dengan tanda strip (-)</span>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Harga Tiket (Rp)</label>
-                                            <Input type="number" value={ticket.price} onChange={e => updateTicket(index, 'price', e.target.value)} required />
+                                            <label className="block text-base font-medium text-neutral-950 mb-2">Harga Tiket (Rp)</label>
+                                            <Input className="border-neutral-300 rounded-2xl h-12" type="number" value={ticket.price} onChange={e => updateTicket(index, 'price', e.target.value)} required />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-semibold text-gray-700 mb-2">Jumlah Tiket (Kuota)</label>
-                                            <Input type="number" value={ticket.available_stock} onChange={e => updateTicket(index, 'available_stock', e.target.value)} required />
+                                            <label className="block text-base font-medium text-neutral-950 mb-2">Jumlah Tiket (Kuota)</label>
+                                            <Input className="border-neutral-300 rounded-2xl h-12" type="number" value={ticket.available_stock} onChange={e => updateTicket(index, 'available_stock', e.target.value)} required />
                                         </div>
                                     </div>
                                 </div>
@@ -431,14 +439,14 @@ export default function Form({ event }) {
                                 <div className="bg-white p-[6px] rounded-2xl">
                                     <div className={`w-14 h-14 rounded-[16px] flex items-center justify-center transition-all duration-300 ${
                                         activeSection === 'tiket' 
-                                            ? 'bg-[#e0f2fe] text-sky-500 scale-110 ' 
-                                            : 'bg-white text-gray-300 border-[3px] border-neutral-300 group-hover:border-sky-500 group-hover:text-sky-500'
+                                            ? 'bg-sky-100 text-sky-500 scale-110 ' 
+                                            : 'bg-white text-neutral-300 border-[3px] border-neutral-300 group-hover:border-sky-500 group-hover:text-sky-500'
                                     }`}>
                                         <IconTicket size={24} stroke={3} />
                                     </div>
                                 </div>
-                                <span className={`text-[13px] font-semibold mt-2 text-center transition-colors ${
-                                    activeSection === 'tiket' ? 'text-sky-500' : 'text-gray-400'
+                                <span className={`text-sm font-medium mt-2 text-center transition-colors ${
+                                    activeSection === 'tiket' ? 'text-sky-500' : 'text-neutral-400'
                                 }`}>Tiket</span>
                             </a>
                         </div>
@@ -448,18 +456,16 @@ export default function Form({ event }) {
                         4. TOMBOL ACTION (Di bawah Form Kiri saja)
                     ========================================== */}
                     <div className="flex flex-col xl:flex-row gap-8 w-full mt-6 relative z-10 ">
-                        {/* Lebar selebar form kiri agar layout tetap konsisten */}
                         <div className="flex-1 flex gap-[10px] p-4 max-h-72 border border-neutral-300 bg-white rounded-[24px]">
-                            <Button className="flex-1 py-2 rounded-xl border-gray-300 text-white h-auto font-semibold text-base bg-red-500 hover:bg-red-700">
+                            <Button type="button" asChild className="flex-1 py-2 rounded-xl border-neutral-300 text-white h-auto font-semibold text-sm bg-red-500 hover:bg-red-700">
                                 <Link href={route('organizer.events.index')}>Kembali</Link>
                             </Button>
-                            <Button type="submit" disabled={processing} className="flex-1 py-2 rounded-xl bg-sky-500 hover:bg-sky-700 text-white font-semibold h-auto text-base">
+                            <Button type="submit" disabled={processing} className="flex-1 py-2 rounded-xl bg-sky-500 hover:bg-sky-700 text-white font-semibold h-auto text-sm">
                                 {processing ? 'Menyimpan...' : isEdit ? 'Update Event' : 'Buat Event'}
                             </Button>
                         </div>
                         {/* KANAN: Hanya Garis Biru Tanpa Ikon */}
                         <div className="hidden xl:flex w-32 shrink-0 justify-center relative -mt-10 border-x border-neutral-300 border-b rounded-b-2xl">
-                            {/* Garis menyambung dari atas (menutupi gap mt-6) sampai ujung form bawah */}
                             <div className="absolute -top-6 bottom-0 w-[4px] bg-sky-500 rounded-b-full bottom-2"></div>
                         </div>
                     </div>
