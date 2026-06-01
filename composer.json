@@ -17,6 +17,8 @@
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
         "mongodb/laravel-mongodb": "^5.7",
+        "symfony/brevo-mailer": "^7.4",
+        "symfony/http-client": "*",
         "tightenco/ziggy": "^2.0",
         "xendit/xendit-php": "^7.0"
     },
