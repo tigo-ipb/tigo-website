@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Mail;
 use Symfony\Component\Mailer\Bridge\Brevo\Transport\BrevoTransportFactory;
 use Symfony\Component\Mailer\Transport\Dsn;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Auth\Notifications\ResetPassword;
+use App\Mail\VerifikasiEmail;
+use App\Mail\LupaPasswordEmail;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,6 +43,23 @@ class AppServiceProvider extends ServiceProvider
                     config('services.brevo.key')
                 )
             );
+        });
+        VerifyEmail::toMailUsing(function (object $notifiable, string $url) {
+            // $notifiable adalah data User, $url adalah link aman dari Laravel
+            return (new VerifikasiEmail($notifiable->name, $url))
+                        ->to($notifiable->email);
+        });
+
+        // 2. Timpa Email Lupa Password Bawaan Laravel
+        ResetPassword::toMailUsing(function (object $notifiable, string $token) {
+            // Buat link reset password bawaan Breeze
+            $url = url(route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ], false));
+
+            return (new LupaPasswordEmail($url))
+                        ->to($notifiable->email);
         });
     }
 }

@@ -18,7 +18,7 @@
         "maatwebsite/excel": "^3.1",
         "mongodb/laravel-mongodb": "^5.7",
         "symfony/brevo-mailer": "^7.4",
-        "symfony/http-client": "*",
+        "symfony/http-client": "^7.4",
         "tightenco/ziggy": "^2.0",
         "xendit/xendit-php": "^7.0"
     },
