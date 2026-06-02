@@ -132,4 +132,16 @@ class MobileDashboardController extends Controller
             ]
         ], 200);
     }
+
+    public function getActiveEvents()
+    {
+        $activeEvents = Event::where('status', 'active')
+                             ->where('date_end', '>=', now())
+                             ->get(['_id', 'name']); // Ambil ID dan Nama saja
+
+        return response()->json([
+            'success' => true,
+            'data' => $activeEvents
+        ], 200);
+    }
 }

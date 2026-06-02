@@ -63,6 +63,6 @@ Route::middleware('auth:sanctum')->group(function () {
         
         // Lihat Dashboard Real-time Lapangan
         Route::get('/organizer/dashboard', [MobileDashboardController::class, 'stats']);
-        
+        Route::get('/organizer/events/active', [MobileDashboardController::class, 'getActiveEvents']);
     });
 });
