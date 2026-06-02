@@ -5,7 +5,7 @@ import Notification from '@/Components/Notification';
 
 export default function GuestLayout({ children }) {
     return (
-       <div className="h-screen overflow-hidden bg-white flex flex-col">
+       <div className="min-h-screen bg-white flex flex-col">
         <Notification />
             <header className="px-8 py-4 border-b border-gray-100 flex items-center justify-between">
                 <div className="flex items-center gap-2">
