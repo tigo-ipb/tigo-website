@@ -86,7 +86,7 @@ class ScannerController extends Controller
             ScanLog::create([
                 'event_id' => $request->event_id,
                 'ticket_validation_id' => $ticket->_id,
-                'status' => 'FAILED',
+                'status' => 'REJECTED',
                 'reason' => 'Tiket SUDAH DIGUNAKAN',
                 'customer_name' => $name,
                 'email' => $email,
