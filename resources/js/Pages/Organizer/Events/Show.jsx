@@ -8,8 +8,10 @@ import {
     IconCheck, 
     IconCurrencyDollar, 
     IconClockHour4, 
-    IconSquareRoundedCheck
+    IconSquareRoundedCheck,
+    IconLockOpen2
 } from '@tabler/icons-react';
+import { Button } from '@/Components/ui/button';
 
 const formatRupiah = (number) => {
     if (number === 0) return 'Free';
@@ -160,10 +162,10 @@ export default function Show({ event }) {
                                     key={index} 
                                     className={`p-2 rounded-2xl border bg-sky-100 border-sky-500 flex justify-between items-center min-h-[60px]`}
                                 >
-                                    <div className="flex flex-col items-center gap-2">
-                                        <h4 className="text-xl font-medium text-black">{ticket.type_name}</h4>
+                                    <div className="flex flex-col text-start items-center gap-2">
+                                        <h4 className="text-xl w-full font-medium text-black">{ticket.type_name}</h4>
                                     {ticket.features != null && (
-                                        <div className="flex flex-wrap gap-x-4 gap-y-2">
+                                        <div className="flex flex-wrap gap-x-4 gap-y-2 w-full">
                                         {ticket.features && ticket.features.map((feature, fIndex) => (
                                             <div key={fIndex} className="flex items-center gap-1.5 text-[10px] font-medium text-sky-500">
                                                 <IconSquareRoundedCheck size={16} className="text-sky-500" />
@@ -191,6 +193,11 @@ export default function Show({ event }) {
 
                 </div>
             </div>
+            <Button asChild className="w-full mt-6 py-6 rounded-xl bg-[#0ea5e9] hover:bg-[#0284c7] text-white font-medium text-base">
+                    <Link href={route('organizer.events.monitoring', event.id)} className="flex items-center justify-center gap-2">
+                        <IconLockOpen2 size={16} stroke={2.5} /> Buka Event
+                    </Link>
+                </Button>
         </DashboardLayout>
     );
 }

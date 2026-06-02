@@ -6,65 +6,123 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\TicketValidation;
-use App\Models\User;
+use App\Models\Payment;
+use App\Models\ScanLog;
 
 class MobileDashboardController extends Controller
 {
     public function stats(Request $request)
     {
-        $request->validate([
-            'event_id' => 'required|string'
-        ]);
+        // 1. Ambil SEMUA event yang berstatus Aktif dan belum berakhir
+        // (Silakan sesuaikan value 'Aktif' jika di database Mas Aryo menggunakan bahasa Inggris misal 'ACTIVE')
+        $activeEvents = Event::where('status', 'active')
+                             ->where('date_end', '>=', now())
+                             ->get();
 
-        $eventId = $request->event_id;
-        $event = Event::find($eventId);
-
-        if (!$event) {
-            return response()->json(['success' => false, 'message' => 'Event tidak ditemukan'], 404);
+        // Jika tidak ada event yang aktif saat ini
+        if ($activeEvents->isEmpty()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Tidak ada event aktif saat ini.',
+                'data' => [
+                    'event_name' => 'Tidak Ada Event Aktif',
+                    'summary' => [
+                        'total_scanned' => 0,
+                        'total_sold' => 0,
+                    ],
+                    'breakdown' => [],
+                    'recent_scans' => []
+                ]
+            ], 200);
         }
 
-        // 1. Ambil SEMUA tiket yang terjual untuk event ini
-        $allTickets = TicketValidation::where('event_id', $eventId)->get();
+        // Kumpulkan semua ID event aktif ke dalam bentuk Array
+        $activeEventIds = $activeEvents->pluck('_id')->toArray();
         
-        $totalSold = $allTickets->count(); // Total tiket terjual (angka 500 di UI)
-        $totalScanned = $allTickets->where('is_used', true)->count(); // Pengunjung masuk (angka 250 di UI)
+        // Simpan data event dengan key ID agar mudah diambil nama event-nya nanti
+        $eventsById = $activeEvents->keyBy('_id');
 
-        // 2. Hitung Rincian per Tipe Tiket (Progress Bar di UI)
-        // Kita kelompokkan koleksi berdasarkan 'type_name'
-        $groupedTickets = $allTickets->groupBy('type_name');
+
+        // =========================================================
+        // 2. STATISTIK TIKET (Gabungan dari SEMUA event aktif)
+        // =========================================================
+        // Menggunakan whereIn untuk mencari tiket dari banyak event sekaligus
+        $allTickets = TicketValidation::whereIn('event_id', $activeEventIds)->get();
         
+        $paymentIds = $allTickets->pluck('payment_id')->unique();
+        $allPayments = Payment::whereIn('_id', $paymentIds)->get()->keyBy('_id');
+
+        $totalSold = $allTickets->count();
+        $totalScanned = 0;
+
+        $stats = [
+            'IPB' => ['total' => 0, 'scanned' => 0],
+            'General' => ['total' => 0, 'scanned' => 0],
+        ];
+
+        foreach ($allTickets as $ticket) {
+            $payment = $allPayments->get($ticket->payment_id);
+            $customerInfo = $payment ? $payment->customer_info : [];
+            
+            if (is_string($customerInfo)) {
+                $customerInfo = json_decode($customerInfo, true) ?? [];
+            } else {
+                $customerInfo = (array) $customerInfo;
+            }
+            
+            $email = $customerInfo['email'] ?? '';
+            $isIpb = str_contains(strtolower($email), '@apps.ipb.ac.id');
+            $category = $isIpb ? 'IPB' : 'General';
+
+            $stats[$category]['total']++;
+            if ($ticket->is_used) {
+                $stats[$category]['scanned']++;
+                $totalScanned++;
+            }
+        }
+
         $ticketBreakdown = [];
-        foreach ($groupedTickets as $typeName => $tickets) {
+        foreach ($stats as $name => $data) {
             $ticketBreakdown[] = [
-                'type_name' => $typeName,
-                'scanned' => $tickets->where('is_used', true)->count(),
-                'sold' => $tickets->count()
+                'type_name' => $name,
+                'scanned' => $data['scanned'],
+                'sold' => $data['total']
             ];
         }
 
-        // 3. Riwayat "Scan Terakhir" (Ambil 10 data terbaru yang sudah is_used = true)
-        $recentScansRaw = TicketValidation::where('event_id', $eventId)
-                            ->where('is_used', true)
-                            ->orderBy('scanned_at', 'desc')
+
+        // =========================================================
+        // 3. RIWAYAT SCAN TERAKHIR (Gabungan dari SEMUA event aktif)
+        // =========================================================
+        // Menggunakan whereIn untuk mengambil log dari semua acara
+        $recentScansRaw = ScanLog::whereIn('event_id', $activeEventIds)
+                            ->orderBy('created_at', 'desc')
                             ->limit(10)
                             ->get();
 
-        $recentScans = $recentScansRaw->map(function ($ticket) use ($event) {
-            $user = User::find($ticket->user_id);
+        $recentScans = $recentScansRaw->map(function ($log) use ($eventsById) {
+            // Cocokkan event_id di log dengan array eventsById untuk mendapatkan nama acara
+            $eventName = $eventsById->has($log->event_id) ? $eventsById->get($log->event_id)->name : 'Unknown Event';
+
             return [
-                'order_id' => substr($ticket->_id, -8), // Ambil 8 karakter terakhir ID sebagai Order ID
-                'buyer_name' => $user ? $user->name : 'Unknown',
-                'scanned_at' => $ticket->scanned_at->format('d/m/Y H:i'),
-                'event_name' => $event->name,
-                'category' => $event->category_name
+                'order_id' => $log->order_id,
+                'buyer_name' => $log->customer_name,
+                'scanned_at' => $log->created_at ? $log->created_at->format('d/m/Y H:i') : null,
+                'event_name' => $eventName, // Memunculkan nama event yang sedang berlangsung
+                'category' => $log->category,
+                'status' => $log->status, 
+                'reason' => $log->reason
             ];
         });
 
-        // 4. Return Data
+
+        // =========================================================
+        // 4. RETURN DATA KE MOBILE
+        // =========================================================
         return response()->json([
             'success' => true,
             'data' => [
-                'event_name' => $event->name,
+                'event_name' => 'Semua Event Aktif', // Diubah menjadi label Global
                 'summary' => [
                     'total_scanned' => $totalScanned,
                     'total_sold' => $totalSold,

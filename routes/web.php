@@ -63,7 +63,12 @@ Route::middleware(['auth', EnsureAccountSetup::class, 'role:organizer'])->prefix
     
     // 2. Events (CRUD Event & Cloudinary)
     Route::resource('events', OrgEvent::class);
+    // Tambahkan di dalam middleware organizer
+    Route::get('/organizer/events/{event}/monitoring', [OrgEvent::class, 'monitoring'])->name('events.monitoring');
     Route::patch('/organizer/events/{id}/status', [OrgEvent::class, 'updateStatus'])->name('events.update-status');
+    // Tambahkan di bawah route monitoring yang sudah ada
+    Route::post('/organizer/events/{event}/monitoring/{log}/action', [OrgEvent::class, 'scanAction'])->name('organizer.events.monitoring.action');
+
     
     // 3. Bookings (Data Transaksi & Pesanan Tiket)
     Route::get('/bookings', [OrgBooking::class, 'index'])->name('bookings');

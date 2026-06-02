@@ -18,7 +18,7 @@ class EventController extends Controller
         $stats = [
             'total' => Event::count(),
             'active' => Event::where('status', 'active')->count(), // Pastikan pakai huruf kecil sesuai DB
-            'archived' => Event::where('status', 'draft')->count(),
+            'archived' => Event::where('status', 'archive')->count(),
         ];
 
         // 2. Query Data Event

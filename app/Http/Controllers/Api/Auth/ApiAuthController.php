@@ -118,8 +118,16 @@ class ApiAuthController extends Controller
 
         // Cek apakah email sudah diverifikasi
         if (is_null($user->email_verified_at)) {
+            $otp = rand(100000, 999999);
+            Mail::to($user->email)->send(new \App\Mail\VerifyEmailMobileMail($otp));
+            $user->update([
+                'verification_otp' => $otp,
+                'otp_expires_at' => now()->addMinutes(15),
+            ]);
             return response()->json(['success' => false, 'message' => 'Email belum diverifikasi. Silakan verifikasi terlebih dahulu.', 'needs_verification' => true], 403);
         }
+
+        
 
         $token = $user->createToken('mobile-app-token')->plainTextToken;
 

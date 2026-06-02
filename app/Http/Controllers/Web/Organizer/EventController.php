@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Event;
 use App\Models\Payment;
+use App\Models\TicketValidation;
 use Carbon\Carbon;
 use DOMDocument;
 use Illuminate\Support\Str;
@@ -446,4 +447,155 @@ class EventController extends Controller
         $event->delete();
 
         return redirect()->route('organizer.events.index')->with('success', 'Event beserta seluruh fotonya berhasil dihapus!');
-    }}
+    }
+    
+    public function monitoring(Request $request, $id)
+    {
+        $event = \App\Models\Event::findOrFail($id);
+
+        // =========================================================
+        // 1. HITUNG STATISTIK PROGRESS BAR (Tanpa Filter)
+        // =========================================================
+        $allValidations = \App\Models\TicketValidation::where('event_id', $id)->get();
+        $paymentIds = $allValidations->pluck('payment_id')->unique();
+        $allPayments = \App\Models\Payment::whereIn('_id', $paymentIds)->get()->keyBy('_id');
+
+        $totalTickets = $allValidations->count();
+        $scannedTickets = 0;
+        $stats = [
+            'IPB' => ['total' => 0, 'scanned' => 0],
+            'General' => ['total' => 0, 'scanned' => 0],
+        ];
+
+        foreach ($allValidations as $scan) {
+            $payment = $allPayments->get($scan->payment_id);
+            
+            // Mencegah error json_decode
+            $customerInfo = $payment ? $payment->customer_info : [];
+            if (is_string($customerInfo)) {
+                $customerInfo = json_decode($customerInfo, true) ?? [];
+            } else {
+                $customerInfo = (array) $customerInfo;
+            }
+            
+            $email = $customerInfo['email'] ?? '';
+            $isIpb = str_contains(strtolower($email), '@apps.ipb.ac.id');
+            $category = $isIpb ? 'IPB' : 'General';
+
+            $stats[$category]['total']++;
+            if ($scan->is_used) {
+                $stats[$category]['scanned']++;
+                $scannedTickets++;
+            }
+        }
+
+        $ticketStats = [];
+        foreach ($stats as $name => $data) {
+            $ticketStats[] = [
+                'name' => $name,
+                'total' => $data['total'],
+                'scanned' => $data['scanned'],
+                'percentage' => $data['total'] > 0 ? round(($data['scanned'] / $data['total']) * 100) : 0
+            ];
+        }
+
+        // =========================================================
+        // 2. AMBIL DATA TABEL SCAN (Sekarang dari ScanLog 🔥)
+        // =========================================================
+        $query = \App\Models\ScanLog::where('event_id', $id);
+
+        // A. Filter Status dari Frontend
+       if ($request->filled('status') && $request->status !== 'Semua') {
+            if ($request->status === 'Berhasil') {
+                $query->where('status', 'SUCCESS');
+            } else {
+                // Tab Gagal mencakup FAILED (baru gagal) dan REJECTED (sudah ditolak admin)
+                $query->whereIn('status', ['FAILED', 'REJECTED']); 
+            }
+        }
+
+        // B. Filter Search (Karena data sudah di-embed, query NoSQL jadi sangat cepat!)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('order_id', 'like', "%{$search}%")
+                  ->orWhere('customer_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // C. Sorting
+        $sortOrder = $request->sort === 'Terlama' ? 'asc' : 'desc';
+        $query->orderBy('created_at', $sortOrder); // Gunakan created_at dari log
+
+        // D. Eksekusi Pagination
+        $paginatedScans = $query->paginate(10)->withQueryString();
+
+        // E. Mapping untuk React
+        $mappedData = $paginatedScans->getCollection()->map(function ($log) use ($event) {
+            return [
+                'id' => (string) $log->_id,
+                'order_id' => $log->order_id,
+                'updated_at' => $log->created_at, // Waktu scan terjadi
+                'type_name' => $log->type_name,
+                'category' => $log->category,
+                'email' => $log->email ?? '',
+                'status' => $log->status, // Konversi boolean untuk UI React
+                'customer_name' => $log->customer_name,
+                'event_name' => $event->name,
+                'reason' => $log->reason // (Opsional) bisa ditampilkan jika gagal
+            ];
+        })->values();
+
+        $paginatedScans->setCollection($mappedData);
+
+        return inertia('Organizer/Events/Monitoring', [
+            'event' => $event,
+            'totalTickets' => $totalTickets, // Didapat dari logika nomor 1
+            'scannedTickets' => $scannedTickets, // Didapat dari logika nomor 1
+            'ticketStats' => $ticketStats, // Didapat dari logika nomor 1
+            'scans' => $paginatedScans,
+            'filters' => (object) $request->only(['search', 'status', 'sort'])
+        ]);
+    }
+
+    // Fungsi untuk menangani tombol Terima / Tolak manual
+    public function scanAction(Request $request, $eventId, $logId)
+    {
+        $request->validate([
+            'action' => 'required|in:terima,tolak'
+        ]);
+
+        $log = \App\Models\ScanLog::findOrFail($logId);
+
+        if ($request->action === 'terima') {
+            // 1. Ubah status log jadi SUCCESS
+            $log->update([
+                'status' => 'SUCCESS',
+                'reason' => 'Diterima Manual oleh Admin'
+            ]);
+
+            // 2. Wajib: Ubah status tiket aslinya jadi terpakai (jika ada tiketnya)
+            if ($log->ticket_validation_id) {
+                \App\Models\TicketValidation::where('_id', $log->ticket_validation_id)->update([
+                    'is_used' => true,
+                    'updated_at' => now()
+                ]);
+            }
+
+            return back()->with('success', 'Pengunjung berhasil diizinkan masuk.');
+        }
+
+        if ($request->action === 'tolak') {
+            // Ubah status jadi REJECTED agar tombol aksinya hilang
+            $log->update([
+                'status' => 'REJECTED',
+                'reason' => 'Ditolak Manual oleh Admin'
+            ]);
+
+            return back()->with('success', 'Akses ditolak secara permanen.');
+        }
+    }
+    }
+
+    

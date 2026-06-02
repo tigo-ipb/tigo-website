@@ -79,7 +79,7 @@ class UserController extends Controller
         // =======================================================
         // 1. Data Statistik Atas (All Time / Sepanjang Masa)
         // =======================================================
-        $totalPemesanAll = User::where('role', 'user')->orWhereNull('role')->count();
+        $totalPemesanAll = User::where('role', 'customer')->orWhereNull('role')->count();
         $totalPenyelenggaraAll = User::where('role', 'organizer')->count();
         
         $topStats = [
