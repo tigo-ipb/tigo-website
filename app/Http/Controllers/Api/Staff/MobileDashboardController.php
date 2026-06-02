@@ -17,6 +17,7 @@ class MobileDashboardController extends Controller
         // (Silakan sesuaikan value 'Aktif' jika di database Mas Aryo menggunakan bahasa Inggris misal 'ACTIVE')
         $activeEvents = Event::where('status', 'active')
                              ->where('date_end', '>=', now())
+                             ->where('organizer_id', auth()->id())
                              ->get();
 
         // Jika tidak ada event yang aktif saat ini
@@ -142,6 +143,7 @@ class MobileDashboardController extends Controller
     {
         $activeEvents = Event::where('status', 'active')
                              ->where('date_end', '>=', now())
+                              ->where('organizer_id', auth()->id())
                              ->get(['_id', 'name']); // Ambil ID dan Nama saja
 
         return response()->json([
