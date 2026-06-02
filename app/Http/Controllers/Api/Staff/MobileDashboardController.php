@@ -25,6 +25,7 @@ class MobileDashboardController extends Controller
                 'success' => true,
                 'message' => 'Tidak ada event aktif saat ini.',
                 'data' => [
+                    'event_id'   => '',
                     'event_name' => 'Tidak Ada Event Aktif',
                     'summary' => [
                         'total_scanned' => 0,
@@ -35,6 +36,9 @@ class MobileDashboardController extends Controller
                 ]
             ], 200);
         }
+
+        // Ambil event pertama sebagai default event_id untuk keperluan scan
+        $defaultEvent = $activeEvents->first();
 
         // Kumpulkan semua ID event aktif ke dalam bentuk Array
         $activeEventIds = $activeEvents->pluck('_id')->toArray();
@@ -122,6 +126,7 @@ class MobileDashboardController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
+                'event_id'   => (string) $defaultEvent->_id, // Event pertama sebagai default untuk scan
                 'event_name' => 'Semua Event Aktif', // Diubah menjadi label Global
                 'summary' => [
                     'total_scanned' => $totalScanned,
