@@ -22,6 +22,37 @@ class ApiAuthController extends Controller
         return $user->is_profile_setup || ($user->phone_number != null);
     }
 
+    // =========================================================================
+    // HELPER: Generate unique username dari email/nama untuk Google Sign-In
+    // =========================================================================
+    private function generateUniqueUsername($email, $name)
+    {
+        // Ambil prefix sebelum '@' dari email, atau dari nama
+        $base = strstr($email, '@', true);
+        if (!$base) {
+            $base = str_replace(' ', '', strtolower($name));
+        }
+        // Bersihkan karakter selain huruf, angka, underscore, dan dot
+        $base = preg_replace('/[^a-zA-Z0-9_\.]/', '', $base);
+        if (empty($base)) {
+            $base = 'user';
+        }
+
+        $username = $base;
+        $counter = 1;
+        
+        // Loop sampai menemukan username yang belum terdaftar
+        while (User::where('username', $username)->exists()) {
+            $username = $base . rand(100, 9999);
+            $counter++;
+            if ($counter > 10) {
+                $username = $base . uniqid();
+                break;
+            }
+        }
+        return $username;
+    }
+
     /*
     |--------------------------------------------------------------------------
     | 1. REGISTER (Kirim OTP ke Gmail)
@@ -157,20 +188,35 @@ class ApiAuthController extends Controller
             $payload = $client->verifyIdToken($request->id_token);
 
             if ($payload) {
-                // Cari atau Buat User Baru
-                $user = User::updateOrCreate(
-                    ['email' => $payload['email']], 
-                    [
-                        'name' => $payload['name'],
-                        'google_id' => $payload['sub'],
-                        'password' => null, 
-                        'email_verified_at' => now(), // Google sudah pasti valid
-                    ]
-                );
+                // Cari user berdasarkan email
+                $user = User::where('email', $payload['email'])->first();
 
-                // Pastikan kolom is_profile_setup ada (default false untuk user baru)
-                if (!isset($user->is_profile_setup)) {
-                    $user->is_profile_setup = false;
+                if (!$user) {
+                    // Buat User Baru jika belum terdaftar
+                    $user = User::create([
+                        'email'            => $payload['email'],
+                        'name'             => $payload['name'] ?? explode('@', $payload['email'])[0],
+                        'username'         => $this->generateUniqueUsername($payload['email'], $payload['name'] ?? ''),
+                        'google_id'        => $payload['sub'],
+                        'role'             => 'customer', // Default role customer
+                        'is_profile_setup' => false,     // Wajib setup profile
+                        'email_verified_at'=> now(),      // Google sudah terverifikasi
+                        'is_password_set_manually' => false,
+                        'password'         => null,
+                    ]);
+                } else {
+                    // Jika user sudah terdaftar, kaitkan google_id jika belum ada
+                    if (empty($user->google_id)) {
+                        $user->google_id = $payload['sub'];
+                    }
+                    // Pastikan email_verified_at terisi jika masuk dengan Google
+                    if (empty($user->email_verified_at)) {
+                        $user->email_verified_at = now();
+                    }
+                    // Pastikan is_profile_setup ada (default false jika kolomnya kosong)
+                    if (!isset($user->is_profile_setup)) {
+                        $user->is_profile_setup = false;
+                    }
                     $user->save();
                 }
 
