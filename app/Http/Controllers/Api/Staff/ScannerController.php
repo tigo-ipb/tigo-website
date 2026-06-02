@@ -24,7 +24,7 @@ class ScannerController extends Controller
 
         // VALIDASI A: Apakah tiket ada/asli?
         if (!$ticket) {
-            // Catat Log Gagal (QR Bodong)
+            // Catat Log: REJECTED (Karena murni palsu)
             ScanLog::create([
                 'event_id' => $request->event_id,
                 'status' => 'REJECTED',
@@ -60,9 +60,9 @@ class ScannerController extends Controller
 
         // VALIDASI B: Apakah tiket ini untuk event yang sedang dijaga staff?
         if ($ticket->event_id !== $request->event_id) {
-            // Catat Log Gagal (Salah Event)
+            // Catat Log: REJECTED (Karena salah acara/event)
             ScanLog::create([
-                'event_id' => $request->event_id, // Catat di event tempat dia nyasar
+                'event_id' => $request->event_id,
                 'ticket_validation_id' => $ticket->_id,
                 'status' => 'REJECTED',
                 'reason' => 'Tiket bukan untuk acara ini',
@@ -81,12 +81,13 @@ class ScannerController extends Controller
 
         // VALIDASI C: Apakah tiket sudah pernah di-scan (Mencegah tiket ganda/fotokopi)
         if ($ticket->is_used) {
-            // Catat Log Gagal (Sudah Dipakai)
+            // 🔥 Catat Log: FAILED 🔥 
+            // (QR benar, Event benar, tapi ada anomali sudah dipakai. Membutuhkan tombol manual dari Admin)
             ScanLog::create([
                 'event_id' => $request->event_id,
                 'ticket_validation_id' => $ticket->_id,
-                'status' => 'REJECTED',
-                'reason' => 'Tiket sudah digunakan',
+                'status' => 'FAILED',
+                'reason' => 'Tiket SUDAH DIGUNAKAN',
                 'customer_name' => $name,
                 'email' => $email,
                 'order_id' => $orderId,
@@ -96,7 +97,7 @@ class ScannerController extends Controller
 
             return response()->json([
                 'success' => false, 
-                'message' => 'Terjadi masalah! Tiket sudah digunakan pada ' . ($ticket->scanned_at ? $ticket->scanned_at->format('d/m/Y H:i') : 'waktu sebelumnya')
+                'message' => 'Terjadi masalah! Tiket SUDAH DIGUNAKAN pada ' . ($ticket->scanned_at ? $ticket->scanned_at->format('d/m/Y H:i') : 'waktu sebelumnya')
             ], 400);
         }
 
@@ -124,7 +125,7 @@ class ScannerController extends Controller
             'message' => 'Tiket diterima dan divalidasi admin. Selamat menikmati event!',
             'data' => [
                 'type_name' => $ticket->type_name,
-                'buyer_name' => $name // Langsung pakai data nama yang sudah diekstrak dari Payment
+                'buyer_name' => $name
             ]
         ], 200);
     }
