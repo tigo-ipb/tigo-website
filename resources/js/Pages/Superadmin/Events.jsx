@@ -23,6 +23,21 @@ export default function Events({ stats, events, filters }) {
     const [search, setSearch] = useState(safeFilters.search || '');
     const [statusTab, setStatusTab] = useState(safeFilters.status || 'Semua');
     const [sort, setSort] = useState(safeFilters.sort || 'terbaru');
+    const [eventToDelete, setEventToDelete] = useState(null);
+
+    const confirmDelete = (id) => { setEventToDelete(id); setOpenDropdown(null); };
+    
+            const executeDelete = () => {
+                if (eventToDelete) {
+                    router.delete(route('superadmin.events.destroy', eventToDelete), {
+                        preserveScroll: true,
+                        onSuccess: (page) => {
+                            setEventToDelete(null);
+                        },
+                        onError: () => { setEventToDelete(null) }
+                    });
+                }
+            };
 
     const updateFilter = (newFilters = {}) => {
         const query = {
@@ -102,7 +117,7 @@ export default function Events({ stats, events, filters }) {
                     <Link href={route('superadmin.events.edit', row.id || row._id)} className="p-1.5 bg-sky-50 text-sky-500 rounded-md hover:bg-sky-100 transition-colors">
                         <IconEdit size={16}/>
                     </Link>
-                    <button className="p-1.5 bg-red-50 text-red-500 rounded-md hover:bg-red-100 transition-colors">
+                    <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); confirmDelete(row.id || row._id); }} className="p-1.5 bg-red-50 text-red-500 rounded-md hover:bg-red-100 transition-colors">
                         <IconTrash size={16}/>
                     </button>
                 </div>
@@ -200,6 +215,22 @@ export default function Events({ stats, events, filters }) {
                     />
                 )}
 
+             {eventToDelete && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={() => setEventToDelete(null)}></div>
+                        <div className="bg-white rounded-[24px] shadow-2xl w-full max-w-md p-8 relative z-10 animate-in zoom-in-95 duration-200">
+                            <div className="flex flex-col items-center text-center">
+                                <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-5 border-4 border-white shadow-sm"><IconTrash size={36} stroke={1.5} /></div>
+                                <h3 className="text-2xl font-bold text-gray-900 mb-2">Hapus Event?</h3>
+                                <p className="text-sm text-gray-500 mb-8 leading-relaxed">Apakah Anda yakin ingin menghapus event ini? Semua data, jadwal, tiket, dan foto yang terkait akan <span className="font-bold text-red-500">terhapus permanen</span> dari sistem.</p>
+                                <div className="flex gap-3 w-full">
+                                    <button onClick={() => setEventToDelete(null)} className="flex-1 py-3.5 px-4 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors">Batal</button>
+                                    <button onClick={executeDelete} className="flex-1 py-3.5 px-4 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition-colors shadow-sm shadow-red-200">Ya, Hapus</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </DashboardLayout>
     );

@@ -120,6 +120,7 @@ Route::middleware(['auth', EnsureAccountSetup::class, 'role:superadmin'])->prefi
     Route::get('/events', [AdminEvent::class, 'index'])->name('events');
     Route::get('/events/{id}', [AdminEvent::class, 'edit'])->name('events.edit');
     Route::put('/events/{id}', [AdminEvent::class, 'update'])->name('events.update');
+    Route::delete('/events/{id}', [AdminEvent::class, 'destroy'])->name('events.destroy');
 
     Route::get('/withdrawals', [AdminWithdrawal::class, 'index'])->name('withdrawals');
 

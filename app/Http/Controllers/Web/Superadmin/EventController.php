@@ -203,4 +203,29 @@ class EventController extends Controller
         ]);
         return redirect()->route('superadmin.events')->with('success', 'Event berhasil diperbarui!');
     }
+
+    public function destroy(Request $request, $id)
+    {
+        $event = Event::where('_id', $id)->firstOrFail();
+
+        // Hapus gambar banner dari Cloudinary
+        if (isset($event->banners['16x9'])) {
+            $this->deleteCloudinaryImage($event->banners['16x9']);
+        }
+        if (isset($event->banners['1x1'])) {
+            $this->deleteCloudinaryImage($event->banners['1x1']);
+        }
+
+        // Hapus gambar gallery dari Cloudinary
+        if (is_array($event->galleries)) {
+            foreach ($event->galleries as $galleryUrl) {
+                $this->deleteCloudinaryImage($galleryUrl);
+            }
+        }
+
+        // Hapus data event dari database
+        $event->delete();
+
+        return redirect()->route('superadmin.events')->with('success', 'Event berhasil dihapus!');
+    }
 }
