@@ -32,7 +32,7 @@ export default function VerifyEmail({ status }) {
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="w-full py-3 bg-blue-400 hover:bg-sky-500 disabled:opacity-60 text-white font-bold rounded-xl transition-colors text-sm"
+                                className="w-full py-3 bg-sky-400 hover:bg-sky-500 disabled:opacity-60 text-white font-bold rounded-xl transition-colors text-sm"
                             >
                                 {processing ? 'Mengirim...' : 'Kirim Ulang Email Verifikasi'}
                             </button>

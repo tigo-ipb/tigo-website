@@ -227,9 +227,9 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
                                         <SelectValue placeholder="Waktu" />
                                     </SelectTrigger>
                                     <SelectContent position="popper" sideOffset={4} className="bg-white rounded-[24px] border border-gray-100 shadow-xl z-[100] p-1.5">
-                                        <SelectItem value="tahun_ini" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun Ini</SelectItem>
-                                        <SelectItem value="tahun_kemarin" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun Kemarin</SelectItem>
-                                        <SelectItem value="5_tahun_kemarin" className="font-medium text-xs text-gray-700 focus:bg-blue-50 focus:text-sky-500 rounded-xl cursor-pointer">5 Tahun Terakhir</SelectItem>
+                                        <SelectItem value="tahun_ini" className="font-medium text-xs text-gray-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun Ini</SelectItem>
+                                        <SelectItem value="tahun_kemarin" className="font-medium text-xs text-gray-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">Tahun Kemarin</SelectItem>
+                                        <SelectItem value="5_tahun_kemarin" className="font-medium text-xs text-gray-700 focus:bg-sky-50 focus:text-sky-500 rounded-xl cursor-pointer">5 Tahun Terakhir</SelectItem>
                                     </SelectContent>
                                 </Select>
 
@@ -247,7 +247,7 @@ export default function Index({ stats, chartPendapatan, topEvents, categories, t
                             {topEvents.length > 0 ? topEvents.map((event, index) => (
                                 <div key={index} className="flex justify-between items-center gap-2">
                                     <div className="flex items-center gap-3 min-w-0">
-                                        <div className="w-6 h-6 bg-blue-50 text-sky-500 text-xs font-bold rounded-full flex items-center justify-center shrink-0">
+                                        <div className="w-6 h-6 bg-sky-50 text-sky-500 text-xs font-bold rounded-full flex items-center justify-center shrink-0">
                                             {index + 1}
                                         </div>
                                         <span className="text-sm font-medium text-gray-700 truncate">{event.name}</span>

@@ -40,7 +40,7 @@ export default function ConfirmPassword() {
                                     value={data.password}
                                     onChange={(e) => setData('password', e.target.value)}
                                     placeholder="Masukkan password"
-                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 placeholder-gray-400 pr-11"
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-100 focus:border-sky-400 placeholder-gray-400 pr-11"
                                     autoFocus
                                 />
                                 <button
@@ -59,7 +59,7 @@ export default function ConfirmPassword() {
                         <button
                             type="submit"
                             disabled={processing}
-                            className="w-full py-3 bg-blue-400 hover:bg-sky-500 disabled:opacity-60 text-white font-bold rounded-xl transition-colors text-sm"
+                            className="w-full py-3 bg-sky-400 hover:bg-sky-500 disabled:opacity-60 text-white font-bold rounded-xl transition-colors text-sm"
                         >
                             {processing ? 'Memproses...' : 'Konfirmasi'}
                         </button>
