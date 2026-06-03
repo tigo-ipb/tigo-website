@@ -14,7 +14,7 @@ export default function VerifyEmail({ status }) {
                 <Head title="Verifikasi Email" />
 
                 <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-                    <h1 className="text-4xl font-black text-blue-500 mb-3 text-center">
+                    <h1 className="text-4xl font-black text-sky-500 mb-3 text-center">
                         Verifikasi Email
                     </h1>
                     <p className="text-gray-500 text-sm mb-8 text-center max-w-sm">
@@ -32,7 +32,7 @@ export default function VerifyEmail({ status }) {
                             <button
                                 type="submit"
                                 disabled={processing}
-                                className="w-full py-3 bg-blue-400 hover:bg-blue-500 disabled:opacity-60 text-white font-bold rounded-xl transition-colors text-sm"
+                                className="w-full py-3 bg-blue-400 hover:bg-sky-500 disabled:opacity-60 text-white font-bold rounded-xl transition-colors text-sm"
                             >
                                 {processing ? 'Mengirim...' : 'Kirim Ulang Email Verifikasi'}
                             </button>

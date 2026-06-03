@@ -23,11 +23,11 @@ export default function Show({ event }) {
     console.log( event.status);
     const customHeader = (
         <div className="flex items-center justify-center text-lg md:text-xl font-semibold">
-            <Link href={route('organizer.events.index')} className="text-gray-900 hover:text-blue-500 transition-colors">
+            <Link href={route('organizer.events.index')} className="text-gray-900 hover:text-sky-500 transition-colors">
                 Events
             </Link>
             <IconChevronRight size={20} className="mx-2 text-gray-400" />
-            <span className="text-blue-500">Event Detail</span>
+            <span className="text-sky-500">Event Detail</span>
         </div>
     );
 
@@ -51,7 +51,7 @@ export default function Show({ event }) {
                             />
                             {/* Badges */}
                             <div className="absolute top-4 left-4">
-                                <span className="px-4 py-1.5 bg-white text-blue-500 text-xs font-semibold rounded-lg border border-blue-400">
+                                <span className="px-4 py-1.5 bg-white text-sky-500 text-xs font-semibold rounded-lg border border-blue-400">
                                     {event.category_name}
                                 </span>
                             </div>
@@ -69,11 +69,11 @@ export default function Show({ event }) {
                             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-6">
                                 <div className="flex flex-col gap-2">
                                     <div className="flex items-center gap-3 text-xs font-medium text-black">
-                                        <IconClock size={20} className="text-blue-500" />
+                                        <IconClock size={20} className="text-sky-500" />
                                         <span>{event.schedule_format}</span>
                                     </div>
                                     <div className="flex items-center gap-3 text-xs font-medium text-black">
-                                        <IconMapPin size={20} className="text-blue-500" />
+                                        <IconMapPin size={20} className="text-sky-500" />
                                         <span>{event.location?.venue}</span>
                                     </div>
                                 </div>

@@ -127,7 +127,7 @@
                         <>
                             <div className="fixed inset-0 z-10" onClick={(e) => { e.stopPropagation(); e.preventDefault(); setOpenDropdown(null) }}></div>
                             <div className="absolute right-0 top-12 w-42 bg-white rounded-2xl shadow-lg border border-gray-100 z-20 overflow-hidden py-2 animate-in fade-in slide-in-from-top-2 font-sans">
-                                <Link href={route('organizer.events.edit', event.id)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-blue-500 w-full text-left">
+                                <Link href={route('organizer.events.edit', event.id)} className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 hover:text-sky-500 w-full text-left">
                                     <IconEdit size={18} stroke={2} /> Edit Event
                                 </Link>
                                 <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); confirmDelete(event.id); }} className="flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 w-full text-left cursor-pointer">
