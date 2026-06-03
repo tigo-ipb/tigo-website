@@ -151,11 +151,31 @@ class ApiAuthController extends Controller
     {
         $request->validate(['id_token' => 'required|string']);
 
-        $client = new Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+        $token = $request->id_token;
+        $payload = null;
 
         try {
-            $payload = $client->verifyIdToken($request->id_token);
+            // CEK: Apakah token yang datang adalah Access Token Web (berawalan ya29.)?
+            if (str_starts_with($token, 'ya29.')) {
+                // Ambil data user menggunakan Endpoint UserInfo Google API
+                $response = \Illuminate\Support\Facades\Http::withToken($token)
+                                ->get('https://www.googleapis.com/oauth2/v3/userinfo');
+                
+                if ($response->successful()) {
+                    $userInfo = $response->json();
+                    $payload = [
+                        'email' => $userInfo['email'],
+                        'name'  => $userInfo['name'],
+                        'sub'   => $userInfo['sub'],
+                    ];
+                }
+            } else {
+                // Jika token adalah ID Token Mobile biasa
+                $client = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+                $payload = $client->verifyIdToken($token);
+            }
 
+            // Jika berhasil mengekstrak data (email, dll) dari token
             if ($payload) {
                 // Cari atau Buat User Baru
                 $user = User::updateOrCreate(
@@ -171,42 +191,27 @@ class ApiAuthController extends Controller
                 // Pastikan kolom is_profile_setup ada (default false untuk user baru)
                 if (!isset($user->is_profile_setup)) {
                     $user->is_profile_setup = false;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     $user->save();
                 }
 
-                $token = $user->createToken('mobile-app-token')->plainTextToken;
+                $appToken = $user->createToken('mobile-app-token')->plainTextToken;
 
                 return response()->json([
                     'success' => true,
                     'message' => 'Google Login berhasil',
                     'data'    => [
                         'user'  => $user,
-                        'token' => $token,
+                        'token' => $appToken,
                         'needs_setup' => !$this->isProfileComplete($user)
                     ]
                 ], 200);
 
             } else {
-                return response()->json(['success' => false, 'message' => 'Token Google tidak valid'], 401);
+                return response()->json(['success' => false, 'message' => 'Token Google tidak valid atau kadaluarsa'], 401);
             }
         } catch (\Exception $e) {
-            Log::error('Google Auth Error: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Kesalahan saat verifikasi Google.'], 500);
+            \Illuminate\Support\Facades\Log::error('Google Auth Error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Kesalahan sistem saat verifikasi Google.'], 500);
         }
     }
 
