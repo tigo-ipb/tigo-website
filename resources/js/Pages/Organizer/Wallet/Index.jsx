@@ -267,7 +267,7 @@ export default function Index({ balances, methods, history, filters }) {
                         <div className="space-y-4">
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-neutral-950 font-medium">Minimal</span>
-                                <span className="text-neutral-950 font-semibold">Rp100.000</span>
+                                <span className="text-neutral-950 font-semibold">Rp50.000</span>
                             </div>
                             <div className="flex justify-between items-center text-sm">
                                 <span className="text-neutral-950 font-medium">Maks / Transaksi</span>
